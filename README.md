@@ -9,17 +9,17 @@
 
 ## Overview
 
-**Grok Code** is a powerful, terminal-based coding assistant powered by Grok AI from xAI. Inspired by advanced tools like Claude Code, it transforms your command line into an intelligent coding environment. Whether you're building a simple script, debugging complex code, or generating entire projects (e.g., a Next.js app ready for Vercel deployment), Grok Code handles it all with natural language prompts.
+**Grok Code** is a powerful, terminal-based coding assistant powered by Grok AI from xAI. It transforms your command line into an intelligent coding environment. Whether you're building a simple script, debugging complex code, or generating entire projects (e.g., a Next.js app ready for Vercel deployment), Grok Code handles it all with natural language prompts.
 
 Built for developers who prefer staying in the terminal, Grok Code supports multi-file edits, autonomous workflows, git integration, custom commands, and more. It's stateful, agentic, and optimized for efficiency—leveraging Grok's advanced reasoning to plan, code, test, and iterate.
 
 **Current Version:** 1.0.0 (Released: July 10, 2025)  
-**Built by:** xAI  
+**Built by:** nytemode  
 **License:** MIT  
 
 ## Key Features
 
-Grok Code is designed to be a full-featured competitor to tools like Claude Code, with enhancements for seamless integration and user control:
+Grok Code is designed to be a full-featured coding assistant with enhancements for seamless integration and user control:
 
 - **AI-Powered Coding Assistance**: Interact with Grok AI via natural language. Ask to write code, debug errors, optimize functions, or generate entire projects. Grok thinks step-by-step, proposes plans, and outputs in markdown for clarity.
   
@@ -162,6 +162,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ## Acknowledgments
 
 - Powered by [xAI's Grok](https://x.ai).
-- Inspired by Claude Code and open-source AI tools.
+- Built by nytemode.
 
 For questions, tweet @xai or join the discussion on GitHub. Happy coding! 🚀 
