@@ -67,9 +67,8 @@ Grok Code is designed to be a full-featured coding assistant with enhancements f
 ## Installation
 
 1. **Prerequisites**:
-   - Python 3.8+.
+   - Node.js 16+.
    - xAI API key (get from [x.ai/api](https://x.ai/api)).
-   - Install dependencies: `pip install openai`.
 
 2. **Clone the Repo**:
    ```
@@ -77,21 +76,37 @@ Grok Code is designed to be a full-featured coding assistant with enhancements f
    cd grok-code
    ```
 
-3. **Run the Script**:
+3. **Install Dependencies**:
    ```
-   python grok_code.py
+   npm install
    ```
-   - On first launch, enter your xAI API key (saved securely in `.grok_code_key`).
 
-4. **Optional: Add to PATH**:
-   - For global access, symlink or add to your shell profile.
+4. **Run the CLI**:
+   ```
+   npm start
+   ```
+   or
+   ```
+   node bin/grok.js
+   ```
+   - On first launch, enter your xAI API key (saved securely in `~/.grok/api_key`).
+
+5. **Global Installation (Optional)**:
+   ```
+   npm install -g .
+   ```
+   Then use `grok` from anywhere.
 
 ## Usage
 
 Launch Grok Code in your project directory:
 
 ```
-python grok_code.py
+npm start
+```
+or
+```
+grok
 ```
 
 - **Basic Interaction**: Type prompts like "Create a Python script to reverse a string" or "Debug this error in app.js".

@@ -1,0 +1,28 @@
+{
+  "name": "@xai/grok-code",
+  "version": "1.0.0",
+  "description": "Grok Code: An agentic coding tool powered by xAI that lives in your terminal, understands your codebase, and helps you code faster.",
+  "main": "index.js",
+  "bin": {
+    "grok": "./bin/grok.js"
+  },
+  "scripts": {
+    "start": "node bin/grok.js"
+  },
+  "dependencies": {
+    "openai": "^4.0.0",
+    "inquirer": "^9.0.0",
+    "ora": "^5.4.1",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.0.0",
+    "child_process": "^1.0.2",
+    "xml2js": "^0.6.2"
+  },
+  "keywords": ["cli", "ai", "coding", "xai", "grok"],
+  "author": "nytemode",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xai-org/grok-code.git"
+  }
+} 
