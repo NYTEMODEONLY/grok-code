@@ -1,12 +1,5 @@
 # Grok Code: Your CLI-Based AI Coding Assistant
 
-![Grok Code Logo](https://via.placeholder.com/800x200?text=Grok+Code) <!-- Replace with actual logo URL if available -->
-
-[![GitHub License](https://img.shields.io/github/license/xai-org/grok-code)](https://github.com/xai-org/grok-code/blob/main/LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/xai-org/grok-code)](https://github.com/xai-org/grok-code/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/xai-org/grok-code)](https://github.com/xai-org/grok-code/network)
-[![Twitter Follow](https://img.shields.io/twitter/follow/xai?style=social)](https://twitter.com/xai)
-
 ## Overview
 
 **Grok Code** is a powerful, terminal-based coding assistant powered by Grok AI from xAI. It transforms your command line into an intelligent coding environment. Whether you're building a simple script, debugging complex code, or generating entire projects (e.g., a Next.js app ready for Vercel deployment), Grok Code handles it all with natural language prompts.
