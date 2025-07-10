@@ -29,7 +29,7 @@ async function main() {
   if (!apiKey) {
     if (fs.existsSync(keyFile)) {
       apiKey = fs.readFileSync(keyFile, 'utf8').trim();
-      const { choice } = await inquirer.prompt([
+      const answers = await inquirer.prompt([
         {
           type: 'list',
           name: 'choice',
@@ -37,8 +37,10 @@ async function main() {
           choices: ['Use existing key', 'Change key', 'Delete key']
         }
       ]);
+      const choice = answers.choice;
       if (choice === 'Change key') {
-        apiKey = (await inquirer.prompt([{ type: 'input', name: 'key', message: 'Enter new xAI API key:' }])).key.trim();
+        const keyAnswers = await inquirer.prompt([{ type: 'input', name: 'key', message: 'Enter new xAI API key:' }]);
+        apiKey = keyAnswers.key.trim();
         fs.writeFileSync(keyFile, apiKey);
       } else if (choice === 'Delete key') {
         fs.unlinkSync(keyFile);
@@ -46,7 +48,8 @@ async function main() {
       }
     }
     if (!apiKey) {
-      apiKey = (await inquirer.prompt([{ type: 'input', name: 'key', message: 'Enter your xAI API key:' }])).key.trim();
+      const keyAnswers = await inquirer.prompt([{ type: 'input', name: 'key', message: 'Enter your xAI API key:' }]);
+      apiKey = keyAnswers.key.trim();
       fs.writeFileSync(keyFile, apiKey);
     }
   }
@@ -99,8 +102,8 @@ Always plan actions, confirm before assuming applied, and suggest next steps lik
   console.log("Welcome to Grok Code! Type your message or use /help for commands. Type '/exit' to quit.\n");
 
   while (true) {
-    const { input } = await inquirer.prompt([{ type: 'input', name: 'input', message: 'You:', prefix: '' }]);
-    let userInput = input.trim();
+    const answers = await inquirer.prompt([{ type: 'input', name: 'input', message: 'You:', prefix: '' }]);
+    let userInput = answers.input.trim();
 
     if (userInput.toLowerCase() === '/exit') {
       console.log("Exiting Grok Code. Happy coding!");
@@ -312,8 +315,8 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
     console.log(`Delete file: ${parsed.delete.$.file}`);
   }
 
-  const { confirm } = await inquirer.prompt([{ type: 'confirm', name: 'confirm', message: 'Apply these actions?' }]);
-  if (!confirm) {
+  const answers = await inquirer.prompt([{ type: 'confirm', name: 'confirm', message: 'Apply these actions?' }]);
+  if (!answers.confirm) {
     console.log("Actions not applied.");
     return;
   }
@@ -358,4 +361,4 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
 
   const updatedFiles = fs.readdirSync('.');
   messages.push({ role: 'system', content: `Actions applied. Updated files in directory: ${updatedFiles.join(', ')}` });
-} 
+}

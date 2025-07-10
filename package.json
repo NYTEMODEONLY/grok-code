@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "openai": "^4.0.0",
-    "inquirer": "^9.0.0",
+    "inquirer": "^8.2.6",
     "ora": "^5.4.1",
     "commander": "^12.0.0",
     "fs-extra": "^11.0.0",
@@ -19,10 +19,10 @@
     "xml2js": "^0.6.2"
   },
   "keywords": ["cli", "ai", "coding", "xai", "grok"],
-  "author": "nytemode",
+  "author": "xAI",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/xai-org/grok-code.git"
   }
-} 
+}

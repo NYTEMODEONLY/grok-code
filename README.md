@@ -71,28 +71,28 @@ Grok Code is designed to be a full-featured coding assistant with enhancements f
    - xAI API key (get from [x.ai/api](https://x.ai/api)).
 
 2. **Clone the Repo**:
-   ```
+   ```bash
    git clone https://github.com/xai-org/grok-code.git
    cd grok-code
    ```
 
 3. **Install Dependencies**:
-   ```
+   ```bash
    npm install
    ```
 
 4. **Run the CLI**:
-   ```
+   ```bash
    npm start
    ```
    or
-   ```
-   node bin/grok.js
+   ```bash
+   ./bin/grok.js
    ```
    - On first launch, enter your xAI API key (saved securely in `~/.grok/api_key`).
 
 5. **Global Installation (Optional)**:
-   ```
+   ```bash
    npm install -g .
    ```
    Then use `grok` from anywhere.
@@ -101,15 +101,19 @@ Grok Code is designed to be a full-featured coding assistant with enhancements f
 
 Launch Grok Code in your project directory:
 
-```
+```bash
 npm start
 ```
 or
+```bash
+./bin/grok.js
 ```
+or globally:
+```bash
 grok
 ```
 
-- **Basic Interaction**: Type prompts like "Create a Python script to reverse a string" or "Debug this error in app.js".
+- **Basic Interaction**: Type prompts like "Create a JavaScript function to reverse a string" or "Debug this error in app.js".
 - **Project Creation**: "Build a Next.js website for a blog, ready to deploy on Vercel."
 - **Debugging**: "Fix the bug in this code: [paste code]".
 - **Git Workflow**: "/init-git", then "Generate commit message for recent changes", followed by "/commit <msg>".
@@ -155,7 +159,7 @@ You: /commit "Add Pong game"
 
 - **Context Management**: Use `/scan` for large repos, but add selectively to save tokens.
 - **Error Handling**: If a command fails, Grok can iterate—paste errors back in.
-- **Performance**: For faster responses, switch to `grok-3-mini-beta` in code.
+- **Performance**: For faster responses, switch to `grok-3-mini-beta` in the code.
 
 ## Contributing
 
