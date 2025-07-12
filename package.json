@@ -2,12 +2,16 @@
   "name": "@xai/grok-code",
   "version": "1.0.0",
   "description": "Grok Code: An agentic coding tool powered by xAI that lives in your terminal, understands your codebase, and helps you code faster.",
-  "main": "index.js",
+  "main": "src/index.js",
   "bin": {
     "grok": "./bin/grok.js"
   },
   "scripts": {
-    "start": "node bin/grok.js"
+    "start": "node bin/grok.js",
+    "dev": "node --watch bin/grok.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "build": "npm run lint && npm test"
   },
   "dependencies": {
     "openai": "^4.0.0",
@@ -16,13 +20,33 @@
     "commander": "^12.0.0",
     "fs-extra": "^11.0.0",
     "child_process": "^1.0.2",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "chalk": "^4.1.2",
+    "figlet": "^1.6.0",
+    "cli-table3": "^0.6.3",
+    "moment": "^2.29.4",
+    "node-cron": "^3.0.3",
+    "uuid": "^9.0.1",
+    "conf": "^10.0.3",
+    "crypto-js": "^4.2.0",
+    "glob": "^10.3.10",
+    "minimatch": "^9.0.3",
+    "yaml": "^2.3.4",
+    "js-yaml": "^4.1.0"
   },
-  "keywords": ["cli", "ai", "coding", "xai", "grok"],
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["cli", "ai", "coding", "xai", "grok", "terminal", "development"],
   "author": "xAI",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/xai-org/grok-code.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
