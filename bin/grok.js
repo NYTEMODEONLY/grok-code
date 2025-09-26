@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// Built by nytemode
+
 import { program } from 'commander';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
@@ -113,7 +115,7 @@ class ErrorLogger {
 
 const logger = new ErrorLogger();
 
-program.name('grok').description('Grok Code CLI').version('1.1.0');
+program.name('grok').description('Grok Code CLI - built by nytemode').version('1.1.0');
 
 program.action(async () => {
   await main();
