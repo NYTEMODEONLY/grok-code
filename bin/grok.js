@@ -22,6 +22,7 @@ import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
 import { DiffViewer } from '../lib/display/diff-viewer.js';
 import { ProgressIndicator } from '../lib/display/progress-indicator.js';
 import { FileBrowser } from '../lib/interactive/file-browser.js';
+import { CodePreview } from '../lib/display/code-preview.js';
 
 /**
  * Error Logging System
@@ -922,6 +923,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Initialize file browser for interactive navigation
   const fileBrowser = new FileBrowser({ syntaxHighlighter });
 
+  // Initialize code preview for enhanced code display
+  const codePreview = new CodePreview({ syntaxHighlighter });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1684,6 +1688,7 @@ async function handleCommand(
 - /diff <status|test|git|show>: Color-coded diff display and git integration
 - /progress <status|test|spinner|multistep>: Progress indicators and status displays
 - /browse <start|find|preview|stats>: Interactive file browser and navigation
+- /preview <file|code|line|search|config>: Enhanced code preview with line numbers
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2136,6 +2141,139 @@ async function handleCommand(
     } else {
       console.log(`Unknown browse subcommand: ${subcommand}`);
       console.log('Use /browse for help');
+    }
+
+    return true;
+  } else if (input.startsWith('/preview')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand) {
+      console.log('Usage: /preview <command>');
+      console.log('Commands:');
+      console.log('  /preview file <path>     - Preview a file with line numbers');
+      console.log('  /preview code <language> - Preview code from clipboard/input');
+      console.log('  /preview line <file> <n> - Navigate to specific line in file');
+      console.log('  /preview search <file> <term> - Search and highlight in file');
+      console.log('  /preview config          - Show preview configuration');
+      console.log('Examples:');
+      console.log('  /preview file package.json');
+      console.log('  /preview line src/app.js 25');
+      console.log('  /preview search lib/utils.js function');
+    } else if (subcommand === 'file') {
+      const filePath = parts.slice(2).join(' ');
+      if (!filePath) {
+        console.log('Usage: /preview file <file-path>');
+        return true;
+      }
+
+      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+
+      if (!fs.existsSync(fullPath)) {
+        console.log(`❌ File not found: ${filePath}`);
+        return true;
+      }
+
+      console.log(`\n👁️  Enhanced preview: ${path.relative(currentDir, fullPath)}`);
+      console.log('═'.repeat(60));
+      console.log(codePreview.previewFile(fullPath, {
+        showLineNumbers: true,
+        showHeader: true,
+        showFileInfo: true,
+        maxLines: 50,
+      }));
+    } else if (subcommand === 'code') {
+      const language = parts[2] || 'auto';
+      console.log(`Enter code to preview (${language} syntax). Type 'END' on a new line to finish:`);
+
+      let codeLines = [];
+      const originalPrompt = '> ';
+      process.stdout.write(originalPrompt);
+
+      process.stdin.setEncoding('utf8');
+      process.stdin.resume();
+
+      process.stdin.on('data', function(chunk) {
+        const input = chunk.toString().trim();
+        if (input === 'END') {
+          process.stdin.pause();
+          const code = codeLines.join('\n');
+          console.log('\n📄 Code Preview:');
+          console.log('═'.repeat(50));
+          console.log(codePreview.previewCode(code, language, {
+            showLineNumbers: true,
+            showHeader: true,
+            maxLines: 30,
+          }));
+          console.log('\n✅ Code preview complete.');
+          process.stdout.write('\nYou: ');
+          return;
+        }
+        codeLines.push(input);
+        process.stdout.write(originalPrompt);
+      });
+    } else if (subcommand === 'line') {
+      const filePath = parts[2];
+      const lineNumber = parseInt(parts[3]);
+
+      if (!filePath || !lineNumber) {
+        console.log('Usage: /preview line <file-path> <line-number>');
+        return true;
+      }
+
+      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+
+      if (!fs.existsSync(fullPath)) {
+        console.log(`❌ File not found: ${filePath}`);
+        return true;
+      }
+
+      console.log(`\n🎯 Navigating to line ${lineNumber} in: ${path.relative(currentDir, fullPath)}`);
+      console.log('═'.repeat(60));
+      console.log(codePreview.navigateToLine(
+        fs.readFileSync(fullPath, 'utf8'),
+        lineNumber,
+        3, // context lines
+        undefined, // auto-detect language
+        { showLineNumbers: true }
+      ));
+    } else if (subcommand === 'search') {
+      const filePath = parts[2];
+      const searchTerm = parts.slice(3).join(' ');
+
+      if (!filePath || !searchTerm) {
+        console.log('Usage: /preview search <file-path> <search-term>');
+        return true;
+      }
+
+      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+
+      if (!fs.existsSync(fullPath)) {
+        console.log(`❌ File not found: ${filePath}`);
+        return true;
+      }
+
+      console.log(`\n🔍 Searching for "${searchTerm}" in: ${path.relative(currentDir, fullPath)}`);
+      console.log('═'.repeat(60));
+      console.log(codePreview.searchAndHighlight(
+        fs.readFileSync(fullPath, 'utf8'),
+        searchTerm,
+        undefined, // auto-detect language
+        { showLineNumbers: true, showHeader: true, maxLines: 30 }
+      ));
+    } else if (subcommand === 'config') {
+      const stats = codePreview.getStats();
+      console.log('\n📄 Code Preview Configuration:');
+      console.log('═'.repeat(40));
+      console.log(`Show Line Numbers: ${stats.showLineNumbers ? '✅' : '❌'}`);
+      console.log(`Line Number Padding: ${stats.lineNumberPadding}`);
+      console.log(`Max Lines: ${stats.maxLines}`);
+      console.log(`Wrap Lines: ${stats.wrapLines ? '✅' : '❌'}`);
+      console.log(`Highlight Current Line: ${stats.highlightCurrentLine ? '✅' : '❌'}`);
+      console.log(`Show Gutter: ${stats.showGutter ? '✅' : '❌'}`);
+    } else {
+      console.log(`Unknown preview subcommand: ${subcommand}`);
+      console.log('Use /preview for help');
     }
 
     return true;
