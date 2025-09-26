@@ -1,0 +1,1039 @@
+{
+  "error_frequency": {
+    "syntax|semi|Missing_semicolon": [
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "file": "src/app.js",
+          "line": 15,
+          "column": 25,
+          "rule": "semi"
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/app.js"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/app.js",
+        "functionName": null,
+        "lineNumber": 15,
+        "columnNumber": 25,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "file": "src/utils.js",
+          "line": 8,
+          "column": 30,
+          "rule": "semi"
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/utils.js"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/utils.js",
+        "functionName": null,
+        "lineNumber": 8,
+        "columnNumber": 30,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi"
+        },
+        "context": {
+          "userId": "user1",
+          "projectId": "project1",
+          "sessionId": "session1"
+        },
+        "timestamp": "2025-09-26T05:46:55.732Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "functionName": null,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:46:55.732Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi"
+        },
+        "context": {
+          "userId": "user2",
+          "projectId": "project2",
+          "sessionId": "session2"
+        },
+        "timestamp": "2025-09-26T05:46:55.733Z",
+        "sessionId": "session2",
+        "userId": "user2",
+        "projectId": "project2",
+        "functionName": null,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:46:55.733Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/app.js",
+          "line": 15
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/app.js",
+        "functionName": null,
+        "lineNumber": 15,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/utils.js",
+          "line": 8
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/utils.js",
+        "functionName": null,
+        "lineNumber": 8,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/config.js",
+          "line": 25
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/config.js",
+        "functionName": null,
+        "lineNumber": 25,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/api.js",
+          "line": 12
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/api.js",
+        "functionName": null,
+        "lineNumber": 12,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      }
+    ],
+    "type|property-not-exist|Property__email__does_not_exist": [
+      {
+        "error": {
+          "type": "type",
+          "message": "Property 'email' does not exist",
+          "file": "src/user.ts",
+          "line": 20,
+          "column": 10,
+          "rule": "property-not-exist"
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/user.ts"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/user.ts",
+        "functionName": null,
+        "lineNumber": 20,
+        "columnNumber": 10,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      }
+    ],
+    "unused|no-unused-vars|Variable_is_defined_but_never_used": [
+      {
+        "error": {
+          "type": "unused",
+          "message": "Variable is defined but never used",
+          "file": "src/config.js",
+          "line": 5,
+          "column": 5,
+          "rule": "no-unused-vars"
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/config.js"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/config.js",
+        "functionName": null,
+        "lineNumber": 5,
+        "columnNumber": 5,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      },
+      {
+        "error": {
+          "type": "unused",
+          "message": "Variable is defined but never used",
+          "rule": "no-unused-vars",
+          "file": "src/helpers.js",
+          "line": 5
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/helpers.js",
+        "functionName": null,
+        "lineNumber": 5,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "unused",
+          "message": "Variable is defined but never used",
+          "rule": "no-unused-vars",
+          "file": "src/validators.js",
+          "line": 10
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/validators.js",
+        "functionName": null,
+        "lineNumber": 10,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      }
+    ],
+    "type|property-not-exist|Property_not_found": [
+      {
+        "error": {
+          "type": "type",
+          "message": "Property not found",
+          "rule": "property-not-exist"
+        },
+        "context": {
+          "userId": "user1",
+          "projectId": "project1",
+          "sessionId": "session1"
+        },
+        "timestamp": "2025-09-26T05:46:55.733Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "functionName": null,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:46:55.733Z"
+        }
+      }
+    ],
+    "type|property-not-exist|Property_does_not_exist": [
+      {
+        "error": {
+          "type": "type",
+          "message": "Property does not exist",
+          "rule": "property-not-exist",
+          "file": "src/user.ts",
+          "line": 20
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/user.ts",
+        "functionName": null,
+        "lineNumber": 20,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "type",
+          "message": "Property does not exist",
+          "rule": "property-not-exist",
+          "file": "src/order.ts",
+          "line": 35
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/order.ts",
+        "functionName": null,
+        "lineNumber": 35,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      }
+    ]
+  },
+  "error_locations": {
+    "syntax|semi|Missing_semicolon": [
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "file": "src/app.js",
+          "line": 15,
+          "column": 25,
+          "rule": "semi"
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/app.js"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/app.js",
+        "functionName": null,
+        "lineNumber": 15,
+        "columnNumber": 25,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "file": "src/utils.js",
+          "line": 8,
+          "column": 30,
+          "rule": "semi"
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/utils.js"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/utils.js",
+        "functionName": null,
+        "lineNumber": 8,
+        "columnNumber": 30,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi"
+        },
+        "context": {
+          "userId": "user1",
+          "projectId": "project1",
+          "sessionId": "session1"
+        },
+        "timestamp": "2025-09-26T05:46:55.732Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "functionName": null,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:46:55.732Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi"
+        },
+        "context": {
+          "userId": "user2",
+          "projectId": "project2",
+          "sessionId": "session2"
+        },
+        "timestamp": "2025-09-26T05:46:55.733Z",
+        "sessionId": "session2",
+        "userId": "user2",
+        "projectId": "project2",
+        "functionName": null,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:46:55.733Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/app.js",
+          "line": 15
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/app.js",
+        "functionName": null,
+        "lineNumber": 15,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/utils.js",
+          "line": 8
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/utils.js",
+        "functionName": null,
+        "lineNumber": 8,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/config.js",
+          "line": 25
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/config.js",
+        "functionName": null,
+        "lineNumber": 25,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "syntax",
+          "message": "Missing semicolon",
+          "rule": "semi",
+          "file": "src/api.js",
+          "line": 12
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/api.js",
+        "functionName": null,
+        "lineNumber": 12,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      }
+    ],
+    "type|property-not-exist|Property__email__does_not_exist": [
+      {
+        "error": {
+          "type": "type",
+          "message": "Property 'email' does not exist",
+          "file": "src/user.ts",
+          "line": 20,
+          "column": 10,
+          "rule": "property-not-exist"
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/user.ts"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/user.ts",
+        "functionName": null,
+        "lineNumber": 20,
+        "columnNumber": 10,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      }
+    ],
+    "unused|no-unused-vars|Variable_is_defined_but_never_used": [
+      {
+        "error": {
+          "type": "unused",
+          "message": "Variable is defined but never used",
+          "file": "src/config.js",
+          "line": 5,
+          "column": 5,
+          "rule": "no-unused-vars"
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1",
+          "filePath": "src/config.js"
+        },
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/config.js",
+        "functionName": null,
+        "lineNumber": 5,
+        "columnNumber": 5,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:44:49.560Z"
+        }
+      },
+      {
+        "error": {
+          "type": "unused",
+          "message": "Variable is defined but never used",
+          "rule": "no-unused-vars",
+          "file": "src/helpers.js",
+          "line": 5
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/helpers.js",
+        "functionName": null,
+        "lineNumber": 5,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "unused",
+          "message": "Variable is defined but never used",
+          "rule": "no-unused-vars",
+          "file": "src/validators.js",
+          "line": 10
+        },
+        "context": {
+          "sessionId": "session2",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session2",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/validators.js",
+        "functionName": null,
+        "lineNumber": 10,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      }
+    ],
+    "type|property-not-exist|Property_not_found": [
+      {
+        "error": {
+          "type": "type",
+          "message": "Property not found",
+          "rule": "property-not-exist"
+        },
+        "context": {
+          "userId": "user1",
+          "projectId": "project1",
+          "sessionId": "session1"
+        },
+        "timestamp": "2025-09-26T05:46:55.733Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "functionName": null,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:46:55.733Z"
+        }
+      }
+    ],
+    "type|property-not-exist|Property_does_not_exist": [
+      {
+        "error": {
+          "type": "type",
+          "message": "Property does not exist",
+          "rule": "property-not-exist",
+          "file": "src/user.ts",
+          "line": 20
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/user.ts",
+        "functionName": null,
+        "lineNumber": 20,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      },
+      {
+        "error": {
+          "type": "type",
+          "message": "Property does not exist",
+          "rule": "property-not-exist",
+          "file": "src/order.ts",
+          "line": 35
+        },
+        "context": {
+          "sessionId": "session1",
+          "userId": "user1",
+          "projectId": "project1"
+        },
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "filePath": "src/order.ts",
+        "functionName": null,
+        "lineNumber": 35,
+        "userAction": "unknown",
+        "environment": {
+          "nodeVersion": "v24.3.0",
+          "platform": "darwin",
+          "arch": "arm64",
+          "cwd": "/Users/lobo/Desktop/Progress/Built in 2025/grokcode/grok-code",
+          "timestamp": "2025-09-26T05:50:15.212Z"
+        }
+      }
+    ]
+  },
+  "temporal_patterns": {},
+  "context_patterns": {},
+  "fix_success_rates": {
+    "syntax|semi|Missing_semicolon": [
+      {
+        "errorKey": "syntax|semi|Missing_semicolon",
+        "fixKey": "template|syntax",
+        "fixMethod": "template",
+        "success": true,
+        "confidence": 0.9,
+        "duration": 1125.3430938185343,
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session1",
+        "wasAutoApplied": true
+      },
+      {
+        "errorKey": "syntax|semi|Missing_semicolon",
+        "fixKey": "template|syntax",
+        "fixMethod": "template",
+        "success": false,
+        "confidence": 0.95,
+        "duration": 612.2385387573157,
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session2",
+        "wasAutoApplied": false
+      },
+      {
+        "errorKey": "syntax|semi|Missing_semicolon",
+        "fixKey": "template|syntax",
+        "fixMethod": "template",
+        "success": true,
+        "confidence": 0.9,
+        "duration": 100,
+        "timestamp": "2025-09-26T05:46:55.732Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "wasAutoApplied": false
+      },
+      {
+        "errorKey": "syntax|semi|Missing_semicolon",
+        "fixKey": "template|syntax",
+        "fixMethod": "template",
+        "success": false,
+        "confidence": 0.95,
+        "duration": 200,
+        "timestamp": "2025-09-26T05:46:55.733Z",
+        "sessionId": "session2",
+        "userId": "user2",
+        "projectId": "project2",
+        "wasAutoApplied": false
+      },
+      {
+        "errorKey": "syntax|semi|Missing_semicolon",
+        "fixKey": "template|unknown",
+        "fixMethod": "template",
+        "success": true,
+        "confidence": 0.9,
+        "duration": 0,
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "wasAutoApplied": false
+      },
+      {
+        "errorKey": "syntax|semi|Missing_semicolon",
+        "fixKey": "template|unknown",
+        "fixMethod": "template",
+        "success": false,
+        "confidence": 0.8,
+        "duration": 0,
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "wasAutoApplied": false
+      }
+    ],
+    "type|property-not-exist|Property__email__does_not_exist": [
+      {
+        "errorKey": "type|property-not-exist|Property__email__does_not_exist",
+        "fixKey": "ai|type",
+        "fixMethod": "ai",
+        "success": true,
+        "confidence": 0.8,
+        "duration": 1148.528456143265,
+        "timestamp": "2025-09-26T05:44:49.560Z",
+        "sessionId": "session1",
+        "wasAutoApplied": true
+      }
+    ],
+    "unused|no-unused-vars|Variable_is_defined_but_never_used": [
+      {
+        "errorKey": "unused|no-unused-vars|Variable_is_defined_but_never_used",
+        "fixKey": "template|unused",
+        "fixMethod": "template",
+        "success": true,
+        "confidence": 0.7,
+        "duration": 1382.7802367811737,
+        "timestamp": "2025-09-26T05:44:49.561Z",
+        "sessionId": "session2",
+        "wasAutoApplied": true
+      }
+    ],
+    "type|property-not-exist|Property_not_found": [
+      {
+        "errorKey": "type|property-not-exist|Property_not_found",
+        "fixKey": "ai|type",
+        "fixMethod": "ai",
+        "success": true,
+        "confidence": 0.8,
+        "duration": 150,
+        "timestamp": "2025-09-26T05:46:55.733Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "wasAutoApplied": false
+      }
+    ],
+    "type|property-not-exist|Property_does_not_exist": [
+      {
+        "errorKey": "type|property-not-exist|Property_does_not_exist",
+        "fixKey": "ai|unknown",
+        "fixMethod": "ai",
+        "success": true,
+        "confidence": 0.7,
+        "duration": 0,
+        "timestamp": "2025-09-26T05:50:15.212Z",
+        "sessionId": "session1",
+        "userId": "user1",
+        "projectId": "project1",
+        "wasAutoApplied": false
+      }
+    ]
+  },
+  "prevention_opportunities": {},
+  "metadata": {
+    "created": "2025-09-26T05:44:49.556Z",
+    "version": "1.0",
+    "lastUpdated": "2025-09-26T05:50:15.251Z",
+    "totalPatterns": 40
+  }
+}
