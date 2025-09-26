@@ -833,6 +833,9 @@ Always plan actions, confirm before assuming applied, and suggest next steps lik
 
 BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, assume they want you to generate the actual code changes, not just explain how to do it.`;
 
+  // Load conversation history for persistent memory
+  let conversationHistory = loadConversationHistory();
+
   let messages = [{ role: 'system', content: systemPrompt }];
   let fileContext = {};
 
@@ -882,8 +885,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Load command history for this workspace
   let commandHistory = loadCommandHistory();
 
-  // Load conversation history for persistent memory
-  let conversationHistory = loadConversationHistory();
+  // Show conversation loading message if history exists
   if (conversationHistory.length > 0) {
     console.log(
       `💬 Loaded ${conversationHistory.length} previous conversation messages.\n`
