@@ -27,6 +27,12 @@
 - AI-powered complex error resolution with Grok integration
 - Safe fix application with automatic rollback capability
 
+### Learning & Intelligence Systems
+- Error pattern analysis across sessions and projects
+- Personalized fix recommendations based on user history
+- Proactive prevention suggestions and configuration guidance
+- Continuous learning from fix outcomes and user feedback
+
 ## Development Standards
 
 ### Code Architecture
@@ -51,7 +57,8 @@ lib/
 ├── fixes/           # Error recovery system
 │   ├── fix-templates.js     # 20+ automated fix patterns
 │   ├── ai-fix-generator.js  # Grok-powered complex fixes
-│   └── safe-applier.js      # Safe application with rollback
+│   ├── safe-applier.js      # Safe application with rollback
+│   └── fix-generator.js     # Orchestrates fix selection & application
 ├── error-detection/ # Intelligent error parsing
 │   ├── error-parser.js      # ESLint/TypeScript/Prettier parsing
 │   ├── error-classifier.js  # Type/severity/complexity analysis
@@ -67,8 +74,11 @@ lib/
 │   ├── relevance-scorer.js  # File relevance algorithms
 │   ├── window-optimizer.js  # Context optimization
 │   ├── file-suggester.js    # Smart file recommendations
-│   ├── auto-context.js      # Query-based context building
-│   └── token-manager.js     # Capacity budgeting (duplicate)
+│   └── auto-context.js      # Query-based context building
+├── learning/        # Intelligence & learning systems
+│   ├── error-patterns.js    # Cross-session error pattern analysis
+│   ├── personalized-fixes.js # User-specific fix recommendations
+│   └── prevention-tips.js   # Proactive error prevention guidance
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
@@ -109,6 +119,13 @@ lib/
 3. **Fix Selection**: Template → AI → Hybrid fallback
 4. **Safe Application**: Backup → Apply → Validate → Rollback if needed
 5. **Learning**: Success rates tracked for continuous improvement
+
+### Learning & Adaptation
+
+- **Pattern Recognition**: Tracks error frequency, hotspots, and temporal patterns
+- **Personalization**: Learns user preferences and project-specific patterns
+- **Prevention**: Provides proactive configuration and practice recommendations
+- **Continuous Improvement**: Adapts recommendations based on success/failure feedback
 
 ## Git Workflow
 
