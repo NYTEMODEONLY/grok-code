@@ -8,7 +8,7 @@
 
 **Transform your terminal into an intelligent coding environment with AI planning and generation**
 
-[Installation](#installation) • [Quick Start](#usage) • [RPG Planning](#-rpg-repository-planning) • [Features](#key-features)
+[Installation](#installation) • [Quick Start](#quick-start) • [RPG Planning](#rpg-repository-planning) • [Features](#key-features)
 
 </div>
 
@@ -61,13 +61,13 @@ RPG planning automatically triggers for prompts containing:
 
 **Example**: `"Build a simple ML library in JavaScript"` → RPG generates `src/data.js`, `src/model.js`, etc.
 
-### 📁 [RPG Examples](examples/)
+### 📁 [RPG Examples](./examples/)
 
-Browse [example RPG plans](examples/rpg-plans/) for different project types:
+Browse [example RPG plans](./examples/rpg-plans/) for different project types:
 
-- [Machine Learning Library](examples/rpg-plans/ml-library.json)
-- [REST API](examples/rpg-plans/rest-api.json)
-- [CLI Tool](examples/rpg-plans/cli-tool.json)
+- [Machine Learning Library](./examples/rpg-plans/ml-library.json)
+- [REST API](./examples/rpg-plans/rest-api.json)
+- [CLI Tool](./examples/rpg-plans/cli-tool.json)
 
 ---
 
@@ -144,7 +144,7 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 2. **Clone the Repo**:
 
    ```bash
-   git clone https://github.com/xai-org/grok-code.git
+   git clone https://github.com/NYTEMODEONLY/grok-code.git
    cd grok-code
    ```
 
@@ -195,7 +195,7 @@ npm start
 Or install globally for system-wide access:
 
 ```bash
-npm install -g @xai/grok-code
+npm install -g grok-code-cli
 grok
 ```
 
@@ -381,7 +381,7 @@ _This is a personal project and not officially affiliated with xAI._
 
 **Ready to revolutionize your coding workflow?** 🚀
 
-[Get Started](#-quick-start) • [RPG Planning](#-rpg-repository-planning) • [Contribute](#-contributing)
+[Get Started](#quick-start) • [RPG Planning](#rpg-repository-planning) • [Contribute](#contributing)
 
 _Made with ❤️ by the AI coding community_
 
