@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.15.0 - Application Flow Analysis (Phase 4.3)
+### v1.16.0 - Intelligent File Placement (Phase 4.3)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -94,7 +94,14 @@
 - **🛤️ User Journey Mapping**: Identifies primary user workflows and interactions
 - **🔌 API Endpoint Discovery**: Maps RESTful endpoints and their purposes
 - **💻 CLI Flow Analysis**: Understands command-line interfaces and their workflows
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows` for complete project intelligence
+- **📁 Intelligent File Placement**: AI-powered suggestions for optimal file organization
+- **🏛️ Architectural Layer Guidance**: Places files in appropriate presentation/business/data/infrastructure layers
+- **🔧 Framework-Specific Placement**: Knows React components, Express routes, Angular services, etc.
+- **📏 Convention-Aware Suggestions**: Respects project-specific coding standards and patterns
+- **🔗 Relationship-Based Placement**: Suggests locations near related files and dependencies
+- **🎯 Confidence Scoring**: Rates placement suggestions by appropriateness and likelihood
+- **💡 Detailed Reasoning**: Explains why each placement suggestion is recommended
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows|placement` for complete project intelligence
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions

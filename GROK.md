@@ -112,7 +112,8 @@ lib/
 │   └── auto-applier.js     # Auto-applies learned conventions to code
 ├── structure/      # Project architecture analysis
 │   ├── architecture-mapper.js  # Maps projects to architectural patterns
-│   └── flow-analyzer.js        # Analyzes application flows and entry points
+│   ├── flow-analyzer.js        # Analyzes application flows and entry points
+│   └── file-placement.js       # Suggests optimal file placements
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
