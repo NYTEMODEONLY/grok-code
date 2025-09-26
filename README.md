@@ -27,11 +27,6 @@
 - **⚡ Full-Stack Ready**: From simple scripts to deploy-ready Next.js apps
 - **🎨 Terminal-Native**: Designed for developers who live in the command line
 
-**Current Version:** 1.1.0 (Updated: September 26, 2025)
-**Built by:** nytemode (Personal Project)
-**License:** MIT
-**Repository:** [NYTEMODEONLY/grok-code](https://github.com/NYTEMODEONLY/grok-code)
-
 ## 🏗️ RPG Repository Planning
 
 **Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2509.16198), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
