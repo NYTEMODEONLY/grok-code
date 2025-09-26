@@ -28,6 +28,7 @@ import { ErrorRecoveryWorkflow } from '../lib/workflows/error-recovery.js';
 import { DebugCommand } from './commands/debug.js';
 import { ErrorStats } from '../lib/analytics/error-stats.js';
 import { AutoComplete } from '../lib/commands/auto-complete.js';
+import { HistorySearch } from '../lib/commands/history-search.js';
 
 /**
  * Error Logging System
@@ -954,6 +955,11 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     maxSuggestions: 10,
   });
 
+  // Initialize command history search system
+  const historySearch = new HistorySearch({
+    maxHistorySize: 500,
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1056,6 +1062,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         trimmedInput.toLowerCase() === 'exit' ||
         trimmedInput.toLowerCase() === '/exit'
       ) {
+        // Save command history before exit
+        historySearch.endSession();
         logger.info('User requested exit');
         console.log('Exiting Grok Code. Happy coding!');
         process.exit(0);
@@ -1064,9 +1072,13 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       // Always add user message to conversation memory first
       messages.push({ role: 'user', content: trimmedInput });
 
-      // Update command history
+      // Update command history with enhanced search system
       commandHistory = addToHistory(trimmedInput, commandHistory);
       saveCommandHistory(commandHistory);
+      historySearch.addCommand(trimmedInput, {
+        hasResponse: true,
+        conversationLength: messages.length,
+      });
 
       // Handle commands
       const handled = await handleCommand(
@@ -1720,6 +1732,7 @@ async function handleCommand(
 - /search <query|regex|word|fuzzy|interactive|history|stats>: Interactive code search across codebase
 - /debug <interactive|file|errors|fix|history|stats>: Interactive error analysis and recovery
 - /complete <test|status|config>: Auto-complete system for commands and file paths
+- /history <search|recent|stats|clear|delete|export>: Advanced command history search and management
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2501,6 +2514,183 @@ async function handleCommand(
     } else {
       console.log(`Unknown search subcommand: ${subcommand}`);
       console.log('Use /search for help');
+    }
+
+    return true;
+  } else if (input.startsWith('/history')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+    const query = parts.slice(2).join(' ');
+
+    if (!subcommand || subcommand === 'search' || subcommand === 'find') {
+      if (!query) {
+        console.log('Usage: /history search "<query>" [options]');
+        console.log('Examples:');
+        console.log(
+          '  /history search "add file"    - Search for file-related commands'
+        );
+        console.log(
+          '  /history search "/debug"      - Search for debug commands'
+        );
+        console.log('  /history search              - Show recent commands');
+        console.log('\nOptions:');
+        console.log(
+          '  --limit 10                   - Limit results (default: 20)'
+        );
+        console.log(
+          '  --sort relevance             - Sort by relevance/frequency/timestamp'
+        );
+        console.log("  --today                      - Only today's commands");
+        console.log(
+          "  --week                       - Only this week's commands"
+        );
+        return true;
+      }
+
+      // Parse options
+      const options = {};
+      const cleanQuery = query
+        .replace(/--\w+(\s+\w+)?/g, (match) => {
+          const [option, value] = match.trim().split(/\s+/);
+          const optName = option.substring(2);
+
+          if (optName === 'limit' && value) {
+            options.limit = parseInt(value);
+          } else if (optName === 'sort' && value) {
+            options.sortBy = value;
+          } else if (['today', 'week', 'month'].includes(optName)) {
+            options.timeRange = optName;
+          }
+
+          return '';
+        })
+        .trim();
+
+      console.log(
+        `🔍 Searching command history for: "${cleanQuery || 'recent commands'}"`
+      );
+      console.log('═'.repeat(50));
+
+      const results = historySearch.searchHistory(cleanQuery, options);
+
+      if (results.length === 0) {
+        console.log('❌ No matching commands found.');
+      } else {
+        console.log(
+          historySearch.formatResults(results, {
+            showTimestamps: true,
+            showScores: !!cleanQuery,
+            maxLength: 100,
+          })
+        );
+      }
+    } else if (subcommand === 'recent' || subcommand === 'last') {
+      const limit = parseInt(parts[2]) || 10;
+      console.log(`📋 Recent command history (last ${limit} commands):`);
+      console.log('═'.repeat(50));
+
+      const results = historySearch.getRecentHistory(limit);
+      console.log(
+        historySearch.formatResults(results, {
+          showTimestamps: true,
+          maxLength: 80,
+        })
+      );
+    } else if (subcommand === 'stats' || subcommand === 'info') {
+      const stats = historySearch.getStatistics();
+      console.log('\n📊 Command History Statistics:');
+      console.log('═'.repeat(35));
+      console.log(`Total Commands: ${stats.totalCommands}`);
+      console.log(`Session Commands: ${stats.sessionCommands}`);
+      console.log(`Unique Commands: ${stats.uniqueCommands}`);
+      console.log(`Today's Commands: ${stats.todayCommands}`);
+      console.log(`This Week: ${stats.weekCommands}`);
+      console.log(`This Month: ${stats.monthCommands}`);
+      console.log(`Avg/Day (30d): ${stats.averageCommandsPerDay.toFixed(1)}`);
+
+      if (stats.topCommands.length > 0) {
+        console.log('\n🏆 Most Used Commands:');
+        stats.topCommands.slice(0, 5).forEach((cmd, index) => {
+          console.log(`  ${index + 1}. "${cmd.command}" (${cmd.count} times)`);
+        });
+      }
+    } else if (subcommand === 'clear') {
+      const { inquirer } = await import('inquirer');
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Are you sure you want to clear all command history?',
+          default: false,
+        },
+      ]);
+
+      if (confirm) {
+        historySearch.clearHistory();
+        console.log('✅ Command history cleared.');
+      } else {
+        console.log('❌ History clear cancelled.');
+      }
+    } else if (subcommand === 'delete') {
+      const deleteQuery = parts.slice(2).join(' ');
+      if (!deleteQuery) {
+        console.log('Usage: /history delete "<query>"');
+        console.log('Examples:');
+        console.log(
+          '  /history delete "old command"    - Delete specific command'
+        );
+        console.log(
+          '  /history delete --older-than 2024-01-01  - Delete old commands'
+        );
+        return true;
+      }
+
+      const criteria = {};
+      if (deleteQuery.startsWith('--older-than')) {
+        const dateStr = deleteQuery.split(' ')[1];
+        if (dateStr) {
+          criteria.olderThan = dateStr;
+        }
+      } else {
+        criteria.query = deleteQuery;
+      }
+
+      const deletedCount = historySearch.deleteFromHistory(criteria);
+      console.log(`🗑️ Deleted ${deletedCount} command(s) from history.`);
+    } else if (subcommand === 'export') {
+      const format = parts[2] || 'json';
+      const exportedData = historySearch.exportHistory(format, { limit: 100 });
+
+      const filename = `command-history.${format}`;
+      const exportPath = path.join(currentDir, filename);
+
+      fs.writeFileSync(exportPath, exportedData);
+      console.log(`📤 Command history exported to: ${filename}`);
+      console.log(
+        `Format: ${format}, Commands: ${historySearch.getStatistics().totalCommands}`
+      );
+    } else if (subcommand === 'help') {
+      console.log('🕐 Command History Help');
+      console.log('═'.repeat(25));
+      console.log('Search and manage your command history.\n');
+      console.log('Commands:');
+      console.log('  /history search "<query>"    - Search command history');
+      console.log('  /history recent [limit]      - Show recent commands');
+      console.log('  /history stats               - Show history statistics');
+      console.log('  /history clear               - Clear all history');
+      console.log('  /history delete "<query>"    - Delete specific commands');
+      console.log(
+        '  /history export [format]     - Export history (json/csv/txt)'
+      );
+      console.log('  /history help                - Show this help');
+      console.log('\nSearch Options:');
+      console.log('  --limit N                    - Limit results');
+      console.log('  --sort relevance|frequency|timestamp - Sort order');
+      console.log('  --today/--week/--month       - Time range filter');
+    } else {
+      console.log(
+        'Unknown history subcommand. Use /history help for available commands.'
+      );
     }
 
     return true;
