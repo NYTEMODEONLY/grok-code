@@ -79,6 +79,8 @@ lib/
 │   ├── error-patterns.js    # Cross-session error pattern analysis
 │   ├── personalized-fixes.js # User-specific fix recommendations
 │   └── prevention-tips.js   # Proactive error prevention guidance
+├── display/         # Visual terminal enhancements
+│   └── syntax-highlighter.js # Multi-language syntax highlighting
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
@@ -126,6 +128,13 @@ lib/
 - **Personalization**: Learns user preferences and project-specific patterns
 - **Prevention**: Provides proactive configuration and practice recommendations
 - **Continuous Improvement**: Adapts recommendations based on success/failure feedback
+
+### Visual Terminal Experience
+
+- **Syntax Highlighting**: Multi-language code highlighting (JS, TS, Python, JSON, Shell, SQL)
+- **Color Themes**: Default, dark, and minimal themes with ANSI terminal compatibility
+- **Interactive Controls**: Runtime theme switching and highlighting controls
+- **Language Detection**: Automatic language recognition for optimal highlighting
 
 ## Git Workflow
 

@@ -161,9 +161,14 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 
 - **Create, edit, or delete multiple files simultaneously using XML tags**
 - **Automatic directory creation for complex project structures**
-- **File context management**: Add files to AI knowledge with `/add <file>`, scan with `/scan`
-- **Context capacity dashboard**: `/budget` command shows usage breakdown
-- **Selective file addition** with capacity-aware warnings
+
+### 🎨 Syntax Highlighting
+
+- **Multi-language support**: JavaScript, TypeScript, Python, JSON, Shell, SQL
+- **Automatic language detection** from code content
+- **Multiple color themes**: default, dark, minimal with ANSI terminal colors
+- **Line numbers** and enhanced readability
+- **Interactive controls**: `/highlight` command for runtime theme switching
 
 ### 🔄 Autonomous Workflows
 
