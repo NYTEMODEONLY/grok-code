@@ -71,8 +71,8 @@ When you run Grok Code with a prompt like "Build a machine learning library in J
 
 ## 📚 Learn More
 
-- **[RPG Guide](../RPG_GUIDE.md)**: Comprehensive documentation of how RPG works
-- **[Main README](../README.md)**: General Grok Code documentation
+- **[RPG Planning](../README.md#rpg-repository-planning)**: Comprehensive documentation of how RPG works
+- **[Main README](./README.md)**: General Grok Code documentation
 - **[Paper Reference](https://arxiv.org/abs/2401.04276)**: Original research paper
 
 ## 🤝 Contributing
