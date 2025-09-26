@@ -24,6 +24,7 @@ Grok Code is a revolutionary terminal-based coding assistant that combines the p
 
 - **🏗️ RPG Planning**: Structured repository planning for complex projects
 - **🤖 AI-Powered**: Natural language prompts powered by Grok AI
+- **🎛️ Model Selection**: Choose from multiple Grok models (`/model` command)
 - **🔄 Stateful & Agentic**: Maintains context and iterates autonomously
 - **⚡ Full-Stack Ready**: From scripts to deploy-ready applications
 - **🎨 Terminal-Native**: Designed for developers who live in the command line
@@ -78,6 +79,26 @@ npm start
 ```
 
 **Prerequisites:** Node.js 16+, xAI API key
+
+## 🎛️ Model Selection
+
+Choose the right model for your needs:
+
+```bash
+# In Grok Code, type:
+/model
+```
+
+**Available Models:**
+- **`grok-3-beta`** (Default): Most capable, balanced performance
+- **`grok-3-mini-beta`**: Faster responses, cost-effective
+- **`grok-beta`**: Legacy model with proven reliability
+
+Or set via environment variable:
+```bash
+export GROK_MODEL=grok-3-mini-beta
+grok
+```
 
 ---
 

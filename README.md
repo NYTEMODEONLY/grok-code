@@ -107,7 +107,11 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **🔧 Configuration & Extensibility**:
   - `GROK.md`: Project-specific guidelines and commands
   - Secure API key management with local storage
-  - Model flexibility (defaults to `grok-3-beta`)
+  - **Model Selection**: Choose from multiple Grok models via `/model` command:
+    - `grok-3-beta`: Most capable model (default)
+    - `grok-3-mini-beta`: Faster, cost-effective
+    - `grok-beta`: Legacy model
+  - Environment variables: Set `GROK_MODEL` to override default
 
 - **🛡️ Security & Best Practices**:
   - User confirmation required for all destructive actions
@@ -188,6 +192,9 @@ grok
 
 #### 🔧 Workflow Commands
 ```bash
+# Model selection
+"/model"                       # Change AI model (interactive menu)
+
 # Git operations
 "/init-git"                    # Initialize repository
 "/commit Add new feature"      # Stage and commit
@@ -274,7 +281,10 @@ Output: olleh
   ```
 
 ### ⚡ Performance Optimization
-- **Model Selection**: Switch to `grok-3-mini-beta` in code for faster responses
+- **Model Selection**: Use `/model` command to switch between models:
+  - `grok-3-beta`: Best quality (default)
+  - `grok-3-mini-beta`: Faster responses, lower cost
+  - `grok-beta`: Legacy option
 - **Context Management**: Clear context with `/clear` for fresh sessions
 - **Selective Scanning**: Use `/add` instead of `/scan` for large codebases
 

@@ -111,6 +111,7 @@ Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
 async function main() {
   const configDir = path.join(process.env.HOME || process.env.USERPROFILE, '.grok');
   const keyFile = path.join(configDir, 'api_key');
+  const modelFile = path.join(configDir, 'model');
   fs.ensureDirSync(configDir);
 
   let apiKey = process.env.XAI_API_KEY;
@@ -147,7 +148,14 @@ async function main() {
     apiKey
   });
 
-  const model = 'grok-3-beta';
+  // Model configuration
+  let model = process.env.GROK_MODEL || 'grok-3-beta'; // Default to grok-3-beta
+  if (fs.existsSync(modelFile)) {
+    const savedModel = fs.readFileSync(modelFile, 'utf8').trim();
+    if (savedModel) {
+      model = savedModel;
+    }
+  }
 
   const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const currentOS = process.platform === 'darwin' ? 'macOS' : process.platform === 'win32' ? 'Windows' : 'Linux';
@@ -304,12 +312,42 @@ async function handleCommand(input, messages, fileContext, client, model) {
     console.log("Files in current directory:");
     files.forEach(f => console.log(`- ${f}`));
     return true;
+  } else if (input === '/model') {
+    const availableModels = [
+      'grok-3-beta',      // Most capable, balanced speed/cost
+      'grok-3-mini-beta', // Faster, lower cost
+      'grok-beta'         // Legacy model
+    ];
+
+    const modelAnswers = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'selectedModel',
+        message: `Current model: ${model}. Select a new model:`,
+        choices: availableModels.map(m => ({
+          name: `${m}${m === model ? ' (current)' : ''}`,
+          value: m
+        }))
+      }
+    ]);
+
+    const newModel = modelAnswers.selectedModel;
+    if (newModel !== model) {
+      fs.writeFileSync(modelFile, newModel);
+      model = newModel;
+      console.log(`Model changed to: ${model}`);
+      messages.push({ role: 'system', content: `Model changed to: ${model}` });
+    } else {
+      console.log(`Model remains: ${model}`);
+    }
+    return true;
   } else if (input === '/help') {
     console.log(`Commands:
 - /add <file>: Add file to context
 - /remove <file>: Remove file from context
 - /scan: Scan and add all files to context
 - /ls: List files in directory
+- /model: Change AI model (grok-3-beta, grok-3-mini-beta, grok-beta)
 - /run <cmd>: Run shell command
 - /git <command>: Run git command (e.g., /git status)
 - /init-git: Initialize git repo
