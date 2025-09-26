@@ -182,8 +182,18 @@ function setupExitHandlers() {
     process.exit(0);
   });
 
-  process.on('exit', (code) => {
+  process.on('exit', async (code) => {
     logger.info('Process exiting', { exitCode: code });
+
+    // Save team patterns on exit
+    if (teamPatternsLearner) {
+      try {
+        await teamPatternsLearner.endSession();
+        logger.info('Team patterns session saved');
+      } catch (error) {
+        logger.error('Failed to save team patterns on exit', { error: error.message });
+      }
+    }
   });
 
   process.on('uncaughtException', (err) => {
@@ -1154,6 +1164,22 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     conventionAnalyzer = null;
   }
 
+  // Initialize team patterns learner
+  let teamPatternsLearner;
+  try {
+    const { TeamPatternsLearner } = await import('../lib/conventions/team-patterns.js');
+    teamPatternsLearner = new TeamPatternsLearner({
+      projectRoot: process.cwd(),
+      maxHistorySize: 1000,
+      confidenceThreshold: 0.7
+    });
+    logger.info('Team patterns learner initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize team patterns learner', { error: error.message });
+    console.log('⚠️  Warning: Team learning may not work properly');
+    teamPatternsLearner = null;
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1291,7 +1317,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         frameworkDetector,
         frameworkPatterns,
         frameworkPromptLoader,
-        conventionAnalyzer
+        conventionAnalyzer,
+        teamPatternsLearner
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1532,7 +1559,8 @@ async function handleCommand(
   frameworkDetector,
   frameworkPatterns,
   frameworkPromptLoader,
-  conventionAnalyzer
+  conventionAnalyzer,
+  teamPatternsLearner
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -3719,6 +3747,98 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'learn') {
+      const action = args[0];
+      if (!action) {
+        console.log('❌ Please specify an action. Use /framework learn help for options.');
+        return true;
+      }
+
+      if (!teamPatternsLearner) {
+        console.log('❌ Team patterns learner not available.');
+        return true;
+      }
+
+      if (action === 'insights') {
+        console.log('🧠 Team Learning Insights\n');
+
+        const report = teamPatternsLearner.generateInsightsReport();
+        console.log(report);
+
+      } else if (action === 'stats') {
+        const stats = teamPatternsLearner.getStatistics();
+        console.log('📊 Team Learning Statistics:');
+        console.log(`  • Total Interactions: ${stats.totalInteractions}`);
+        console.log(`  • Sessions: ${stats.sessionsCount}`);
+        console.log(`  • Patterns Learned: ${stats.patternsLearned}`);
+
+        for (const [category, catStats] of Object.entries(stats.categories)) {
+          console.log(`\n🎯 ${category.charAt(0).toUpperCase() + category.slice(1)}:`);
+          console.log(`  • Patterns: ${catStats.accepted + catStats.rejected}`);
+          console.log(`  • High Confidence: ${catStats.confident}`);
+        }
+
+      } else if (action === 'preferences') {
+        const categories = args[1] ? [args[1]] : ['naming', 'style', 'structure'];
+
+        console.log('⭐ Team Preferences:\n');
+
+        for (const category of categories) {
+          const prefs = teamPatternsLearner.getTeamPreferences(category);
+          if (Object.keys(prefs.preferences).length > 0) {
+            console.log(`${category.charAt(0).toUpperCase() + category.slice(1)} Preferences:`);
+            Object.entries(prefs.preferences).slice(0, 3).forEach(([pattern, data]) => {
+              console.log(`  • "${pattern}" (${(data.confidence * 100).toFixed(1)}% confidence, ${data.totalInteractions} interactions)`);
+            });
+            console.log('');
+          } else {
+            console.log(`No learned preferences for ${category} yet.\n`);
+          }
+        }
+
+      } else if (action === 'simulate') {
+        // Simulate some learning for testing
+        console.log('🎭 Simulating team learning patterns...\n');
+
+        // Simulate some common team preferences
+        const simulations = [
+          { type: 'accepted', category: 'naming', pattern: 'camelCase' },
+          { type: 'accepted', category: 'style', pattern: 'single' }, // quotes
+          { type: 'accepted', category: 'style', pattern: 'spaces' }, // indentation
+          { type: 'accepted', category: 'structure', pattern: 'arrow' }, // functions
+          { type: 'corrected', category: 'naming', pattern: 'snake_case', correction: 'camelCase' },
+          { type: 'rejected', category: 'style', pattern: 'double' }, // quotes
+        ];
+
+        simulations.forEach(sim => {
+          teamPatternsLearner.recordInteraction(sim);
+        });
+
+        await teamPatternsLearner.savePatterns();
+        console.log(`✅ Simulated ${simulations.length} team interactions`);
+        console.log('Run "/framework learn preferences" to see learned patterns');
+
+      } else if (action === 'reset') {
+        console.log('⚠️  This will reset all learned team patterns. Continue? (y/N): ');
+        // For safety, we'll just show a warning for now
+        console.log('To reset, manually delete .grok/team-patterns.json');
+        console.log('This action cannot be undone!');
+
+      } else if (action === 'help') {
+        console.log('🧠 Team Learning Commands:');
+        console.log('  /framework learn insights    - Show comprehensive learning report');
+        console.log('  /framework learn stats       - Show learning statistics');
+        console.log('  /framework learn preferences [category] - Show team preferences');
+        console.log('  /framework learn simulate    - Simulate team interactions (testing)');
+        console.log('  /framework learn reset       - Reset all learned patterns (dangerous!)');
+        console.log('  /framework learn help        - Show this help');
+        console.log('\nCategories: naming, style, structure');
+
+      } else {
+        console.log(`❌ Unknown action "${action}". Use /framework learn help for options.`);
+      }
+
+      return true;
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
       if (!filePath) {
@@ -3805,6 +3925,7 @@ async function handleCommand(
       console.log('Commands:');
       console.log('  /framework detect        - Scan project and detect frameworks');
       console.log('  /framework conventions   - Analyze project coding standards');
+      console.log('  /framework learn <cmd>   - Team learning and preferences');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
