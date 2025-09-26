@@ -1,19 +1,18 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
-const inquirer = require('inquirer');
-const fs = require('fs-extra');
-const path = require('path');
-const { execSync } = require('child_process');
-const OpenAI = require('openai');
-const ora = require('ora');
-const xml2js = require('xml2js');
-const readline = require('readline');
-const https = require('https');
-const { promisify } = require('util');
-const stream = require('stream');
+import { program } from 'commander';
+import inquirer from 'inquirer';
+import fs from 'fs-extra';
+import path from 'path';
+import { execSync } from 'child_process';
+import OpenAI from 'openai';
+import ora from 'ora';
+import xml2js from 'xml2js';
+import https from 'https';
+import os from 'os';
+import { promisify } from 'util';
+import stream from 'stream';
 const pipeline = promisify(stream.pipeline);
-const os = require('os');
 
 /**
  * Error Logging System
@@ -47,9 +46,9 @@ class ErrorLogger {
         error: {
           name: error.name,
           message: error.message,
-          stack: error.stack
-        }
-      })
+          stack: error.stack,
+        },
+      }),
     };
 
     const logLine = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
@@ -108,17 +107,13 @@ class ErrorLogger {
 
 const logger = new ErrorLogger();
 
-program
-  .name('grok')
-  .description('Grok Code CLI')
-  .version('1.0.0');
+program.name('grok').description('Grok Code CLI').version('1.1.0');
 
 program.action(async () => {
   await main();
 });
 
 program.parse();
-
 
 /**
  * Sets up process event handlers for graceful shutdown.
@@ -142,14 +137,18 @@ function setupExitHandlers() {
     logger.error('Uncaught exception occurred', err);
     if (!isShuttingDown) {
       isShuttingDown = true;
-      console.error('\n💥 An unexpected error occurred. Check .grok/error.log for details.');
+      console.error(
+        '\n💥 An unexpected error occurred. Check .grok/error.log for details.'
+      );
       process.exit(1);
     }
   });
 
   process.on('unhandledRejection', (reason) => {
     logger.error('Unhandled promise rejection', reason);
-    console.error('\n💥 An unhandled promise rejection occurred. Check .grok/error.log for details.');
+    console.error(
+      '\n💥 An unhandled promise rejection occurred. Check .grok/error.log for details.'
+    );
   });
 }
 
@@ -159,29 +158,29 @@ async function checkForUpdates() {
     const options = {
       hostname: 'api.github.com',
       path: '/repos/NYTEMODEONLY/grok-code/releases/latest',
-      headers: { 'User-Agent': 'grok-code-cli' }
+      headers: { 'User-Agent': 'grok-code-cli' },
     };
 
     const req = https.get(options, (res) => {
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
         try {
           const release = JSON.parse(data);
-          
+
           // Check if the response has the expected structure
           if (!release || !release.tag_name) {
             resolve({ hasUpdate: false, error: 'No releases found on GitHub' });
             return;
           }
-          
+
           const latestVersion = release.tag_name.replace(/^v/, '');
           const currentVersion = require('../package.json').version;
-          resolve({ 
+          resolve({
             hasUpdate: latestVersion !== currentVersion,
             currentVersion,
             latestVersion,
-            downloadUrl: release.zipball_url
+            downloadUrl: release.zipball_url,
           });
         } catch (e) {
           resolve({ hasUpdate: false, error: e.message });
@@ -202,37 +201,41 @@ async function performUpdate(downloadUrl) {
   try {
     const tempDir = path.join(require('os').tmpdir(), 'grok-update');
     fs.ensureDirSync(tempDir);
-    
+
     const zipPath = path.join(tempDir, 'update.zip');
     const writeStream = fs.createWriteStream(zipPath);
-    
+
     await new Promise((resolve, reject) => {
-      https.get(downloadUrl, (res) => {
-        res.pipe(writeStream);
-        writeStream.on('finish', resolve);
-        writeStream.on('error', reject);
-      }).on('error', reject);
+      https
+        .get(downloadUrl, (res) => {
+          res.pipe(writeStream);
+          writeStream.on('finish', resolve);
+          writeStream.on('error', reject);
+        })
+        .on('error', reject);
     });
 
     spinner.text = 'Extracting update...';
-    
+
     // Extract and replace files (simplified approach)
     execSync(`cd ${tempDir} && unzip -q update.zip`);
-    const extractedDir = fs.readdirSync(tempDir).find(d => d.startsWith('NYTEMODEONLY-grok-code-'));
+    const extractedDir = fs
+      .readdirSync(tempDir)
+      .find((d) => d.startsWith('NYTEMODEONLY-grok-code-'));
     const sourcePath = path.join(tempDir, extractedDir);
-    
+
     // Get the global npm modules path for grok-code-cli
     const globalPath = execSync('npm root -g', { encoding: 'utf8' }).trim();
     const grokPath = path.join(globalPath, 'grok-code-cli');
-    
+
     spinner.text = 'Installing update...';
-    
+
     // Copy new files
     fs.copySync(sourcePath, grokPath, { overwrite: true });
-    
+
     // Clean up
     fs.removeSync(tempDir);
-    
+
     spinner.succeed('Update completed successfully! Please restart grok.');
     return true;
   } catch (error) {
@@ -273,8 +276,9 @@ function saveCommandHistory(commands) {
 
 function addToHistory(command, history) {
   // Don't add duplicate consecutive commands or commands that start with /
-  if (command.startsWith('/') || command.toLowerCase() === 'exit') return history;
-  
+  if (command.startsWith('/') || command.toLowerCase() === 'exit')
+    return history;
+
   if (history.length === 0 || history[history.length - 1] !== command) {
     history.push(command);
     // Keep only last 3 commands
@@ -303,64 +307,94 @@ Output ONLY a JSON object with:
 Keep it concise and modular.
     `;
 
-    logger.debug('Making RPG planning request', { promptLength: planningPrompt.length, model });
-
-    openai.chat.completions.create({
-      model: model,
-      messages: [
-        { role: "system", content: "You are a precise code planner. Respond with valid JSON only." },
-        { role: "user", content: planningPrompt }
-      ],
-      max_tokens: 500
-    }).then(response => {
-      try {
-        const rawResponse = response.choices[0].message.content.trim();
-        logger.debug('Received RPG planning response', { responseLength: rawResponse.length, responsePreview: rawResponse.substring(0, 200) });
-
-        const plan = JSON.parse(rawResponse);
-        logger.info('Successfully parsed RPG planning JSON', {
-          features: plan.features?.length || 0,
-          files: Object.keys(plan.files || {}).length
-        });
-
-        // Validate plan structure
-        if (!plan.features || !Array.isArray(plan.features)) {
-          throw new Error('Plan missing required "features" array');
-        }
-        if (!plan.files || typeof plan.files !== 'object') {
-          throw new Error('Plan missing required "files" object');
-        }
-        if (!plan.flows || !Array.isArray(plan.flows)) {
-          throw new Error('Plan missing required "flows" array');
-        }
-        if (!plan.deps || !Array.isArray(plan.deps)) {
-          throw new Error('Plan missing required "deps" array');
-        }
-
-        // Build simple graph as JSON (nodes + edges)
-        const graph = {
-          nodes: [
-            ...plan.features.map(f => ({ id: f, type: 'feature' })),
-            ...Object.entries(plan.files).map(([f, file]) => ({ id: file, type: 'file' }))
-          ],
-          edges: [
-            ...Object.entries(plan.files).map(([f, file]) => ({ from: f, to: file, type: 'implements' })),
-            ...plan.flows.map(([src, dst]) => ({ from: src, to: dst, type: 'data_flow' })),
-            ...plan.deps.map(([src, dst]) => ({ from: src, to: dst, type: 'depends' }))
-          ]
-        };
-
-        resolve({ graph, plan });
-      } catch (e) {
-        logger.error('Failed to parse RPG planning response', e, {
-          rawResponse: response.choices[0]?.message?.content?.substring(0, 500) || 'No response'
-        });
-        reject(e);
-      }
-    }).catch(error => {
-      logger.error('RPG planning API request failed', error);
-      reject(error);
+    logger.debug('Making RPG planning request', {
+      promptLength: planningPrompt.length,
+      model,
     });
+
+    openai.chat.completions
+      .create({
+        model: model,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a precise code planner. Respond with valid JSON only.',
+          },
+          { role: 'user', content: planningPrompt },
+        ],
+        max_tokens: 500,
+      })
+      .then((response) => {
+        try {
+          const rawResponse = response.choices[0].message.content.trim();
+          logger.debug('Received RPG planning response', {
+            responseLength: rawResponse.length,
+            responsePreview: rawResponse.substring(0, 200),
+          });
+
+          const plan = JSON.parse(rawResponse);
+          logger.info('Successfully parsed RPG planning JSON', {
+            features: plan.features?.length || 0,
+            files: Object.keys(plan.files || {}).length,
+          });
+
+          // Validate plan structure
+          if (!plan.features || !Array.isArray(plan.features)) {
+            throw new Error('Plan missing required "features" array');
+          }
+          if (!plan.files || typeof plan.files !== 'object') {
+            throw new Error('Plan missing required "files" object');
+          }
+          if (!plan.flows || !Array.isArray(plan.flows)) {
+            throw new Error('Plan missing required "flows" array');
+          }
+          if (!plan.deps || !Array.isArray(plan.deps)) {
+            throw new Error('Plan missing required "deps" array');
+          }
+
+          // Build simple graph as JSON (nodes + edges)
+          const graph = {
+            nodes: [
+              ...plan.features.map((f) => ({ id: f, type: 'feature' })),
+              ...Object.entries(plan.files).map(([f, file]) => ({
+                id: file,
+                type: 'file',
+              })),
+            ],
+            edges: [
+              ...Object.entries(plan.files).map(([f, file]) => ({
+                from: f,
+                to: file,
+                type: 'implements',
+              })),
+              ...plan.flows.map(([src, dst]) => ({
+                from: src,
+                to: dst,
+                type: 'data_flow',
+              })),
+              ...plan.deps.map(([src, dst]) => ({
+                from: src,
+                to: dst,
+                type: 'depends',
+              })),
+            ],
+          };
+
+          resolve({ graph, plan });
+        } catch (e) {
+          logger.error('Failed to parse RPG planning response', e, {
+            rawResponse:
+              response.choices[0]?.message?.content?.substring(0, 500) ||
+              'No response',
+          });
+          reject(e);
+        }
+      })
+      .catch((error) => {
+        logger.error('RPG planning API request failed', error);
+        reject(error);
+      });
   });
 }
 
@@ -374,32 +408,45 @@ Keep it concise and modular.
  */
 async function generateCodeWithRPG(prompt, openai, model, fileContext = {}) {
   try {
-    logger.info('Starting RPG code generation', { prompt: prompt.substring(0, 100) });
+    logger.info('Starting RPG code generation', {
+      prompt: prompt.substring(0, 100),
+    });
 
     // Step 1: Generate RPG with progress indicator
     const planSpinner = ora('🔄 Planning project structure...').start();
 
     // Get existing file information to provide context
-    const existingFiles = Object.keys(fileContext).length > 0 ?
-      Object.keys(fileContext).join(', ') : 'none';
+    const existingFiles =
+      Object.keys(fileContext).length > 0
+        ? Object.keys(fileContext).join(', ')
+        : 'none';
 
-    logger.debug('Making RPG plan request', { existingFiles, promptLength: prompt.length });
+    logger.debug('Making RPG plan request', {
+      existingFiles,
+      promptLength: prompt.length,
+    });
 
     const rpg = await makeRPG(prompt, openai, model, existingFiles);
     const plan = rpg.plan;
     const graph = rpg.graph;
     planSpinner.succeed('📋 Project structure planned');
 
-    logger.info('RPG plan generated', { features: plan.features.length, files: Object.keys(plan.files).length });
+    logger.info('RPG plan generated', {
+      features: plan.features.length,
+      files: Object.keys(plan.files).length,
+    });
 
     // Step 2: Guide code gen with plan
     const codeSpinner = ora('⚙️ Generating code files...').start();
 
     // Include existing file contents for context
-    const existingFileContents = Object.keys(fileContext).length > 0 ?
-      '\nExisting files:\n' + Object.entries(fileContext).map(([path, content]) =>
-        `=== ${path} ===\n${content}\n`
-      ).join('') : '';
+    const existingFileContents =
+      Object.keys(fileContext).length > 0
+        ? '\nExisting files:\n' +
+          Object.entries(fileContext)
+            .map(([path, content]) => `=== ${path} ===\n${content}\n`)
+            .join('')
+        : '';
 
     const codePrompt = `
 Using this repository plan:
@@ -418,26 +465,41 @@ If modifying existing files, ensure the new code integrates properly with the ex
 Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
     `;
 
-    logger.debug('Making code generation API request', { promptLength: codePrompt.length });
+    logger.debug('Making code generation API request', {
+      promptLength: codePrompt.length,
+    });
 
     const response = await openai.chat.completions.create({
       model: model,
       messages: [
-        { role: "system", content: "You are a precise code generator. Respond with valid JSON only." },
-        { role: "user", content: codePrompt }
+        {
+          role: 'system',
+          content:
+            'You are a precise code generator. Respond with valid JSON only.',
+        },
+        { role: 'user', content: codePrompt },
       ],
-      max_tokens: 2000
+      max_tokens: 2000,
     });
 
     const rawResponse = response.choices[0].message.content.trim();
-    logger.debug('Received code generation response', { responseLength: rawResponse.length, responsePreview: rawResponse.substring(0, 200) });
+    logger.debug('Received code generation response', {
+      responseLength: rawResponse.length,
+      responsePreview: rawResponse.substring(0, 200),
+    });
 
     let codeOutput;
     try {
       codeOutput = JSON.parse(rawResponse);
-      logger.info('Successfully parsed code generation JSON', { fileCount: Object.keys(codeOutput.files || {}).length });
+      logger.info('Successfully parsed code generation JSON', {
+        fileCount: Object.keys(codeOutput.files || {}).length,
+      });
     } catch (parseError) {
-      logger.error('Failed to parse code generation response as JSON', parseError, { rawResponse: rawResponse.substring(0, 500) });
+      logger.error(
+        'Failed to parse code generation response as JSON',
+        parseError,
+        { rawResponse: rawResponse.substring(0, 500) }
+      );
       throw new Error(`AI response was not valid JSON: ${parseError.message}`);
     }
 
@@ -461,7 +523,10 @@ Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
         fs.ensureDirSync(path.dirname(filepath));
         fs.writeFileSync(filepath, code);
         filesWritten++;
-        logger.debug('File written successfully', { filepath, codeLength: code.length });
+        logger.debug('File written successfully', {
+          filepath,
+          codeLength: code.length,
+        });
         writeSpinner.text = `📁 Writing files to disk... (${filesWritten}/${fileCount})`;
       } catch (fileError) {
         filesFailed++;
@@ -470,7 +535,9 @@ Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
       }
     });
 
-    writeSpinner.succeed(`✅ Generated ${filesWritten} files successfully${filesFailed > 0 ? ` (${filesFailed} failed)` : ''}`);
+    writeSpinner.succeed(
+      `✅ Generated ${filesWritten} files successfully${filesFailed > 0 ? ` (${filesFailed} failed)` : ''}`
+    );
 
     if (filesFailed > 0) {
       logger.warn('Some files failed to write', { filesWritten, filesFailed });
@@ -478,7 +545,9 @@ Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
 
     return codeOutput;
   } catch (error) {
-    logger.error('RPG code generation failed', error, { prompt: prompt.substring(0, 100) });
+    logger.error('RPG code generation failed', error, {
+      prompt: prompt.substring(0, 100),
+    });
     throw error;
   }
 }
@@ -487,13 +556,16 @@ Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
  * Main entry point for the Grok Code CLI.
  * Handles setup, user interaction, and AI integration.
  */
-async function main() {
+export async function main() {
+  const logger = new ErrorLogger();
   logger.info('Starting Grok Code CLI');
 
-  // Set up exit handlers first
   setupExitHandlers();
 
-  const configDir = path.join(process.env.HOME || process.env.USERPROFILE, '.grok');
+  const configDir = path.join(
+    process.env.HOME || process.env.USERPROFILE,
+    '.grok'
+  );
   const keyFile = path.join(configDir, 'api_key');
   const modelFile = path.join(configDir, 'model');
 
@@ -501,7 +573,9 @@ async function main() {
     fs.ensureDirSync(configDir);
   } catch (error) {
     logger.error('Failed to create config directory', error, { configDir });
-    console.error('❌ Failed to create configuration directory. Check permissions.');
+    console.error(
+      '❌ Failed to create configuration directory. Check permissions.'
+    );
     process.exit(1);
   }
 
@@ -514,12 +588,14 @@ async function main() {
           type: 'list',
           name: 'choice',
           message: 'Found saved API key. What would you like to do?',
-          choices: ['Use existing key', 'Change key', 'Delete key']
-        }
+          choices: ['Use existing key', 'Change key', 'Delete key'],
+        },
       ]);
       const choice = answers.choice;
       if (choice === 'Change key') {
-        const keyAnswers = await inquirer.prompt([{ type: 'input', name: 'key', message: 'Enter new xAI API key:' }]);
+        const keyAnswers = await inquirer.prompt([
+          { type: 'input', name: 'key', message: 'Enter new xAI API key:' },
+        ]);
         apiKey = keyAnswers.key.trim();
         fs.writeFileSync(keyFile, apiKey);
       } else if (choice === 'Delete key') {
@@ -528,7 +604,9 @@ async function main() {
       }
     }
     if (!apiKey) {
-      const keyAnswers = await inquirer.prompt([{ type: 'input', name: 'key', message: 'Enter your xAI API key:' }]);
+      const keyAnswers = await inquirer.prompt([
+        { type: 'input', name: 'key', message: 'Enter your xAI API key:' },
+      ]);
       apiKey = keyAnswers.key.trim();
       fs.writeFileSync(keyFile, apiKey);
     }
@@ -537,7 +615,7 @@ async function main() {
   // Update OpenAI client for v5.x
   const client = new OpenAI({
     baseURL: 'https://api.x.ai/v1',
-    apiKey: apiKey
+    apiKey: apiKey,
   });
 
   // Model configuration
@@ -549,8 +627,16 @@ async function main() {
     }
   }
 
-  const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  const currentOS = process.platform === 'darwin' ? 'macOS' : process.platform === 'win32' ? 'Windows' : 'Linux';
+  const currentDateTime = new Date()
+    .toISOString()
+    .slice(0, 19)
+    .replace('T', ' ');
+  const currentOS =
+    process.platform === 'darwin'
+      ? 'macOS'
+      : process.platform === 'win32'
+        ? 'Windows'
+        : 'Linux';
   const currentDir = process.cwd();
   const fileList = fs.readdirSync(currentDir);
   let grokMdContent = '';
@@ -597,148 +683,203 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Automatic codebase scanning on start
   const essentialFiles = ['package.json', 'README.md', 'GROK.md'];
-  essentialFiles.forEach(f => {
+  essentialFiles.forEach((f) => {
     const filePath = path.join(currentDir, f);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf8');
       fileContext[f] = content;
-      messages.push({ role: 'system', content: `Auto-added essential file ${f}:\n${content}` });
+      messages.push({
+        role: 'system',
+        content: `Auto-added essential file ${f}:\n${content}`,
+      });
     }
   });
   console.log('Auto-scanned essential files for initial context.');
 
   // Check for updates on startup (non-blocking)
-  checkForUpdates().then(updateCheck => {
-    if (updateCheck.hasUpdate) {
-      console.log(`\n🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`);
-      console.log("Type '/update' to update to the latest version.\n");
-    }
-    // Only show error if it's not the common "no releases" case
-    else if (updateCheck.error && !updateCheck.error.includes('No releases found')) {
-      console.log(`\n⚠️  Could not check for updates: ${updateCheck.error}\n`);
-    }
-  }).catch(() => {
-    // Silently fail on startup update check
-  });
-
+  checkForUpdates()
+    .then((updateCheck) => {
+      if (updateCheck.hasUpdate) {
+        console.log(
+          `\n🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
+        );
+        console.log("Type '/update' to update to the latest version.\n");
+      }
+      // Only show error if it's not the common "no releases" case
+      else if (
+        updateCheck.error &&
+        !updateCheck.error.includes('No releases found')
+      ) {
+        console.log(
+          `\n⚠️  Could not check for updates: ${updateCheck.error}\n`
+        );
+      }
+    })
+    .catch(() => {
+      // Silently fail on startup update check
+    });
 
   // Load command history for this workspace
   let commandHistory = loadCommandHistory();
 
-  console.log("Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n");
+  console.log(
+    "Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n"
+  );
 
-  // No readline; use inquirer for all input
-  const mainQuestion = {
+  const mainPrompt = {
     type: 'input',
-    name: 'input',
+    name: 'userInput',
     message: 'You: ',
-    history: commandHistory  // inquirer supports history via external lib, but for simplicity, use array
   };
 
   while (true) {
-    const { input: userInputRaw } = await inquirer.prompt([mainQuestion]);
-    const userInput = userInputRaw.trim();
-
-    if (!userInput) continue;
-
-    if (userInput.toLowerCase() === 'exit' || userInput.toLowerCase() === '/exit') {
-      logger.info('User requested exit');
-      console.log("Exiting Grok Code. Happy coding!");
-      process.exit(0);
-    }
-
-    // Handle commands
-    const handled = await handleCommand(userInput, messages, fileContext, client, model);
-    if (handled) {
-      // Update history
-      commandHistory = addToHistory(userInput, commandHistory);
-      saveCommandHistory(commandHistory);
-      continue;
-    }
-
-    // Add to history
-    commandHistory = addToHistory(userInput, commandHistory);
-    saveCommandHistory(commandHistory);
-
-    // RPG check
-    const shouldUseRPG = userInput.toLowerCase().includes('generate repo') ||
-                           userInput.toLowerCase().includes('build') ||
-                           userInput.toLowerCase().includes('create a') ||
-                           userInput.toLowerCase().includes('implement a') ||
-                           userInput.toLowerCase().includes('develop a') ||
-                           userInput.toLowerCase().includes('add ') ||
-                           userInput.toLowerCase().includes('make ') ||
-                           userInput.toLowerCase().includes('modify ') ||
-                           userInput.toLowerCase().includes('update') ||
-                           userInput.toLowerCase().includes('change ') ||
-                           userInput.toLowerCase().includes('fix ') ||
-                           userInput.toLowerCase().includes('improve ') ||
-                           userInput.toLowerCase().includes('enhance ') ||
-                           userInput.toLowerCase().includes('extend ') ||
-                           // Additional code-related patterns
-                           userInput.toLowerCase().includes('write code') ||
-                           userInput.toLowerCase().includes('code for') ||
-                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('function') ||
-                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('component') ||
-                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('class') ||
-                           userInput.toLowerCase().includes('generate ') && userInput.toLowerCase().includes('code') ||
-                           userInput.toLowerCase().includes('implement ') && userInput.toLowerCase().includes('feature') ||
-                           userInput.toLowerCase().includes('add ') && userInput.toLowerCase().includes('feature') ||
-                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('file') ||
-                           userInput.toLowerCase().includes('new ') && userInput.toLowerCase().includes('file');
-
-    if (shouldUseRPG) {
-      logger.info('RPG mode triggered', { userInput, existingFiles: Object.keys(fileContext) });
-      try {
-        await generateCodeWithRPG(userInput, client, model, fileContext);
-      } catch (error) {
-        // fallback
-      }
-      continue;
-    }
-
-    // Regular chat
-    messages.push({ role: 'user', content: userInput });
-
-    if (Object.keys(fileContext).length > 0) {
-      const contextStr = Object.entries(fileContext).map(([f, c]) => `File ${f}:\n${c}`).join('\n');
-      messages.push({ role: 'system', content: `Current file context:\n${contextStr}` });
-    }
-
-    const spinner = ora('Thinking').start();
-
     try {
-      logger.debug('Making API request', { model, messageCount: messages.length });
+      const { userInput } = await inquirer.prompt([mainPrompt]);
+      const trimmedInput = userInput.trim();
+      if (!trimmedInput) continue;
 
-      const response = await client.chat.completions.create({
-        model,
+      if (
+        trimmedInput.toLowerCase() === 'exit' ||
+        trimmedInput.toLowerCase() === '/exit'
+      ) {
+        logger.info('User requested exit');
+        console.log('Exiting Grok Code. Happy coding!');
+        process.exit(0);
+      }
+
+      // Handle commands
+      const handled = await handleCommand(
+        trimmedInput,
         messages,
-        max_tokens: 4096,
-        temperature: 0.7
-      });
+        fileContext,
+        client,
+        model
+      );
+      if (handled) {
+        // Update history
+        commandHistory = addToHistory(trimmedInput, commandHistory);
+        saveCommandHistory(commandHistory);
+        continue;
+      }
 
-      spinner.stop();
+      // Add to history
+      commandHistory = addToHistory(trimmedInput, commandHistory);
+      saveCommandHistory(commandHistory);
 
-      const grokResponse = response.choices[0].message.content;
-      console.log(`\nGrok: ${grokResponse}\n`);
+      // RPG check
+      const shouldUseRPG =
+        trimmedInput.toLowerCase().includes('generate repo') ||
+        trimmedInput.toLowerCase().includes('build') ||
+        trimmedInput.toLowerCase().includes('create a') ||
+        trimmedInput.toLowerCase().includes('implement a') ||
+        trimmedInput.toLowerCase().includes('develop a') ||
+        trimmedInput.toLowerCase().includes('add ') ||
+        trimmedInput.toLowerCase().includes('make ') ||
+        trimmedInput.toLowerCase().includes('modify ') ||
+        trimmedInput.toLowerCase().includes('update') ||
+        trimmedInput.toLowerCase().includes('change ') ||
+        trimmedInput.toLowerCase().includes('fix ') ||
+        trimmedInput.toLowerCase().includes('improve ') ||
+        trimmedInput.toLowerCase().includes('enhance ') ||
+        trimmedInput.toLowerCase().includes('extend ') ||
+        // Additional code-related patterns
+        trimmedInput.toLowerCase().includes('write code') ||
+        trimmedInput.toLowerCase().includes('code for') ||
+        (trimmedInput.toLowerCase().includes('create ') &&
+          trimmedInput.toLowerCase().includes('function')) ||
+        (trimmedInput.toLowerCase().includes('create ') &&
+          trimmedInput.toLowerCase().includes('component')) ||
+        (trimmedInput.toLowerCase().includes('create ') &&
+          trimmedInput.toLowerCase().includes('class')) ||
+        (trimmedInput.toLowerCase().includes('generate ') &&
+          trimmedInput.toLowerCase().includes('code')) ||
+        (trimmedInput.toLowerCase().includes('implement ') &&
+          trimmedInput.toLowerCase().includes('feature')) ||
+        (trimmedInput.toLowerCase().includes('add ') &&
+          trimmedInput.toLowerCase().includes('feature')) ||
+        (trimmedInput.toLowerCase().includes('create ') &&
+          trimmedInput.toLowerCase().includes('file')) ||
+        (trimmedInput.toLowerCase().includes('new ') &&
+          trimmedInput.toLowerCase().includes('file'));
 
-      logger.info('Received API response', { responseLength: grokResponse.length });
+      if (shouldUseRPG) {
+        logger.info('RPG mode triggered', {
+          userInput,
+          existingFiles: Object.keys(fileContext),
+        });
+        try {
+          await generateCodeWithRPG(trimmedInput, client, model, fileContext);
+        } catch (error) {
+          // fallback
+        }
+        continue;
+      }
 
-      await parseAndApplyActions(grokResponse, messages, fileContext);
-
-      messages.push({ role: 'assistant', content: grokResponse });
+      // Regular chat
+      messages.push({ role: 'user', content: trimmedInput });
 
       if (Object.keys(fileContext).length > 0) {
-        messages.splice(messages.length - 2, 1);  // Remove temp context
+        const contextStr = Object.entries(fileContext)
+          .map(([f, c]) => `File ${f}:\n${c}`)
+          .join('\n');
+        messages.push({
+          role: 'system',
+          content: `Current file context:\n${contextStr}`,
+        });
+      }
+
+      const spinner = ora('Thinking').start();
+
+      try {
+        logger.debug('Making API request', {
+          model,
+          messageCount: messages.length,
+        });
+
+        const response = await client.chat.completions.create({
+          model,
+          messages,
+          max_tokens: 4096,
+          temperature: 0.7,
+        });
+
+        spinner.stop();
+
+        const grokResponse = response.choices[0].message.content;
+        console.log(`\nGrok: ${grokResponse}\n`);
+
+        logger.info('Received API response', {
+          responseLength: grokResponse.length,
+        });
+
+        await parseAndApplyActions(grokResponse, messages, fileContext);
+
+        messages.push({ role: 'assistant', content: grokResponse });
+
+        if (Object.keys(fileContext).length > 0) {
+          messages.splice(messages.length - 2, 1); // Remove temp context
+        }
+      } catch (error) {
+        spinner.stop();
+        logger.error('API request failed', error, {
+          model,
+          lastMessage: messages[messages.length - 1]?.content?.substring(
+            0,
+            100
+          ),
+        });
+        console.error(
+          '❌ API request failed. Check your connection and API key.'
+        );
+        console.log('💡 Try again or check .grok/error.log for details.');
       }
     } catch (error) {
-      spinner.stop();
-      logger.error('API request failed', error, {
-        model,
-        lastMessage: messages[messages.length - 1]?.content?.substring(0, 100)
-      });
-      console.error("❌ API request failed. Check your connection and API key.");
-      console.log("💡 Try again or check .grok/error.log for details.");
+      if (error.isTtyError) {
+        logger.warn('User aborted prompt (Ctrl+C)');
+        process.exit(0); // Or continue; but for abort, exit clean
+      }
+      logger.error('Input error', error);
+      continue;
     }
   }
 }
@@ -749,7 +890,10 @@ async function handleCommand(input, messages, fileContext, client, model) {
     if (fs.existsSync(filename)) {
       const content = fs.readFileSync(filename, 'utf8');
       fileContext[filename] = content;
-      messages.push({ role: 'system', content: `File ${filename} added to context:\n${content}` });
+      messages.push({
+        role: 'system',
+        content: `File ${filename} added to context:\n${content}`,
+      });
       console.log(`Added ${filename} to context.`);
     } else {
       console.log(`File ${filename} not found.`);
@@ -759,34 +903,42 @@ async function handleCommand(input, messages, fileContext, client, model) {
     const filename = input.split(' ').slice(1).join(' ');
     if (filename in fileContext) {
       delete fileContext[filename];
-      messages.push({ role: 'system', content: `File ${filename} removed from context.` });
+      messages.push({
+        role: 'system',
+        content: `File ${filename} removed from context.`,
+      });
       console.log(`Removed ${filename} from context.`);
     } else {
       console.log(`File ${filename} not in context.`);
     }
     return true;
   } else if (input === '/scan') {
-    const files = fs.readdirSync('.').filter(f => fs.statSync(f).isFile() && !f.startsWith('.'));
-    files.forEach(f => {
+    const files = fs
+      .readdirSync('.')
+      .filter((f) => fs.statSync(f).isFile() && !f.startsWith('.'));
+    files.forEach((f) => {
       const content = fs.readFileSync(f, 'utf8');
       fileContext[f] = content;
-      messages.push({ role: 'system', content: `File ${f} added to context:\n${content}` });
+      messages.push({
+        role: 'system',
+        content: `File ${f} added to context:\n${content}`,
+      });
     });
     console.log(`Scanned and added ${files.length} files to context.`);
     return true;
   } else if (input === '/ls') {
     const files = fs.readdirSync('.');
-    console.log("Files in current directory:");
-    files.forEach(f => console.log(`- ${f}`));
+    console.log('Files in current directory:');
+    files.forEach((f) => console.log(`- ${f}`));
     return true;
   } else if (input === '/model') {
     const availableModels = [
-      'grok-code-fast-1',        // Optimized for coding, fast & cost-effective (default)
-      'grok-4-fast-reasoning',   // Best for complex reasoning (RPG planning), 2M context
+      'grok-code-fast-1', // Optimized for coding, fast & cost-effective (default)
+      'grok-4-fast-reasoning', // Best for complex reasoning (RPG planning), 2M context
       'grok-4-fast-non-reasoning', // Fast for simple tasks, 2M context
-      'grok-3-beta',             // Legacy: Most capable, balanced performance
-      'grok-3-mini-beta',        // Legacy: Faster, lower cost
-      'grok-beta'                // Legacy: Original model
+      'grok-3-beta', // Legacy: Most capable, balanced performance
+      'grok-3-mini-beta', // Legacy: Faster, lower cost
+      'grok-beta', // Legacy: Original model
     ];
 
     const modelAnswers = await inquirer.prompt([
@@ -794,11 +946,11 @@ async function handleCommand(input, messages, fileContext, client, model) {
         type: 'list',
         name: 'selectedModel',
         message: `Current model: ${model}. Select a new model:`,
-        choices: availableModels.map(m => ({
+        choices: availableModels.map((m) => ({
           name: `${m}${m === model ? ' (current)' : ''}`,
-          value: m
-        }))
-      }
+          value: m,
+        })),
+      },
     ]);
 
     const newModel = modelAnswers.selectedModel;
@@ -842,10 +994,16 @@ async function handleCommand(input, messages, fileContext, client, model) {
     try {
       const result = execSync(cmd, { encoding: 'utf8' });
       console.log(result);
-      messages.push({ role: 'system', content: `Run command '${cmd}' output:\n${result}` });
+      messages.push({
+        role: 'system',
+        content: `Run command '${cmd}' output:\n${result}`,
+      });
     } catch (e) {
       console.log(`Error: ${e.stderr}`);
-      messages.push({ role: 'system', content: `Run command '${cmd}' error:\n${e.stderr}` });
+      messages.push({
+        role: 'system',
+        content: `Run command '${cmd}' error:\n${e.stderr}`,
+      });
     }
     return true;
   } else if (input.startsWith('/git ')) {
@@ -853,10 +1011,16 @@ async function handleCommand(input, messages, fileContext, client, model) {
     try {
       const result = execSync(`git ${cmd}`, { encoding: 'utf8' });
       console.log(result);
-      messages.push({ role: 'system', content: `Git command '${cmd}' output:\n${result}` });
+      messages.push({
+        role: 'system',
+        content: `Git command '${cmd}' output:\n${result}`,
+      });
     } catch (e) {
       console.log(`Error: ${e.stderr}`);
-      messages.push({ role: 'system', content: `Git command '${cmd}' error:\n${e.stderr}` });
+      messages.push({
+        role: 'system',
+        content: `Git command '${cmd}' error:\n${e.stderr}`,
+      });
     }
     return true;
   } else if (input === '/init-git') {
@@ -872,9 +1036,14 @@ async function handleCommand(input, messages, fileContext, client, model) {
     const message = input.split(' ').slice(1).join(' ');
     try {
       execSync('git add .');
-      const result = execSync(`git commit -m "${message}"`, { encoding: 'utf8' });
+      const result = execSync(`git commit -m "${message}"`, {
+        encoding: 'utf8',
+      });
       console.log(result);
-      messages.push({ role: 'system', content: `Git commit output:\n${result}` });
+      messages.push({
+        role: 'system',
+        content: `Git commit output:\n${result}`,
+      });
     } catch (e) {
       console.log(`Error: ${e.stderr}`);
     }
@@ -882,8 +1051,11 @@ async function handleCommand(input, messages, fileContext, client, model) {
   } else if (input.startsWith('/pr ')) {
     const title = input.split(' ').slice(1).join(' ');
     try {
-      const body = 'Auto-generated by Grok Code';  // Could prompt for body or generate via AI
-      const result = execSync(`gh pr create --title "${title}" --body "${body}"`, { encoding: 'utf8' });
+      const body = 'Auto-generated by Grok Code'; // Could prompt for body or generate via AI
+      const result = execSync(
+        `gh pr create --title "${title}" --body "${body}"`,
+        { encoding: 'utf8' }
+      );
       console.log(result);
       messages.push({ role: 'system', content: `PR created: ${result}` });
     } catch (e) {
@@ -904,16 +1076,18 @@ async function handleCommand(input, messages, fileContext, client, model) {
       const logFile = path.join(process.cwd(), '.grok/error.log');
       if (fs.existsSync(logFile)) {
         const logs = fs.readFileSync(logFile, 'utf8');
-        const lines = logs.split('\n').filter(line => line.trim());
+        const lines = logs.split('\n').filter((line) => line.trim());
         const recentLogs = lines.slice(-20); // Show last 20 entries
 
         console.log('\n📋 Recent Error Logs (last 20 entries):');
-        console.log('=' .repeat(50));
+        console.log('='.repeat(50));
         recentLogs.forEach((line, index) => {
           try {
             const entry = JSON.parse(line);
             const time = new Date(entry.timestamp).toLocaleString();
-            console.log(`${index + 1}. [${time}] ${entry.level.toUpperCase()}: ${entry.message}`);
+            console.log(
+              `${index + 1}. [${time}] ${entry.level.toUpperCase()}: ${entry.message}`
+            );
             if (entry.error) {
               console.log(`   Error: ${entry.error.message}`);
             }
@@ -921,10 +1095,12 @@ async function handleCommand(input, messages, fileContext, client, model) {
             console.log(`${index + 1}. ${line}`);
           }
         });
-        console.log('=' .repeat(50));
+        console.log('='.repeat(50));
         console.log(`Full logs available at: ${logFile}`);
       } else {
-        console.log('📋 No error logs found. Logs will be created when errors occur.');
+        console.log(
+          '📋 No error logs found. Logs will be created when errors occur.'
+        );
       }
     } catch (error) {
       console.log(`❌ Error reading logs: ${error.message}`);
@@ -934,18 +1110,24 @@ async function handleCommand(input, messages, fileContext, client, model) {
     messages = [{ role: 'system', content: systemPrompt }];
     fileContext = {};
     console.clear();
-    console.log("Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n");
+    console.log(
+      "Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n"
+    );
     return true;
   } else if (input === '/update' || input.toLowerCase() === 'update') {
     console.log('Checking for updates...');
     const updateCheck = await checkForUpdates();
     if (updateCheck.hasUpdate) {
-      console.log(`🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`);
-      const updateAnswers = await inquirer.prompt([{
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Would you like to update now?'
-      }]);
+      console.log(
+        `🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
+      );
+      const updateAnswers = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Would you like to update now?',
+        },
+      ]);
       if (updateAnswers.confirm) {
         const success = await performUpdate(updateCheck.downloadUrl);
         if (success) {
@@ -955,7 +1137,9 @@ async function handleCommand(input, messages, fileContext, client, model) {
     } else if (updateCheck.error) {
       console.log(`❌ Could not check for updates: ${updateCheck.error}`);
     } else {
-      console.log(`✅ You're already running the latest version (v${updateCheck.currentVersion})`);
+      console.log(
+        `✅ You're already running the latest version (v${updateCheck.currentVersion})`
+      );
     }
     return true;
   } else if (input.startsWith('/')) {
@@ -973,7 +1157,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
           model,
           messages,
           max_tokens: 4096,
-          temperature: 0.7
+          temperature: 0.7,
         });
         spinner.stop();
         const grokResponse = response.choices[0].message.content;
@@ -982,7 +1166,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
         messages.push({ role: 'assistant', content: grokResponse });
       } catch (error) {
         spinner.stop();
-        console.error("API error:", error);
+        console.error('API error:', error);
       }
       return true;
     } else {
@@ -995,16 +1179,24 @@ async function handleCommand(input, messages, fileContext, client, model) {
 
 async function parseAndApplyActions(responseText, messages, fileContext) {
   try {
-    logger.debug('Parsing and applying actions', { responseLength: responseText.length });
+    logger.debug('Parsing and applying actions', {
+      responseLength: responseText.length,
+    });
 
     const parser = new xml2js.Parser({ explicitArray: false });
 
     // Pre-process responseText to escape unescaped ampersands in command attributes
-    let processedText = responseText.replace(/<run command="([^"]*)">/g, (match, commandAttr) => {
-      // Escape unescaped ampersands in command attributes
-      const escapedCommand = commandAttr.replace(/&(?!(?:amp|lt|gt|quot|apos);)/g, '&amp;');
-      return `<run command="${escapedCommand}">`;
-    });
+    let processedText = responseText.replace(
+      /<run command="([^"]*)">/g,
+      (match, commandAttr) => {
+        // Escape unescaped ampersands in command attributes
+        const escapedCommand = commandAttr.replace(
+          /&(?!(?:amp|lt|gt|quot|apos);)/g,
+          '&amp;'
+        );
+        return `<run command="${escapedCommand}">`;
+      }
+    );
 
     const edits = processedText.match(/<edit[^>]*>[\s\S]*?<\/edit>/g) || [];
     const deletes = processedText.match(/<delete[^>]*><\/delete>/g) || [];
@@ -1015,10 +1207,12 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
       return;
     }
 
-    console.log("\nProposed actions:");
+    console.log('\nProposed actions:');
     for (const run of runs) {
       const parsed = await parser.parseStringPromise(run);
-      console.log(`Run command: ${parsed.run.$.command.replace(/&amp;/g, '&')}`);
+      console.log(
+        `Run command: ${parsed.run.$.command.replace(/&amp;/g, '&')}`
+      );
     }
     for (const edit of edits) {
       const parsed = await parser.parseStringPromise(edit);
@@ -1032,20 +1226,26 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
     // Use safer prompt handling
     let answers;
     try {
-      answers = await inquirer.prompt([{ type: 'confirm', name: 'confirm', message: 'Apply these actions?' }]);
+      answers = await inquirer.prompt([
+        { type: 'confirm', name: 'confirm', message: 'Apply these actions?' },
+      ]);
     } catch (promptError) {
       logger.error('Error with confirmation prompt', promptError);
-      console.log("❌ Error with confirmation prompt. Actions not applied.");
+      console.log('❌ Error with confirmation prompt. Actions not applied.');
       return;
     }
 
     if (!answers.confirm) {
       logger.info('User declined to apply actions');
-      console.log("Actions not applied.");
+      console.log('Actions not applied.');
       return;
     }
 
-    logger.info('User confirmed actions', { runs: runs.length, edits: edits.length, deletes: deletes.length });
+    logger.info('User confirmed actions', {
+      runs: runs.length,
+      edits: edits.length,
+      deletes: deletes.length,
+    });
 
     // Apply runs first
     for (const run of runs) {
@@ -1058,15 +1258,31 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
         try {
           const result = execSync(cmd, { encoding: 'utf8' }); // 10 second timeout
           console.log(`Command '${cmd}' output:\n${result}`);
-          messages.push({ role: 'system', content: `Command '${cmd}' output:\n${result}` });
-          logger.info('Command executed successfully', { command: cmd, outputLength: result.length });
+          messages.push({
+            role: 'system',
+            content: `Command '${cmd}' output:\n${result}`,
+          });
+          logger.info('Command executed successfully', {
+            command: cmd,
+            outputLength: result.length,
+          });
         } catch (execError) {
-          logger.warn('Command execution failed', { command: cmd, error: execError.message });
-          console.log(`Error executing '${cmd}': ${execError.stderr || execError.message}`);
-          messages.push({ role: 'system', content: `Command '${cmd}' error:\n${execError.stderr || execError.message}` });
+          logger.warn('Command execution failed', {
+            command: cmd,
+            error: execError.message,
+          });
+          console.log(
+            `Error executing '${cmd}': ${execError.stderr || execError.message}`
+          );
+          messages.push({
+            role: 'system',
+            content: `Command '${cmd}' error:\n${execError.stderr || execError.message}`,
+          });
         }
       } catch (parseError) {
-        logger.error('Failed to parse run command', parseError, { runTag: run });
+        logger.error('Failed to parse run command', parseError, {
+          runTag: run,
+        });
         console.log(`❌ Failed to parse command: ${parseError.message}`);
       }
     }
@@ -1076,7 +1292,7 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
       try {
         const parsed = await parser.parseStringPromise(edit);
         const filename = parsed.edit.$.file;
-        const content = parsed.edit._;  // Assuming CDATA is handled as text
+        const content = parsed.edit._; // Assuming CDATA is handled as text
 
         logger.debug('Applying file edit', { filename });
 
@@ -1085,13 +1301,18 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
           fs.writeFileSync(filename, content);
           console.log(`✅ Saved ${filename}.`);
           fileContext[filename] = content;
-          logger.info('File saved successfully', { filename, contentLength: content.length });
+          logger.info('File saved successfully', {
+            filename,
+            contentLength: content.length,
+          });
         } catch (fileError) {
           logger.error('Failed to save file', fileError, { filename });
           console.log(`❌ Failed to save ${filename}: ${fileError.message}`);
         }
       } catch (parseError) {
-        logger.error('Failed to parse edit command', parseError, { editTag: edit });
+        logger.error('Failed to parse edit command', parseError, {
+          editTag: edit,
+        });
         console.log(`❌ Failed to parse edit: ${parseError.message}`);
       }
     }
@@ -1112,28 +1333,38 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
             logger.info('File deleted successfully', { filename });
           } catch (deleteError) {
             logger.error('Failed to delete file', deleteError, { filename });
-            console.log(`❌ Failed to delete ${filename}: ${deleteError.message}`);
+            console.log(
+              `❌ Failed to delete ${filename}: ${deleteError.message}`
+            );
           }
         } else {
           logger.warn('File not found for deletion', { filename });
           console.log(`⚠️  File ${filename} not found for deletion.`);
         }
       } catch (parseError) {
-        logger.error('Failed to parse delete command', parseError, { deleteTag: del });
+        logger.error('Failed to parse delete command', parseError, {
+          deleteTag: del,
+        });
         console.log(`❌ Failed to parse delete: ${parseError.message}`);
       }
     }
 
     try {
       const updatedFiles = fs.readdirSync('.');
-      messages.push({ role: 'system', content: `Actions applied. Updated files in directory: ${updatedFiles.join(', ')}` });
+      messages.push({
+        role: 'system',
+        content: `Actions applied. Updated files in directory: ${updatedFiles.join(', ')}`,
+      });
       logger.info('All actions completed successfully');
     } catch (fsError) {
       logger.error('Failed to read directory after actions', fsError);
     }
-
   } catch (error) {
-    logger.error('Critical error in parseAndApplyActions', error, { responseText: responseText.substring(0, 500) });
-    console.log(`💥 Critical error processing actions. Check .grok/error.log for details.`);
+    logger.error('Critical error in parseAndApplyActions', error, {
+      responseText: responseText.substring(0, 500),
+    });
+    console.log(
+      `💥 Critical error processing actions. Check .grok/error.log for details.`
+    );
   }
 }
