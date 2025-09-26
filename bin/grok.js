@@ -1011,33 +1011,37 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     }
   }
 
-  // Check for updates on startup (non-blocking)
-  checkForUpdates()
-    .then((updateCheck) => {
-      if (updateCheck.hasUpdate) {
-        console.log(
-          `\n🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
-        );
-        console.log("Type '/update' to update to the latest version.\n");
-      } else if (updateCheck.isAhead) {
-        console.log(
-          `\n🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
-        );
-        console.log("You're running a development version.\n");
-      }
-      // Only show error if it's not the common "no releases" case
-      else if (
-        updateCheck.error &&
-        !updateCheck.error.includes('No releases found')
-      ) {
-        console.log(
-          `\n⚠️  Could not check for updates: ${updateCheck.error}\n`
-        );
-      }
-    })
-    .catch(() => {
-      // Silently fail on startup update check
-    });
+  // Check for updates on startup (synchronously to avoid cursor issues)
+  console.log('🔍 Checking for updates...');
+  let updateCheck;
+  try {
+    updateCheck = await checkForUpdates();
+  } catch (error) {
+    updateCheck = { error: error.message };
+  }
+
+  if (updateCheck.hasUpdate) {
+    console.log(
+      `🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
+    );
+    console.log("Type '/update' to update to the latest version.\n");
+  } else if (updateCheck.isAhead) {
+    console.log(
+      `🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
+    );
+    console.log("You're running a development version.\n");
+  }
+  // Only show error if it's not the common "no releases" case
+  else if (
+    updateCheck.error &&
+    !updateCheck.error.includes('No releases found')
+  ) {
+    console.log(
+      `⚠️  Could not check for updates: ${updateCheck.error}\n`
+    );
+  } else {
+    console.log('✅ Up to date!\n');
+  }
 
   // Load command history for this workspace
   let commandHistory = loadCommandHistory();
