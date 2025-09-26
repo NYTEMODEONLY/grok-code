@@ -233,10 +233,10 @@ Transform the terminal interface into a modern, interactive development environm
   - Files to modify: `lib/interactive/file-browser.js`
   - Testing: Navigate and preview files interactively ✅ COMPLETED
 
-- [ ] **Task 3.2.2**: Create code preview with line numbers
+- [x] **Task 3.2.2**: Create code preview with line numbers
   - Dependencies: File browser
   - Files to modify: `lib/display/code-preview.js`
-  - Testing: Display code with syntax highlighting and line numbers
+  - Testing: Display code with syntax highlighting and line numbers ✅ COMPLETED
 
 - [ ] **Task 3.2.3**: Implement search and highlight in code display
   - Dependencies: Code preview
