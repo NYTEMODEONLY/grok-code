@@ -316,7 +316,7 @@ Output: olleh
   - Build: npm run build
   - Test: npm test
   - Architecture: Feature-based folder structure
-````
+  ```
 
 - **Custom Commands**: Create reusable workflows:
   ```bash
