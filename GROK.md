@@ -106,6 +106,8 @@ lib/
 │   ├── detector.js         # Intelligent framework and language detection
 │   ├── patterns.js         # Framework-specific patterns and conventions
 │   └── prompt-loader.js    # Framework-specific AI prompts and behavioral rules
+├── conventions/    # Project coding standards analysis
+│   └── analyzer.js         # Learns project-specific coding conventions
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
