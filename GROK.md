@@ -96,7 +96,9 @@ lib/
 │   ├── file-browser.js       # Interactive file navigation and selection
 │   └── code-search.js        # Advanced codebase search and highlighting
 ├── commands/        # CLI command implementations
-│   └── debug.js             # Interactive debugging and error recovery
+│   ├── debug.js             # Interactive debugging and error recovery
+│   ├── auto-complete.js     # Intelligent command and file path auto-completion
+│   └── history-search.js    # Advanced command history search and analytics
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
