@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.14.0 - Project Architecture Mapping (Phase 4.3)
+### v1.15.0 - Application Flow Analysis (Phase 4.3)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -89,7 +89,12 @@
 - **🔗 Component Relationships**: Analyzes dependencies between architectural components
 - **🚪 Entry Point Detection**: Identifies application entry points and main flows
 - **💡 Architectural Recommendations**: Suggests improvements and best practices
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture` for complete project intelligence
+- **🌊 Flow Analysis**: Traces application execution paths and user journeys
+- **🔄 Runtime Behavior**: Understands how applications actually work and flow
+- **🛤️ User Journey Mapping**: Identifies primary user workflows and interactions
+- **🔌 API Endpoint Discovery**: Maps RESTful endpoints and their purposes
+- **💻 CLI Flow Analysis**: Understands command-line interfaces and their workflows
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows` for complete project intelligence
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
