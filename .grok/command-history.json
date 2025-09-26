@@ -19,5 +19,19 @@
     "sessionId": "1758875075440",
     "hasResponse": true,
     "conversationLength": 45
+  },
+  {
+    "command": "/framework detect",
+    "timestamp": "2025-09-26T08:35:47.398Z",
+    "sessionId": "1758875734830",
+    "hasResponse": true,
+    "conversationLength": 45
+  },
+  {
+    "command": "/framework detect",
+    "timestamp": "2025-09-26T08:44:22.180Z",
+    "sessionId": "1758876248139",
+    "hasResponse": true,
+    "conversationLength": 45
   }
 ]
