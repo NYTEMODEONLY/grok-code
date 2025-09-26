@@ -3272,6 +3272,12 @@ async function handleCommand(
     if (!subcommand || subcommand === 'detect' || subcommand === 'scan') {
       console.log('🔍 Detecting frameworks and technologies...\n');
 
+      // Check if frameworkDetector is available
+      if (!frameworkDetector) {
+        console.log('❌ Framework detector not available. Please restart the application.');
+        return true;
+      }
+
       try {
         const results = await frameworkDetector.detectFrameworks();
 
