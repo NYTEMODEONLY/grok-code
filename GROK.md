@@ -85,7 +85,8 @@ lib/
 │   ├── progress-indicator.js # Progress indicators and status displays
 │   └── code-preview.js       # Enhanced code display with line numbers
 ├── interactive/     # Terminal UI components
-│   └── file-browser.js       # Interactive file navigation and selection
+│   ├── file-browser.js       # Interactive file navigation and selection
+│   └── code-search.js        # Advanced codebase search and highlighting
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
@@ -173,6 +174,15 @@ lib/
 - **Search Highlighting**: Visual highlighting of search terms within code
 - **Code Annotations**: Inline comments and explanations for code sections
 - **File Metadata**: Size, type, and modification information display
+
+### Advanced Code Search
+
+- **Multi-Mode Search**: Exact, regex, whole word, and fuzzy matching
+- **File Type Filtering**: Language-specific search across JavaScript, TypeScript, Python, etc.
+- **Result Highlighting**: Color-coded matches with contextual previews
+- **Search History**: Query tracking and usage analytics
+- **Interactive Interface**: Guided search with menu-driven configuration
+- **Performance Optimized**: Efficient searching across large codebases
 
 ## Git Workflow
 
