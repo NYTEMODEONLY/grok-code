@@ -23,6 +23,7 @@ import { DiffViewer } from '../lib/display/diff-viewer.js';
 import { ProgressIndicator } from '../lib/display/progress-indicator.js';
 import { FileBrowser } from '../lib/interactive/file-browser.js';
 import { CodePreview } from '../lib/display/code-preview.js';
+import { CodeSearch } from '../lib/interactive/code-search.js';
 
 /**
  * Error Logging System
@@ -926,6 +927,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Initialize code preview for enhanced code display
   const codePreview = new CodePreview({ syntaxHighlighter });
 
+  // Initialize code search for interactive codebase search
+  const codeSearch = new CodeSearch({ syntaxHighlighter, codePreview });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1689,6 +1693,7 @@ async function handleCommand(
 - /progress <status|test|spinner|multistep>: Progress indicators and status displays
 - /browse <start|find|preview|stats>: Interactive file browser and navigation
 - /preview <file|code|line|search|config>: Enhanced code preview with line numbers
+- /search <query|regex|word|fuzzy|interactive|history|stats>: Interactive code search across codebase
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2274,6 +2279,123 @@ async function handleCommand(
     } else {
       console.log(`Unknown preview subcommand: ${subcommand}`);
       console.log('Use /preview for help');
+    }
+
+    return true;
+  } else if (input.startsWith('/search')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand) {
+      console.log('Usage: /search <command>');
+      console.log('Commands:');
+      console.log('  /search query "<term>"    - Search for exact term');
+      console.log('  /search regex "<pattern>" - Search with regex');
+      console.log('  /search word "<term>"     - Search for whole word');
+      console.log('  /search fuzzy "<term>"    - Fuzzy search');
+      console.log('  /search interactive        - Interactive search mode');
+      console.log('  /search history           - Show search history');
+      console.log('  /search stats             - Show search statistics');
+      console.log('Examples:');
+      console.log('  /search query "function"');
+      console.log('  /search regex "\\bconst\\s+\\w+"');
+      console.log('  /search word "import"');
+    } else if (subcommand === 'interactive') {
+      console.log('Starting interactive code search...');
+      codeSearch.interactiveSearch().catch(error => {
+        console.log(`❌ Search error: ${error.message}`);
+      });
+    } else if (subcommand === 'query' || subcommand === 'regex' || subcommand === 'word' || subcommand === 'fuzzy') {
+      const query = parts.slice(2).join(' ').replace(/^["']|["']$/g, ''); // Remove surrounding quotes
+
+      if (!query) {
+        console.log(`Usage: /search ${subcommand} "<search term>"`);
+        return true;
+      }
+
+      console.log(`🔍 Searching for "${query}" (${subcommand} mode)...\n`);
+
+      const results = await codeSearch.search(query, {
+        mode: subcommand === 'query' ? 'exact' : subcommand,
+        directory: currentDir,
+        maxResults: 20
+      });
+
+      if (results.length === 0) {
+        console.log('❌ No matches found.');
+      } else {
+        console.log(`✅ Found ${results.length} matches in ${new Set(results.map(r => r.file)).size} files:\n`);
+
+        // Group by file
+        const fileGroups = {};
+        results.forEach(result => {
+          if (!fileGroups[result.file]) {
+            fileGroups[result.file] = [];
+          }
+          fileGroups[result.file].push(result);
+        });
+
+        let matchCount = 1;
+        for (const [filePath, fileResults] of Object.entries(fileGroups)) {
+          const relativePath = path.relative(currentDir, filePath);
+          console.log(`📄 ${relativePath} (${fileResults.length} matches):`);
+
+          fileResults.forEach(result => {
+            const truncated = result.content.length > 80
+              ? result.content.substring(0, 77) + '...'
+              : result.content;
+            console.log(`  ${matchCount}. Line ${result.line}: ${truncated}`);
+            matchCount++;
+          });
+          console.log();
+        }
+
+        // Show context for first result
+        if (results.length > 0) {
+          const firstResult = results[0];
+          console.log('📋 First match context:');
+          console.log(firstResult.preview);
+        }
+      }
+    } else if (subcommand === 'history') {
+      const history = codeSearch.getSearchHistory();
+      console.log('\n📚 Search History:');
+      console.log('═'.repeat(30));
+
+      if (history.length === 0) {
+        console.log('No search history available.');
+      } else {
+        history.forEach((entry, index) => {
+          const time = entry.timestamp.toLocaleString();
+          const mode = entry.options?.mode || 'exact';
+          console.log(`${index + 1}. "${entry.query}" (${mode}) - ${time}`);
+        });
+      }
+    } else if (subcommand === 'stats') {
+      const stats = codeSearch.getStats();
+      console.log('\n📊 Search Statistics:');
+      console.log('═'.repeat(25));
+      console.log(`Total searches: ${stats.totalSearches}`);
+
+      console.log('\nSearch modes used:');
+      Object.entries(stats.searchModes).forEach(([mode, count]) => {
+        console.log(`  ${mode}: ${count}`);
+      });
+
+      console.log('\nFile type filters used:');
+      Object.entries(stats.fileTypes).forEach(([type, count]) => {
+        console.log(`  ${type}: ${count}`);
+      });
+
+      if (stats.recentQueries.length > 0) {
+        console.log('\nRecent queries:');
+        stats.recentQueries.forEach((query, index) => {
+          console.log(`  ${index + 1}. "${query}"`);
+        });
+      }
+    } else {
+      console.log(`Unknown search subcommand: ${subcommand}`);
+      console.log('Use /search for help');
     }
 
     return true;

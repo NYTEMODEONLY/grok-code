@@ -238,10 +238,10 @@ Transform the terminal interface into a modern, interactive development environm
   - Files to modify: `lib/display/code-preview.js`
   - Testing: Display code with syntax highlighting and line numbers ✅ COMPLETED
 
-- [ ] **Task 3.2.3**: Implement search and highlight in code display
+- [x] **Task 3.2.3**: Implement search and highlight in code display
   - Dependencies: Code preview
   - Files to modify: `lib/interactive/code-search.js`
-  - Testing: Search and highlight terms in displayed code
+  - Testing: Search and highlight terms in displayed code ✅ COMPLETED
 
 #### **3.3 Smart Command Interface**
 - [ ] **Task 3.3.1**: Auto-complete for commands and file paths
