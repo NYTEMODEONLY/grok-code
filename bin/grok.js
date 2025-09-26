@@ -31,6 +31,7 @@ import { AutoComplete } from '../lib/commands/auto-complete.js';
 import { HistorySearch } from '../lib/commands/history-search.js';
 import { ContextualSuggestions } from '../lib/commands/suggestions.js';
 import { WorkflowDiagram } from '../lib/visualization/workflow-diagram.js';
+import { ProgressTracker } from '../lib/visualization/progress-tracker.js';
 
 /**
  * Error Logging System
@@ -975,6 +976,14 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     style: 'default',
   });
 
+  // Initialize progress tracking system
+  const progressTracker = new ProgressTracker({
+    maxConcurrent: 5,
+    showDetails: true,
+    autoCleanup: true,
+    updateInterval: 100,
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1754,6 +1763,7 @@ async function handleCommand(
 - /history <search|recent|stats|clear|delete|export>: Advanced command history search and management
 - /suggest <show|stats|reset>: Intelligent contextual command suggestions
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
+- /progress <status|history|report>: Track operations with visual progress indicators
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2929,6 +2939,177 @@ async function handleCommand(
       console.log('\nStyles: default, minimal, fancy');
     } else {
       console.log('Unknown diagram subcommand. Use /diagram help for available commands.');
+    }
+
+    return true;
+  } else if (input.startsWith('/progress')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+    const args = parts.slice(2);
+
+    if (!subcommand || subcommand === 'status' || subcommand === 'show') {
+      console.log('📊 Progress Tracking Status\n');
+
+      const activeOps = progressTracker.getActiveOperations();
+      const stats = progressTracker.getStats();
+
+      if (activeOps.length === 0) {
+        console.log('✅ No active operations currently running.\n');
+      } else {
+        console.log('🔄 Active Operations:');
+        activeOps.forEach(op => {
+          const duration = Math.round((Date.now() - op.startTime) / 1000);
+          const eta = op.estimatedDuration ? Math.round((op.estimatedDuration - (Date.now() - op.startTime)) / 1000) : null;
+
+          console.log(`  📋 ${op.name} (${op.id})`);
+          console.log(`     Progress: ${op.progress.toFixed(1)}% (${op.currentStep}/${op.totalSteps} steps)`);
+          console.log(`     Duration: ${duration}s${eta ? ` | ETA: ${eta}s` : ''}`);
+          console.log(`     Status: ${op.status}`);
+          if (op.errors.length > 0) {
+            console.log(`     ⚠️  Errors: ${op.errors.length}`);
+          }
+          console.log('');
+        });
+      }
+
+      // Show statistics
+      console.log('📈 Overall Statistics:');
+      console.log(`  Total Operations: ${stats.totalOperations}`);
+      console.log(`  Completed: ${stats.completedOperations}`);
+      console.log(`  Failed: ${stats.failedOperations}`);
+      console.log(`  Success Rate: ${stats.successRate.toFixed(1)}%`);
+      console.log(`  Average Duration: ${Math.round(stats.averageDuration / 1000)}s`);
+      console.log(`  Active Now: ${stats.activeOperations}`);
+    } else if (subcommand === 'history') {
+      const limit = args[0] ? parseInt(args[0]) : 10;
+      const history = progressTracker.getOperationHistory({ limit });
+
+      if (history.length === 0) {
+        console.log('📜 No operation history available.');
+        return true;
+      }
+
+      console.log(`📜 Operation History (Last ${limit} operations):\n`);
+
+      history.forEach(op => {
+        const duration = Math.round(op.duration / 1000);
+        const statusIcon = op.status === 'completed' ? '✅' : '❌';
+        const timeAgo = Math.round((Date.now() - op.endTime) / 1000 / 60); // minutes ago
+
+        console.log(`${statusIcon} ${op.name}`);
+        console.log(`   Duration: ${duration}s | ${timeAgo}min ago | ${op.status}`);
+        if (op.errors && op.errors.length > 0) {
+          console.log(`   ⚠️  Errors: ${op.errors.length}`);
+        }
+        console.log('');
+      });
+    } else if (subcommand === 'report') {
+      console.log('📊 Performance Report\n');
+
+      const report = progressTracker.generatePerformanceReport();
+
+      console.log('Overall Statistics:');
+      console.log(`  Total Operations: ${report.stats.totalOperations}`);
+      console.log(`  Success Rate: ${report.stats.successRate.toFixed(1)}%`);
+      console.log(`  Average Duration: ${Math.round(report.stats.averageDuration / 1000)}s`);
+      console.log(`  Currently Active: ${report.activeOperations}\n`);
+
+      console.log('Category Breakdown:');
+      Object.entries(report.categoryBreakdown).forEach(([category, stats]) => {
+        console.log(`  ${category}:`);
+        console.log(`    Total: ${stats.total} | Success: ${stats.completed} | Failed: ${stats.failed}`);
+        console.log(`    Avg Duration: ${Math.round(stats.averageDuration / 1000)}s`);
+      });
+
+      if (report.recentHistory.length > 0) {
+        console.log('\nRecent Operations:');
+        report.recentHistory.slice(-5).forEach(op => {
+          const duration = Math.round(op.duration / 1000);
+          const statusIcon = op.status === 'completed' ? '✅' : '❌';
+          console.log(`  ${statusIcon} ${op.name} (${duration}s)`);
+        });
+      }
+    } else if (subcommand === 'export') {
+      const format = args[0] || 'json';
+      const data = progressTracker.exportOperations(format);
+
+      console.log(`📄 Operation Data Export (${format.toUpperCase()}):\n`);
+      console.log(data);
+      console.log(`\n💡 Tip: Save this output to a file for external analysis`);
+    } else if (subcommand === 'reset') {
+      const { inquirer } = await import('inquirer');
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Reset all progress tracking data? This cannot be undone.',
+          default: false
+        }
+      ]);
+
+      if (confirm) {
+        progressTracker.reset();
+        console.log('✅ Progress tracking data has been reset.');
+      } else {
+        console.log('❌ Reset cancelled.');
+      }
+    } else if (subcommand === 'demo') {
+      console.log('🎭 Running Progress Tracker Demo...\n');
+
+      // Create a demo operation with multiple steps
+      const demoOpId = progressTracker.startOperation('Progress Tracker Demo', {
+        totalSteps: 5,
+        category: 'demo',
+        showProgress: true,
+        showETA: true
+      });
+
+      // Simulate a multi-step operation
+      setTimeout(() => {
+        progressTracker.updateProgress(demoOpId, 20, { step: 1, stepName: 'Initializing' });
+      }, 500);
+
+      setTimeout(() => {
+        progressTracker.updateProgress(demoOpId, 40, { step: 2, stepName: 'Processing Data' });
+      }, 1500);
+
+      setTimeout(() => {
+        progressTracker.updateProgress(demoOpId, 60, { step: 3, stepName: 'Analyzing Results' });
+      }, 2500);
+
+      setTimeout(() => {
+        progressTracker.updateProgress(demoOpId, 80, { step: 4, stepName: 'Generating Output' });
+      }, 3500);
+
+      setTimeout(() => {
+        progressTracker.updateProgress(demoOpId, 100, { step: 5, stepName: 'Finalizing' });
+        progressTracker.completeOperation(demoOpId, { success: true });
+        console.log('\n✅ Demo completed! Use /progress status to see the results.');
+      }, 4500);
+
+      console.log('🎬 Demo operation started! Watch the progress indicators above.');
+      console.log('💡 Use /progress status during the demo to see live updates.\n');
+    } else if (subcommand === 'help') {
+      console.log('📊 Progress Tracking Help');
+      console.log('═'.repeat(25));
+      console.log('Track and monitor long-running operations with visual feedback.\n');
+      console.log('Commands:');
+      console.log('  /progress status       - Show current operation status and statistics');
+      console.log('  /progress history [N]  - Show last N operations (default: 10)');
+      console.log('  /progress report       - Generate detailed performance report');
+      console.log('  /progress export [fmt] - Export operation data (json/csv)');
+      console.log('  /progress reset        - Reset all tracking data');
+      console.log('  /progress demo         - Run a demonstration of progress tracking');
+      console.log('  /progress help         - Show this help');
+      console.log('\nFeatures:');
+      console.log('• Real-time progress bars for multi-step operations');
+      console.log('• ETA calculations and duration tracking');
+      console.log('• Operation history and performance analytics');
+      console.log('• Nested operation support (parent/child relationships)');
+      console.log('• Success rate and error tracking');
+      console.log('• Category-based operation organization');
+    } else {
+      console.log('Unknown progress subcommand. Use /progress help for available commands.');
     }
 
     return true;
