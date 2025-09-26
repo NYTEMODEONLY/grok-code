@@ -83,6 +83,8 @@ lib/
 │   ├── syntax-highlighter.js # Multi-language syntax highlighting
 │   ├── diff-viewer.js        # Color-coded diff display and git integration
 │   └── progress-indicator.js # Progress indicators and status displays
+├── interactive/     # Terminal UI components
+│   └── file-browser.js       # Interactive file navigation and selection
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
@@ -153,6 +155,14 @@ lib/
 - **Multi-Step Operation Tracking**: Sequential execution visualization
 - **Status Indicators**: Rich success/error/warning/info/pending displays
 - **Performance Timing**: Formatted duration displays with automatic cleanup
+
+### Interactive File Navigation
+
+- **Terminal File Browser**: Arrow key navigation with intuitive file selection
+- **File Type Icons**: Emoji indicators for directories, code files, and documents
+- **Syntax-Highlighted Previews**: Code preview with language detection and highlighting
+- **Context Integration**: Direct file addition to AI conversation memory
+- **Search Capabilities**: Pattern-based file discovery across directory trees
 
 ## Git Workflow
 
