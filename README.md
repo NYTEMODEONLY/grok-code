@@ -45,6 +45,14 @@
 
 ## 📋 Changelog
 
+### v1.2.0 - IDE-like Terminal Experience (Phase 3.1)
+- **🎨 Syntax Highlighting**: Multi-language code highlighting (JavaScript, TypeScript, Python, JSON, Shell, SQL)
+- **🌈 Multiple Color Themes**: Default, dark, and minimal themes with ANSI terminal compatibility
+- **📊 Color-Coded Diff Display**: Unified diff parsing with green/red/gray color coding for additions/deletions
+- **🔍 Git Integration**: `/diff git` command for seamless git diff workflows with syntax highlighting
+- **🎯 Interactive Controls**: `/highlight` and `/diff` commands for runtime theme switching and configuration
+- **⚡ Performance Optimized**: Real-time highlighting and diff display without performance impact
+
 ### v1.1.1 - CLI User Experience Improvements
 - **✨ Enhanced CLI Experience**: Suppressed verbose internal logging from appearing in user console output
 - **🔇 Clean Startup**: Removed detailed context loading and budget status messages during initialization
