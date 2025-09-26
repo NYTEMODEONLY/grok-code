@@ -1,7 +1,7 @@
 {
   "name": "@xai/grok-code",
   "version": "1.0.0",
-  "description": "🚀 Grok Code: AI-powered CLI coding assistant with RPG planning and model selection. Transform your terminal into an intelligent coding environment with structured repository planning, multiple Grok models, and seamless code generation.",
+  "description": "🚀 Grok Code: AI-powered CLI coding assistant with RPG planning and latest Grok models. Transform your terminal into an intelligent coding environment with grok-code-fast-1, grok-4-fast-reasoning, structured repository planning, and seamless code generation.",
   "main": "index.js",
   "bin": {
     "grok": "./bin/grok.js"

@@ -90,13 +90,16 @@ Choose the right model for your needs:
 ```
 
 **Available Models:**
-- **`grok-3-beta`** (Default): Most capable, balanced performance
-- **`grok-3-mini-beta`**: Faster responses, cost-effective
-- **`grok-beta`**: Legacy model with proven reliability
+- **`grok-code-fast-1`** (Default): Optimized for coding, fast & cost-effective
+- **`grok-4-fast-reasoning`**: Best for complex reasoning (RPG planning), 2M context
+- **`grok-4-fast-non-reasoning`**: Fast for simple tasks, 2M context, low cost
+- **`grok-3-beta`**: Legacy - Most capable, balanced performance
+- **`grok-3-mini-beta`**: Legacy - Faster, cost-effective
+- **`grok-beta`**: Legacy - Original model
 
 Or set via environment variable:
 ```bash
-export GROK_MODEL=grok-3-mini-beta
+export GROK_MODEL=grok-4-fast-reasoning
 grok
 ```
 
@@ -105,7 +108,8 @@ grok
 ## 📚 Learn More
 
 - 📖 [Full Documentation](README.md)
-- 🏗️ [RPG Planning Guide](README.md#-rpg-repository-planning)
+- 🏗️ [Complete RPG Guide](RPG_GUIDE.md) - How RPG planning works
+- 📁 [RPG Examples](examples/) - Sample project plans
 - 🤝 [Contributing](README.md#-contributing)
 - 🐛 [Issues](https://github.com/NYTEMODEONLY/grok-code/issues)
 

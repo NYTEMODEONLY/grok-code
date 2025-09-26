@@ -367,6 +367,23 @@ if (shouldUseRPG) {
 3. **Consider Dependencies**: Think about how components interact
 4. **Plan for Scale**: Design for future extension
 
+### Recommended Models for RPG
+
+- **Planning Phase**: Use `grok-4-fast-reasoning` - Excellent reasoning capabilities with 2M context for complex architecture planning
+- **Code Generation**: Use `grok-code-fast-1` - Optimized specifically for coding tasks and implementation
+- **Large Projects**: Use `grok-4-fast-non-reasoning` - 2M context window handles large codebases efficiently
+
+**Model Switching During RPG:**
+```bash
+# Start with reasoning model for planning
+/model
+# Select: grok-4-fast-reasoning
+
+# Then switch to coding model for implementation
+/model
+# Select: grok-code-fast-1
+```
+
 ### Reviewing Generated Plans
 
 Always review the RPG plan output:
@@ -395,11 +412,14 @@ RPG Plan Generated: {
 # Force RPG mode for all prompts
 export GROK_FORCE_RPG=true
 
-# Custom model for RPG planning
-export GROK_RPG_MODEL=grok-3-beta
+# Custom model for RPG planning (recommended: grok-4-fast-reasoning)
+export GROK_RPG_MODEL=grok-4-fast-reasoning
 
 # Disable RPG fallback
 export GROK_NO_RPG_FALLBACK=true
+
+# Set default model for all interactions
+export GROK_MODEL=grok-code-fast-1
 ```
 
 ### Custom RPG Triggers

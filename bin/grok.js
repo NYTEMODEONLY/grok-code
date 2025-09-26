@@ -149,7 +149,7 @@ async function main() {
   });
 
   // Model configuration
-  let model = process.env.GROK_MODEL || 'grok-3-beta'; // Default to grok-3-beta
+  let model = process.env.GROK_MODEL || 'grok-code-fast-1'; // Default to grok-code-fast-1 (optimized for coding)
   if (fs.existsSync(modelFile)) {
     const savedModel = fs.readFileSync(modelFile, 'utf8').trim();
     if (savedModel) {
@@ -314,9 +314,12 @@ async function handleCommand(input, messages, fileContext, client, model) {
     return true;
   } else if (input === '/model') {
     const availableModels = [
-      'grok-3-beta',      // Most capable, balanced speed/cost
-      'grok-3-mini-beta', // Faster, lower cost
-      'grok-beta'         // Legacy model
+      'grok-code-fast-1',        // Optimized for coding, fast & cost-effective (default)
+      'grok-4-fast-reasoning',   // Best for complex reasoning (RPG planning), 2M context
+      'grok-4-fast-non-reasoning', // Fast for simple tasks, 2M context
+      'grok-3-beta',             // Legacy: Most capable, balanced performance
+      'grok-3-mini-beta',        // Legacy: Faster, lower cost
+      'grok-beta'                // Legacy: Original model
     ];
 
     const modelAnswers = await inquirer.prompt([
@@ -347,7 +350,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
 - /remove <file>: Remove file from context
 - /scan: Scan and add all files to context
 - /ls: List files in directory
-- /model: Change AI model (grok-3-beta, grok-3-mini-beta, grok-beta)
+- /model: Change AI model (grok-code-fast-1, grok-4-fast-reasoning, grok-4-fast-non-reasoning, etc.)
 - /run <cmd>: Run shell command
 - /git <command>: Run git command (e.g., /git status)
 - /init-git: Initialize git repo

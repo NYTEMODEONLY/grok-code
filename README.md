@@ -35,30 +35,36 @@
 
 **Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
 
-### How RPG Works
+### 📖 [Complete RPG Guide](RPG_GUIDE.md)
 
-1. **📋 Planning Phase**: Grok analyzes your request and creates a structured JSON plan with:
-   - **Features**: High-level functionalities (e.g., `data_processing`, `model_training`)
-   - **Files**: Feature-to-file mappings (e.g., `data_processing` → `src/data.js`)
-   - **Data Flows**: How features interact (e.g., data → processing → output)
-   - **Dependencies**: File relationships and imports
+For comprehensive documentation on how RPG works, including:
+- Detailed technical workflow and algorithms
+- JSON plan structure specifications
+- Best practices for effective planning
+- Advanced configuration options
+- Real-world examples and use cases
 
-2. **🗂️ Graph Construction**: Builds a dependency graph with nodes (features/files) and edges (flows/dependencies)
+### Quick RPG Overview
 
+1. **📋 Planning Phase**: Grok analyzes your request and creates a structured JSON plan
+2. **🗂️ Graph Construction**: Builds a dependency graph with features and relationships
 3. **⚙️ Guided Generation**: Uses the plan to generate modular, well-structured code
-
-4. **💾 Direct Output**: Writes files directly to your filesystem with proper organization
+4. **💾 Direct Output**: Writes files directly to your filesystem
 
 ### When RPG Activates
 
 RPG planning automatically triggers for prompts containing:
-- `"generate repo"`
-- `"build a"`
-- `"create a"`
-- `"implement a"`
-- `"develop a"`
+- `"generate repo"`, `"build a"`, `"create a"`
+- `"implement a"`, `"develop a"`
 
 **Example**: `"Build a simple ML library in JavaScript"` → RPG generates `src/data.js`, `src/model.js`, etc.
+
+### 📁 [RPG Examples](examples/)
+
+Browse [example RPG plans](examples/rpg-plans/) for different project types:
+- [Machine Learning Library](examples/rpg-plans/ml-library.json)
+- [REST API](examples/rpg-plans/rest-api.json)
+- [CLI Tool](examples/rpg-plans/cli-tool.json)
 
 ---
 
@@ -108,9 +114,12 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
   - `GROK.md`: Project-specific guidelines and commands
   - Secure API key management with local storage
   - **Model Selection**: Choose from multiple Grok models via `/model` command:
-    - `grok-3-beta`: Most capable model (default)
-    - `grok-3-mini-beta`: Faster, cost-effective
-    - `grok-beta`: Legacy model
+    - `grok-code-fast-1`: **Default** - Optimized for coding, fast & cost-effective
+    - `grok-4-fast-reasoning`: Best for complex reasoning (RPG planning), 2M context
+    - `grok-4-fast-non-reasoning`: Fast for simple tasks, 2M context, low cost
+    - `grok-3-beta`: Legacy - Most capable, balanced performance
+    - `grok-3-mini-beta`: Legacy - Faster, lower cost
+    - `grok-beta`: Legacy - Original model
   - Environment variables: Set `GROK_MODEL` to override default
 
 - **🛡️ Security & Best Practices**:
@@ -281,10 +290,12 @@ Output: olleh
   ```
 
 ### ⚡ Performance Optimization
-- **Model Selection**: Use `/model` command to switch between models:
-  - `grok-3-beta`: Best quality (default)
-  - `grok-3-mini-beta`: Faster responses, lower cost
-  - `grok-beta`: Legacy option
+- **Model Selection**: Use `/model` command to choose the right model for your task:
+  - **Coding tasks**: `grok-code-fast-1` (default - optimized for code)
+  - **Complex reasoning/RPG**: `grok-4-fast-reasoning` (2M context, excellent reasoning)
+  - **Simple/fast tasks**: `grok-4-fast-non-reasoning` (2M context, low cost)
+  - **High quality**: `grok-3-beta` (legacy - most capable)
+  - **Speed/cost**: `grok-3-mini-beta` (legacy - fastest)
 - **Context Management**: Clear context with `/clear` for fresh sessions
 - **Selective Scanning**: Use `/add` instead of `/scan` for large codebases
 
