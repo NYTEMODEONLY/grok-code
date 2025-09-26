@@ -61,15 +61,15 @@
 
 ## 📋 Changelog
 
-### v1.7.0 - Complete IDE-like Terminal Experience (Phase 3 Complete!)
-- **🖼️ ASCII Art Diagram Generator**: Beautiful terminal visualizations of RPG plans and workflows
-- **📊 Multiple Diagram Types**: Flowchart, mind map, dependency graph, and statistical overview
-- **🎨 Customizable Styles**: Default, minimal, and fancy visual themes with emojis and symbols
-- **🧠 Intelligent Plan Detection**: Automatic extraction of RPG plans from conversation history
-- **⏳ Advanced Progress Tracking**: Real-time progress bars, ETA calculations, and operation analytics
-- **✅ Rich Confirmation Dialogs**: File previews, impact assessment, and safety confirmations
-- **🎯 Complete Workflow Visualization**: Progress tracking with visual indicators and interactive confirmations
-- **⚙️ Enhanced CLI Commands**: `/diagram`, `/progress`, `/confirm` for comprehensive terminal experience
+### v1.8.0 - Framework Detection Engine (Phase 4.1)
+- **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
+- **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 25+ more
+- **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
+- **📊 Confidence-Based Scoring**: High-accuracy detection with detailed confidence metrics
+- **🏗️ Project Structure Analysis**: Deep analysis of file organization and patterns
+- **💡 Smart Recommendations**: Framework suggestions based on detected languages and patterns
+- **📋 Detailed Reporting**: Comprehensive analysis reports with export capabilities
+- **⚙️ Enhanced CLI Commands**: `/framework detect|report|list` for intelligent project analysis
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
