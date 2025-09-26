@@ -103,7 +103,8 @@ lib/
 ├── visualization/   # ASCII art diagram generators
 │   └── workflow-diagram.js  # RPG plan visualization with multiple styles
 ├── frameworks/      # Framework detection and analysis
-│   └── detector.js         # Intelligent framework and language detection
+│   ├── detector.js         # Intelligent framework and language detection
+│   └── patterns.js         # Framework-specific patterns and conventions
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
