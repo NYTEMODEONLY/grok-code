@@ -111,7 +111,8 @@ lib/
 │   ├── team-patterns.js    # Learns team-specific patterns from interactions
 │   └── auto-applier.js     # Auto-applies learned conventions to code
 ├── structure/      # Project architecture analysis
-│   └── architecture-mapper.js  # Maps projects to architectural patterns
+│   ├── architecture-mapper.js  # Maps projects to architectural patterns
+│   └── flow-analyzer.js        # Analyzes application flows and entry points
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
