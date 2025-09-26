@@ -107,10 +107,10 @@ grok
 
 ## 📚 Learn More
 
-- 📖 [Full Documentation](README.md)
-- 🏗️ [Complete RPG Guide](RPG_GUIDE.md) - How RPG planning works
-- 📁 [RPG Examples](examples/) - Sample project plans
-- 🤝 [Contributing](README.md#-contributing)
+- 📖 [Full Documentation](https://github.com/NYTEMODEONLY/grok-code/blob/main/README.md)
+- 🏗️ [Complete RPG Guide](https://github.com/NYTEMODEONLY/grok-code/blob/main/RPG_GUIDE.md) - How RPG planning works
+- 📁 [RPG Examples](https://github.com/NYTEMODEONLY/grok-code/tree/main/examples) - Sample project plans
+- 🤝 [Contributing](https://github.com/NYTEMODEONLY/grok-code/blob/main/README.md#contributing)
 - 🐛 [Issues](https://github.com/NYTEMODEONLY/grok-code/issues)
 
 ---
