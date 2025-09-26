@@ -82,7 +82,8 @@ lib/
 ├── display/         # Visual terminal enhancements
 │   ├── syntax-highlighter.js # Multi-language syntax highlighting
 │   ├── diff-viewer.js        # Color-coded diff display and git integration
-│   └── progress-indicator.js # Progress indicators and status displays
+│   ├── progress-indicator.js # Progress indicators and status displays
+│   └── code-preview.js       # Enhanced code display with line numbers
 ├── interactive/     # Terminal UI components
 │   └── file-browser.js       # Interactive file navigation and selection
 └── utils/           # Infrastructure
@@ -163,6 +164,15 @@ lib/
 - **Syntax-Highlighted Previews**: Code preview with language detection and highlighting
 - **Context Integration**: Direct file addition to AI conversation memory
 - **Search Capabilities**: Pattern-based file discovery across directory trees
+
+### Enhanced Code Display
+
+- **Line Numbers & Gutter**: IDE-style line numbering with navigation markers
+- **Syntax Highlighting**: Multi-language code coloring with theme support
+- **Line Navigation**: Jump to specific lines with contextual display
+- **Search Highlighting**: Visual highlighting of search terms within code
+- **Code Annotations**: Inline comments and explanations for code sections
+- **File Metadata**: Size, type, and modification information display
 
 ## Git Workflow
 
