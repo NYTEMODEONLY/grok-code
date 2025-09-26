@@ -16,7 +16,7 @@
 
 ## ✨ Overview
 
-**Grok Code** is a revolutionary, terminal-based coding assistant powered by Grok AI from xAI. It elevates your command line into an intelligent coding environment with **Repository Planning Graph (RPG)** technology - a structured approach to software architecture that ensures modular, well-planned code generation.
+**Grok Code** is a personal, terminal-based coding assistant powered by Grok AI models from xAI. It elevates your command line into an intelligent coding environment with **Repository Planning Graph (RPG)** technology - a structured approach to software architecture that ensures modular, well-planned code generation.
 
 ### 🎯 What Makes Grok Code Special?
 
@@ -27,7 +27,7 @@
 - **🎨 Terminal-Native**: Designed for developers who live in the command line
 
 **Current Version:** 1.0.0 (Released: September 26, 2025)  
-**Built by:** nytemode  
+**Built by:** nytemode (Personal Project)  
 **License:** MIT  
 **Repository:** [NYTEMODEONLY/grok-code](https://github.com/NYTEMODEONLY/grok-code)  
 
@@ -157,6 +157,10 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 5. **Global Installation (Optional)**:
    ```bash
    npm install -g .
+   ```
+   Or install from npm (once published):
+   ```bash
+   npm install -g grok-code-cli
    ```
    Then use `grok` from anywhere.
 
@@ -331,10 +335,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **🤖 Powered by** [xAI's Grok](https://x.ai) - The foundation of intelligent assistance
+- **🤖 Powered by** [xAI's Grok](https://x.ai) models - The foundation of intelligent assistance
 - **📚 Inspired by** ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276) - Structured planning for better code generation
-- **👨‍💻 Built by** nytemode - Crafting the future of AI-powered development
-- **🌟 Community** - Every contributor and user making this tool better
+- **👨‍💻 Built by** nytemode - Personal project exploring AI-assisted development
+- **🌟 xAI Community** - For providing the amazing models that make this possible
+
+*This is a personal project and not officially affiliated with xAI.*
 
 ## 📞 Support & Community
 

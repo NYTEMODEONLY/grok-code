@@ -32,7 +32,7 @@ Grok Code is a revolutionary terminal-based coding assistant that combines the p
 ### 🚀 Quick Start
 
 ```bash
-npm install -g @xai/grok-code
+npm install -g grok-code-cli
 grok
 ```
 
@@ -117,7 +117,9 @@ grok
 
 <div align="center">
 
-**Built with ❤️ by nytemode | Powered by xAI**
+**Built with ❤️ by nytemode**
+
+*Personal project exploring AI-assisted development with xAI's Grok models*
 
 [⭐ Star this repo](https://github.com/NYTEMODEONLY/grok-code) • [🐛 Report Issues](https://github.com/NYTEMODEONLY/grok-code/issues) • [💬 Discussions](https://github.com/NYTEMODEONLY/grok-code/discussions)
 

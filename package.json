@@ -1,7 +1,7 @@
 {
-  "name": "@xai/grok-code",
+  "name": "grok-code-cli",
   "version": "1.0.0",
-  "description": "🚀 Grok Code: AI-powered CLI coding assistant with RPG planning and latest Grok models. Transform your terminal into an intelligent coding environment with grok-code-fast-1, grok-4-fast-reasoning, structured repository planning, and seamless code generation.",
+  "description": "🚀 Grok Code: Personal AI-powered CLI coding assistant with RPG planning. Transform your terminal into an intelligent coding environment with structured repository planning and seamless code generation.",
   "main": "index.js",
   "bin": {
     "grok": "./bin/grok.js"
@@ -18,11 +18,11 @@
     "child_process": "^1.0.2",
     "xml2js": "^0.6.2"
   },
-  "keywords": ["cli", "ai", "coding", "xai", "grok"],
-  "author": "xAI",
+  "keywords": ["cli", "ai", "coding", "grok", "rpg-planning"],
+  "author": "nytemodeonly",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xai-org/grok-code.git"
+    "url": "https://github.com/NYTEMODEONLY/grok-code.git"
   }
 }
