@@ -18,13 +18,17 @@ examples/
 Each RPG plan is a JSON object with four key components:
 
 ### Features
+
 High-level functionalities that define what the system does:
+
 ```json
 "features": ["data_loading", "model_training", "prediction"]
 ```
 
 ### Files
+
 Mapping between features and their implementation files:
+
 ```json
 "files": {
   "data_loading": "src/data.js",
@@ -33,7 +37,9 @@ Mapping between features and their implementation files:
 ```
 
 ### Flows
+
 Data flow relationships showing how features interact:
+
 ```json
 "flows": [
   ["data_loading", "model_training"],
@@ -42,7 +48,9 @@ Data flow relationships showing how features interact:
 ```
 
 ### Dependencies
+
 File-level import relationships:
+
 ```json
 "deps": [
   ["data.js", "model.js"],

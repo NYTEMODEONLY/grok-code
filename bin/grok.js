@@ -9,10 +9,6 @@ import OpenAI from 'openai';
 import ora from 'ora';
 import xml2js from 'xml2js';
 import https from 'https';
-import os from 'os';
-import { promisify } from 'util';
-import stream from 'stream';
-const pipeline = promisify(stream.pipeline);
 
 /**
  * Error Logging System
@@ -265,7 +261,7 @@ function loadCommandHistory() {
       const history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
       return history.commands || [];
     }
-  } catch (e) {
+  } catch (_e) {
     // If history file is corrupted, start fresh
   }
   return [];
@@ -275,9 +271,191 @@ function saveCommandHistory(commands) {
   const historyPath = getWorkspaceHistoryPath();
   try {
     fs.writeFileSync(historyPath, JSON.stringify({ commands }, null, 2));
-  } catch (e) {
+  } catch (_e) {
     // Silently fail if we can't save history
   }
+}
+
+// Conversation Memory Functions
+function getConversationPath() {
+  const currentDir = process.cwd();
+  const grokDir = path.join(currentDir, '.grok');
+  fs.ensureDirSync(grokDir);
+  return path.join(grokDir, 'conversation.json');
+}
+
+// Action History Functions for Undo/Redo
+function getActionHistoryPath() {
+  const currentDir = process.cwd();
+  const grokDir = path.join(currentDir, '.grok');
+  fs.ensureDirSync(grokDir);
+  return path.join(grokDir, 'action-history.json');
+}
+
+function loadActionHistory() {
+  const historyPath = getActionHistoryPath();
+  try {
+    if (fs.existsSync(historyPath)) {
+      const history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+      return history.actions || [];
+    }
+  } catch (_e) {
+    // If history file is corrupted, start fresh
+  }
+  return [];
+}
+
+function saveActionHistory(actions) {
+  const historyPath = getActionHistoryPath();
+  try {
+    // Keep only last 20 actions to prevent file from growing too large
+    const recentActions = actions.slice(-20);
+    fs.writeFileSync(
+      historyPath,
+      JSON.stringify(
+        {
+          actions: recentActions,
+          lastUpdated: new Date().toISOString(),
+        },
+        null,
+        2
+      )
+    );
+  } catch (_e) {
+    // Silently fail if we can't save history
+  }
+}
+
+function recordAction(action) {
+  const actions = loadActionHistory();
+  actions.push({
+    ...action,
+    timestamp: new Date().toISOString(),
+    id: Date.now(),
+  });
+  saveActionHistory(actions);
+}
+
+function undoLastAction() {
+  const actions = loadActionHistory();
+  if (actions.length === 0) {
+    return { success: false, message: 'No actions to undo.' };
+  }
+
+  const lastAction = actions.pop();
+  let result = { success: true, message: 'Action undone successfully.' };
+
+  try {
+    switch (lastAction.type) {
+      case 'file_edit':
+        // Restore original content
+        if (lastAction.originalContent !== undefined) {
+          fs.writeFileSync(lastAction.filepath, lastAction.originalContent);
+        } else if (fs.existsSync(lastAction.filepath)) {
+          fs.unlinkSync(lastAction.filepath); // File was created, so delete it
+        }
+        break;
+      case 'file_delete':
+        // Restore deleted file
+        if (lastAction.originalContent) {
+          fs.writeFileSync(lastAction.filepath, lastAction.originalContent);
+        }
+        break;
+      default:
+        result = {
+          success: false,
+          message: `Cannot undo action type: ${lastAction.type}`,
+        };
+    }
+
+    if (result.success) {
+      saveActionHistory(actions); // Save updated history
+    }
+  } catch (error) {
+    result = {
+      success: false,
+      message: `Failed to undo action: ${error.message}`,
+    };
+  }
+
+  return result;
+}
+
+function loadConversationHistory() {
+  const conversationPath = getConversationPath();
+  try {
+    if (fs.existsSync(conversationPath)) {
+      const conversation = JSON.parse(
+        fs.readFileSync(conversationPath, 'utf8')
+      );
+      return conversation.messages || [];
+    }
+  } catch (_e) {
+    // If conversation file is corrupted, start fresh
+  }
+  return [];
+}
+
+function saveConversationHistory(messages) {
+  const conversationPath = getConversationPath();
+  try {
+    // Only save non-system messages to avoid bloating the file
+    const conversationMessages = messages.filter(
+      (msg) => msg.role !== 'system'
+    );
+    // Limit to last 50 messages to prevent file from growing too large
+    const recentMessages = conversationMessages.slice(-50);
+    fs.writeFileSync(
+      conversationPath,
+      JSON.stringify(
+        {
+          messages: recentMessages,
+          lastUpdated: new Date().toISOString(),
+        },
+        null,
+        2
+      )
+    );
+  } catch (_e) {
+    // Silently fail if we can't save conversation
+  }
+}
+
+// Context Window Management
+function manageContextWindow(messages, maxTokens = 8000) {
+  // Keep system message always
+  const systemMessage = messages.find((msg) => msg.role === 'system');
+  const conversationMessages = messages.filter((msg) => msg.role !== 'system');
+
+  // Rough token estimation: ~4 characters per token
+  const estimatedTokens = conversationMessages.reduce((total, msg) => {
+    return total + msg.content.length / 4;
+  }, 0);
+
+  // If under limit, return as-is
+  if (estimatedTokens < maxTokens) {
+    return messages;
+  }
+
+  console.log(
+    `📏 Compressing context (${Math.round(estimatedTokens)} tokens → ${maxTokens})`
+  );
+
+  // Keep recent messages and summarize older ones
+  const recentMessages = conversationMessages.slice(-10); // Keep last 10 messages
+  const olderMessages = conversationMessages.slice(0, -10);
+
+  if (olderMessages.length > 0) {
+    // Create a summary of older conversation
+    const summaryMessage = {
+      role: 'system',
+      content: `Previous conversation summary: ${olderMessages.length} messages exchanged. Key topics included coding assistance and file operations.`,
+    };
+
+    return [systemMessage, summaryMessage, ...recentMessages].filter(Boolean);
+  }
+
+  return [systemMessage, ...recentMessages].filter(Boolean);
 }
 
 function addToHistory(command, history) {
@@ -359,35 +537,7 @@ Keep it concise and modular.
             throw new Error('Plan missing required "deps" array');
           }
 
-          // Build simple graph as JSON (nodes + edges)
-          const graph = {
-            nodes: [
-              ...plan.features.map((f) => ({ id: f, type: 'feature' })),
-              ...Object.entries(plan.files).map(([f, file]) => ({
-                id: file,
-                type: 'file',
-              })),
-            ],
-            edges: [
-              ...Object.entries(plan.files).map(([f, file]) => ({
-                from: f,
-                to: file,
-                type: 'implements',
-              })),
-              ...plan.flows.map(([src, dst]) => ({
-                from: src,
-                to: dst,
-                type: 'data_flow',
-              })),
-              ...plan.deps.map(([src, dst]) => ({
-                from: src,
-                to: dst,
-                type: 'depends',
-              })),
-            ],
-          };
-
-          resolve({ graph, plan });
+          resolve({ plan });
         } catch (e) {
           logger.error('Failed to parse RPG planning response', e, {
             rawResponse:
@@ -434,7 +584,6 @@ async function generateCodeWithRPG(prompt, openai, model, fileContext = {}) {
 
     const rpg = await makeRPG(prompt, openai, model, existingFiles);
     const plan = rpg.plan;
-    const graph = rpg.graph;
     planSpinner.succeed('📋 Project structure planned');
 
     logger.info('RPG plan generated', {
@@ -687,6 +836,11 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   let messages = [{ role: 'system', content: systemPrompt }];
   let fileContext = {};
 
+  // Append previous conversation history to maintain memory
+  if (conversationHistory.length > 0) {
+    messages.push(...conversationHistory);
+  }
+
   // Automatic codebase scanning on start
   const essentialFiles = ['package.json', 'README.md', 'GROK.md'];
   essentialFiles.forEach((f) => {
@@ -728,6 +882,14 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Load command history for this workspace
   let commandHistory = loadCommandHistory();
 
+  // Load conversation history for persistent memory
+  let conversationHistory = loadConversationHistory();
+  if (conversationHistory.length > 0) {
+    console.log(
+      `💬 Loaded ${conversationHistory.length} previous conversation messages.\n`
+    );
+  }
+
   console.log(
     "Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n"
   );
@@ -753,24 +915,34 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         process.exit(0);
       }
 
+      // Always add user message to conversation memory first
+      messages.push({ role: 'user', content: trimmedInput });
+
+      // Update command history
+      commandHistory = addToHistory(trimmedInput, commandHistory);
+      saveCommandHistory(commandHistory);
+
       // Handle commands
       const handled = await handleCommand(
         trimmedInput,
         messages,
         fileContext,
         client,
-        model
+        model,
+        currentDir,
+        systemPrompt,
+        modelFile
       );
       if (handled) {
-        // Update history
-        commandHistory = addToHistory(trimmedInput, commandHistory);
-        saveCommandHistory(commandHistory);
+        // For commands, add a brief assistant acknowledgment to maintain conversation flow
+        messages.push({
+          role: 'assistant',
+          content: `Command executed: ${trimmedInput}`,
+        });
+        // Save conversation after command execution
+        saveConversationHistory(messages);
         continue;
       }
-
-      // Add to history
-      commandHistory = addToHistory(trimmedInput, commandHistory);
-      saveCommandHistory(commandHistory);
 
       // RPG check
       const shouldUseRPG =
@@ -814,15 +986,28 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
           existingFiles: Object.keys(fileContext),
         });
         try {
-          await generateCodeWithRPG(trimmedInput, client, model, fileContext);
-        } catch (error) {
-          // fallback
+          const result = await generateCodeWithRPG(
+            trimmedInput,
+            client,
+            model,
+            fileContext
+          );
+          // Add RPG result to conversation memory
+          const rpgResponse = `RPG planning completed. Generated ${Object.keys(result.files || {}).length} files successfully.`;
+          messages.push({ role: 'assistant', content: rpgResponse });
+          // Save conversation after RPG interaction
+          saveConversationHistory(messages);
+        } catch (_error) {
+          const errorResponse =
+            'RPG code generation failed. Please try again or use regular chat mode.';
+          messages.push({ role: 'assistant', content: errorResponse });
+          // Save conversation after RPG error
+          saveConversationHistory(messages);
         }
         continue;
       }
 
-      // Regular chat
-      messages.push({ role: 'user', content: trimmedInput });
+      // Regular chat continues below...
 
       if (Object.keys(fileContext).length > 0) {
         const contextStr = Object.entries(fileContext)
@@ -833,6 +1018,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
           content: `Current file context:\n${contextStr}`,
         });
       }
+
+      // Manage context window before API call
+      messages = manageContextWindow(messages);
 
       const spinner = ora('Thinking').start();
 
@@ -862,6 +1050,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
         messages.push({ role: 'assistant', content: grokResponse });
 
+        // Save conversation after each interaction
+        saveConversationHistory(messages);
+
         if (Object.keys(fileContext).length > 0) {
           messages.splice(messages.length - 2, 1); // Remove temp context
         }
@@ -890,7 +1081,16 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 }
 
-async function handleCommand(input, messages, fileContext, client, model) {
+async function handleCommand(
+  input,
+  messages,
+  fileContext,
+  client,
+  model,
+  currentDir,
+  systemPrompt,
+  modelFile
+) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
     if (fs.existsSync(filename)) {
@@ -985,11 +1185,14 @@ async function handleCommand(input, messages, fileContext, client, model) {
 - /pr <title>: Create a pull request (requires gh CLI)
 - /logs: View recent error logs
 - /clear: Clear conversation history
+- /undo: Undo the last file operation
 - exit or /exit: Quit
 - Custom: /<custom_name> for user-defined in .grok/commands/
 
 🔧 Workspace Features:
 - Command history: Shows your last 3 commands at each prompt
+- Conversation memory: Remembers your conversation across sessions
+- Action history: Tracks file operations for undo capability
 - Auto-update check: Notifies you of new versions on startup
 - Error logging: Automatic logging to .grok/error.log
 - Smart code generation: Automatically detects requests like "build", "add", "update", "make", etc. and generates code
@@ -1097,7 +1300,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
             if (entry.error) {
               console.log(`   Error: ${entry.error.message}`);
             }
-          } catch (parseError) {
+          } catch (_parseError) {
             console.log(`${index + 1}. ${line}`);
           }
         });
@@ -1119,6 +1322,19 @@ async function handleCommand(input, messages, fileContext, client, model) {
     console.log(
       "Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n"
     );
+    return true;
+  } else if (input === '/undo') {
+    const result = undoLastAction();
+    if (result.success) {
+      console.log(`✅ ${result.message}`);
+      // Add undo action to conversation memory
+      messages.push({ role: 'assistant', content: result.message });
+      saveConversationHistory(messages);
+    } else {
+      console.log(`❌ ${result.message}`);
+      messages.push({ role: 'assistant', content: result.message });
+      saveConversationHistory(messages);
+    }
     return true;
   } else if (input === '/update' || input.toLowerCase() === 'update') {
     console.log('Checking for updates...');
@@ -1303,6 +1519,17 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
         logger.debug('Applying file edit', { filename });
 
         try {
+          // Record action for undo capability
+          const originalContent = fs.existsSync(filename)
+            ? fs.readFileSync(filename, 'utf8')
+            : undefined;
+          recordAction({
+            type: 'file_edit',
+            filepath: filename,
+            originalContent,
+            newContent: content,
+          });
+
           fs.ensureDirSync(path.dirname(filename));
           fs.writeFileSync(filename, content);
           console.log(`✅ Saved ${filename}.`);
@@ -1333,6 +1560,14 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
 
         if (fs.existsSync(filename)) {
           try {
+            // Record action for undo capability
+            const originalContent = fs.readFileSync(filename, 'utf8');
+            recordAction({
+              type: 'file_delete',
+              filepath: filename,
+              originalContent,
+            });
+
             fs.unlinkSync(filename);
             console.log(`🗑️  Deleted ${filename}.`);
             delete fileContext[filename];

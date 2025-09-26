@@ -22,27 +22,28 @@
 
 - **🤖 AI-First Architecture**: Natural language prompts for any coding task
 - **📊 RPG Planning**: Inspired by ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276) - structured planning before code generation
+- **🧠 Memory System**: Remembers conversations across sessions with undo/redo
 - **🔄 Stateful & Agentic**: Maintains context, plans ahead, and iterates autonomously
 - **⚡ Full-Stack Ready**: From simple scripts to deploy-ready Next.js apps
 - **🎨 Terminal-Native**: Designed for developers who live in the command line
 
-**Current Version:** 1.0.0 (Released: September 26, 2025)  
-**Built by:** nytemode (Personal Project)  
-**License:** MIT  
-**Repository:** [NYTEMODEONLY/grok-code](https://github.com/NYTEMODEONLY/grok-code)  
+**Current Version:** 1.1.0 (Updated: September 26, 2025)
+**Built by:** nytemode (Personal Project)
+**License:** MIT
+**Repository:** [NYTEMODEONLY/grok-code](https://github.com/NYTEMODEONLY/grok-code)
 
 ## 🏗️ RPG Repository Planning
 
 **Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
 
-### 📖 [Complete RPG Guide](RPG_GUIDE.md)
+### 📖 RPG Technical Details
 
-For comprehensive documentation on how RPG works, including:
-- Detailed technical workflow and algorithms
-- JSON plan structure specifications
-- Best practices for effective planning
-- Advanced configuration options
-- Real-world examples and use cases
+RPG planning works by analyzing your request and creating a structured JSON plan with:
+
+- **Features**: High-level functionalities to implement
+- **Files**: Feature-to-file mapping for modular code generation
+- **Flows**: Data flow relationships between features
+- **Dependencies**: File dependency relationships
 
 ### Quick RPG Overview
 
@@ -54,6 +55,7 @@ For comprehensive documentation on how RPG works, including:
 ### When RPG Activates
 
 RPG planning automatically triggers for prompts containing:
+
 - `"generate repo"`, `"build a"`, `"create a"`
 - `"implement a"`, `"develop a"`
 
@@ -62,6 +64,7 @@ RPG planning automatically triggers for prompts containing:
 ### 📁 [RPG Examples](examples/)
 
 Browse [example RPG plans](examples/rpg-plans/) for different project types:
+
 - [Machine Learning Library](examples/rpg-plans/ml-library.json)
 - [REST API](examples/rpg-plans/rest-api.json)
 - [CLI Tool](examples/rpg-plans/cli-tool.json)
@@ -78,7 +81,6 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **RPG Planning Integration**: Structured repository planning for complex projects
 - **Step-by-Step Reasoning**: Grok thinks ahead, plans, and iterates on solutions
 - **Multi-Paradigm Support**: Scripts, libraries, web apps, APIs, and more
-  
 - **🗂️ Multi-File Management**:
   - Create, edit, or delete multiple files simultaneously using XML tags
   - Automatic directory creation for complex project structures
@@ -98,6 +100,12 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
   - Define reusable prompts in `.grok/commands/<cmd_name>.txt`
   - Team-shared commands for project consistency
   - Example: `/lint` → "Run ESLint on all JS files"
+
+- **🧠 Memory & History System**:
+  - Conversation persistence across CLI sessions
+  - Action history with undo/redo functionality (`/undo`)
+  - Context window management for long conversations
+  - Automatic conversation compression and summarization
 
 - **🖥️ Environment Awareness**:
   - Cross-platform support (Windows, macOS, Linux)
@@ -134,24 +142,30 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
    - xAI API key (get from [x.ai/api](https://x.ai/api)).
 
 2. **Clone the Repo**:
+
    ```bash
    git clone https://github.com/xai-org/grok-code.git
    cd grok-code
    ```
 
 3. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 4. **Run the CLI**:
+
    ```bash
    npm start
    ```
+
    or
+
    ```bash
    ./bin/grok.js
    ```
+
    - On first launch, enter your xAI API key (saved securely in `~/.grok/api_key`).
 
 5. **Global Installation (Optional)**:
@@ -179,6 +193,7 @@ npm start
 ```
 
 Or install globally for system-wide access:
+
 ```bash
 npm install -g @xai/grok-code
 grok
@@ -187,6 +202,7 @@ grok
 ### 💡 Usage Examples
 
 #### 🏗️ RPG Planning (Recommended for Complex Projects)
+
 ```bash
 # Automatic RPG activation
 "Build a simple ML library in JavaScript"
@@ -196,6 +212,7 @@ grok
 ```
 
 #### 🤖 Regular AI Chat
+
 ```bash
 # General coding assistance
 "Write a function to validate email addresses"
@@ -204,6 +221,7 @@ grok
 ```
 
 #### 🔧 Workflow Commands
+
 ```bash
 # Model selection
 "/model"                       # Change AI model (interactive menu)
@@ -218,15 +236,20 @@ grok
 "/scan"                        # Scan all files
 "/ls"                          # List directory
 
+# Memory & history
+"/undo"                        # Undo the last file operation
+"/clear"                       # Clear conversation history
+
 # Custom commands
 "/test"                        # Run tests (if defined)
 ```
 
-Exit anytime with `exit` or `/exit`. Clear session with `/clear`.
+Exit anytime with `exit` or `/exit`. Conversations are automatically saved and restored between sessions.
 
 ### 📋 Example Sessions
 
 #### 🏗️ RPG Planning Example
+
 ```bash
 Welcome to Grok Code! Type your message or use /help for commands.
 
@@ -248,7 +271,8 @@ Repository generation completed!
 ```
 
 #### 🤖 Regular Chat Example
-```bash
+
+````bash
 You: Create a function to reverse a string in JavaScript
 
 Grok: Here's a simple function to reverse a string:
@@ -257,12 +281,13 @@ Grok: Here's a simple function to reverse a string:
 function reverseString(str) {
   return str.split('').reverse().join('');
 }
-```
+````
 
 You: /run node -e "console.log(reverseString('hello'))"
 [Command executed: node -e "console.log(reverseString('hello'))"]
 Output: olleh
-```
+
+````
 
 ## 💡 Best Practices & Tips
 
@@ -285,7 +310,7 @@ Output: olleh
   - Build: npm run build
   - Test: npm test
   - Architecture: Feature-based folder structure
-  ```
+````
 
 - **Custom Commands**: Create reusable workflows:
   ```bash
@@ -294,6 +319,7 @@ Output: olleh
   ```
 
 ### ⚡ Performance Optimization
+
 - **Model Selection**: Use `/model` command to choose the right model for your task:
   - **Coding tasks**: `grok-code-fast-1` (default - optimized for code)
   - **Complex reasoning/RPG**: `grok-4-fast-reasoning` (2M context, excellent reasoning)
@@ -340,7 +366,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **👨‍💻 Built by** nytemode - Personal project exploring AI-assisted development
 - **🌟 xAI Community** - For providing the amazing models that make this possible
 
-*This is a personal project and not officially affiliated with xAI.*
+_This is a personal project and not officially affiliated with xAI._
 
 ## 📞 Support & Community
 
@@ -357,6 +383,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 [Get Started](#-quick-start) • [RPG Planning](#-rpg-repository-planning) • [Contribute](#-contributing)
 
-*Made with ❤️ by the AI coding community*
+_Made with ❤️ by the AI coding community_
 
-</div> 
+</div>
