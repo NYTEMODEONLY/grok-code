@@ -9,6 +9,10 @@ import OpenAI from 'openai';
 import ora from 'ora';
 import xml2js from 'xml2js';
 import https from 'https';
+import os from 'os';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 /**
  * Error Logging System
@@ -177,7 +181,12 @@ async function checkForUpdates() {
           }
 
           const latestVersion = release.tag_name.replace(/^v/, '');
-          const currentVersion = require('../package.json').version;
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = dirname(__filename);
+          const packageJson = JSON.parse(
+            readFileSync(path.join(__dirname, '../package.json'), 'utf8')
+          );
+          const currentVersion = packageJson.version;
           resolve({
             hasUpdate: latestVersion !== currentVersion,
             currentVersion,
@@ -201,7 +210,7 @@ async function checkForUpdates() {
 async function performUpdate(downloadUrl) {
   const spinner = ora('Downloading update...').start();
   try {
-    const tempDir = path.join(require('os').tmpdir(), 'grok-update');
+    const tempDir = path.join(os.tmpdir(), 'grok-update');
     fs.ensureDirSync(tempDir);
 
     const zipPath = path.join(tempDir, 'update.zip');
