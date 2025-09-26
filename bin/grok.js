@@ -34,6 +34,7 @@ import { WorkflowDiagram } from '../lib/visualization/workflow-diagram.js';
 import { ProgressTracker } from '../lib/visualization/progress-tracker.js';
 import { ConfirmDialog } from '../lib/interactive/confirm-dialog.js';
 import { FrameworkDetector } from '../lib/frameworks/detector.js';
+import { FrameworkPatterns } from '../lib/frameworks/patterns.js';
 
 /**
  * Error Logging System
@@ -1114,6 +1115,17 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     frameworkDetector = null;
   }
 
+  // Initialize framework patterns knowledge base
+  let frameworkPatterns;
+  try {
+    frameworkPatterns = new FrameworkPatterns();
+    logger.info('Framework patterns knowledge base initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize framework patterns system', { error: error.message });
+    console.log('⚠️  Warning: Framework pattern analysis may not work properly');
+    frameworkPatterns = null;
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1248,7 +1260,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         currentDir,
         systemPrompt,
         modelFile,
-        frameworkDetector
+        frameworkDetector,
+        frameworkPatterns
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1486,7 +1499,8 @@ async function handleCommand(
   currentDir,
   systemPrompt,
   modelFile,
-  frameworkDetector
+  frameworkDetector,
+  frameworkPatterns
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -1897,7 +1911,7 @@ async function handleCommand(
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
-- /framework <detect|report|list>: Framework and technology detection system
+- /framework <detect|patterns|analyze>: Framework and technology detection system
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -3523,16 +3537,147 @@ async function handleCommand(
         names.forEach(name => console.log(`  • ${name}`));
         console.log('');
       });
+    } else if (subcommand === 'patterns') {
+      const frameworkArg = args[0];
+      if (!frameworkArg) {
+        console.log('❌ Please specify a framework. Use /framework list to see available frameworks.');
+        return true;
+      }
+
+      if (!frameworkPatterns) {
+        console.log('❌ Framework patterns system not available.');
+        return true;
+      }
+
+      const patterns = frameworkPatterns.getFrameworkPatterns(frameworkArg);
+      if (!patterns) {
+        console.log(`❌ Framework '${frameworkArg}' not found. Use /framework list to see available frameworks.`);
+        return true;
+      }
+
+      console.log(`📋 Patterns and Conventions for ${patterns.name}\n`);
+
+      // Show patterns by category
+      for (const [categoryName, category] of Object.entries(patterns.patterns)) {
+        console.log(`${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Patterns:`);
+        for (const [patternName, pattern] of Object.entries(category)) {
+          console.log(`  • ${patternName}: ${pattern.description}`);
+        }
+        console.log('');
+      }
+
+      // Show conventions
+      if (patterns.conventions) {
+        console.log('General Conventions:');
+        for (const [conventionType, conventionList] of Object.entries(patterns.conventions)) {
+          console.log(`  ${conventionType.charAt(0).toUpperCase() + conventionType.slice(1)}:`);
+          conventionList.forEach(convention => {
+            console.log(`    • ${convention}`);
+          });
+        }
+        console.log('');
+      }
+
+      // Show anti-patterns
+      if (patterns.antiPatterns && patterns.antiPatterns.length > 0) {
+        console.log('Anti-patterns to Avoid:');
+        patterns.antiPatterns.forEach(antiPattern => {
+          console.log(`  • ${antiPattern}`);
+        });
+        console.log('');
+      }
+    } else if (subcommand === 'analyze') {
+      const filePath = args[0];
+      if (!filePath) {
+        console.log('❌ Please specify a file path to analyze.');
+        return true;
+      }
+
+      if (!frameworkPatterns || !frameworkDetector) {
+        console.log('❌ Framework analysis systems not available.');
+        return true;
+      }
+
+      try {
+        // Read file content
+        const content = fs.readFileSync(filePath, 'utf8');
+
+        // Detect frameworks first
+        const detectionResults = await frameworkDetector.detectFrameworks();
+        const detectedFrameworks = detectionResults.frameworks.map(f => f.name.toLowerCase());
+
+        if (detectedFrameworks.length === 0) {
+          console.log('🤔 No frameworks detected in project. Analyzing with general patterns...');
+        }
+
+        console.log(`🔬 Analyzing patterns in ${filePath}\n`);
+
+        // Find matching patterns
+        const matches = frameworkPatterns.findMatchingPatterns(content);
+
+        if (matches.length === 0) {
+          console.log('📝 No specific framework patterns detected in this file.');
+          console.log('The file may contain general programming patterns or custom code.');
+        } else {
+          console.log('🎯 Detected Patterns:');
+          matches.forEach(match => {
+            console.log(`  ${match.framework.toUpperCase()}: ${match.pattern} - ${match.description}`);
+          });
+          console.log('');
+
+          // Get suggestions
+          const suggestions = frameworkPatterns.suggestImprovements(matches, detectedFrameworks[0]);
+          if (suggestions.length > 0) {
+            console.log('💡 Improvement Suggestions:');
+            suggestions.forEach(suggestion => {
+              console.log(`  • ${suggestion.message}`);
+            });
+          }
+        }
+
+      } catch (error) {
+        console.log(`❌ Failed to analyze file: ${error.message}`);
+      }
+    } else if (subcommand === 'conventions') {
+      const frameworkArg = args[0];
+      if (!frameworkArg) {
+        console.log('❌ Please specify a framework. Use /framework list to see available frameworks.');
+        return true;
+      }
+
+      if (!frameworkPatterns) {
+        console.log('❌ Framework patterns system not available.');
+        return true;
+      }
+
+      const conventions = frameworkPatterns.getFrameworkConventions(frameworkArg);
+      if (!conventions) {
+        console.log(`❌ Framework '${frameworkArg}' not found. Use /framework list to see available frameworks.`);
+        return true;
+      }
+
+      console.log(`📏 Conventions for ${frameworkArg.charAt(0).toUpperCase() + frameworkArg.slice(1)}\n`);
+
+      for (const [conventionType, conventionList] of Object.entries(conventions)) {
+        console.log(`${conventionType.charAt(0).toUpperCase() + conventionType.slice(1)}:`);
+        conventionList.forEach(convention => {
+          console.log(`  • ${convention}`);
+        });
+        console.log('');
+      }
     } else if (subcommand === 'help') {
       console.log('🔍 Framework Detection Help');
       console.log('═'.repeat(27));
       console.log('Analyze project structure and dependencies to detect frameworks.\n');
       console.log('Commands:');
-      console.log('  /framework detect     - Scan project and detect frameworks');
-      console.log('  /framework report     - Generate detailed analysis report');
-      console.log('  /framework export [f] - Export results (json/markdown)');
-      console.log('  /framework list [cat] - List supported frameworks');
-      console.log('  /framework help       - Show this help');
+      console.log('  /framework detect        - Scan project and detect frameworks');
+      console.log('  /framework report        - Generate detailed analysis report');
+      console.log('  /framework patterns <fw> - Show patterns for a specific framework');
+      console.log('  /framework analyze <file>- Analyze patterns in a specific file');
+      console.log('  /framework conventions <fw> - Show conventions for a framework');
+      console.log('  /framework export [f]    - Export results (json/markdown)');
+      console.log('  /framework list [cat]    - List supported frameworks');
+      console.log('  /framework help          - Show this help');
       console.log('\nSupported Categories:');
       console.log('  • frontend, backend, fullstack');
       console.log('  • database, state-management, styling');

@@ -61,15 +61,17 @@
 
 ## 📋 Changelog
 
-### v1.8.0 - Framework Detection Engine (Phase 4.1)
+### v1.9.0 - Framework Pattern Recognition (Phase 4.1)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 25+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
 - **📊 Confidence-Based Scoring**: High-accuracy detection with detailed confidence metrics
 - **🏗️ Project Structure Analysis**: Deep analysis of file organization and patterns
+- **🧩 Framework Pattern Recognition**: Identify hooks, components, lifecycle methods, and conventions
 - **💡 Smart Recommendations**: Framework suggestions based on detected languages and patterns
+- **🔬 Code Pattern Analysis**: Analyze specific files for framework-specific patterns and anti-patterns
 - **📋 Detailed Reporting**: Comprehensive analysis reports with export capabilities
-- **⚙️ Enhanced CLI Commands**: `/framework detect|report|list` for intelligent project analysis
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze` for intelligent project analysis
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
