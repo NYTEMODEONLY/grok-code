@@ -19,6 +19,7 @@ import { fileSuggester } from '../lib/context/file-suggester.js';
 import { autoContextBuilder } from '../lib/context/auto-context.js';
 import { tokenManager } from '../lib/context/token-manager.js';
 import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
+import { DiffViewer } from '../lib/display/diff-viewer.js';
 
 /**
  * Error Logging System
@@ -882,6 +883,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Initialize syntax highlighter for code display
   const syntaxHighlighter = new SyntaxHighlighter();
 
+  // Initialize diff viewer for color-coded diffs
+  const diffViewer = new DiffViewer({ syntaxHighlighter });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1636,6 +1640,7 @@ async function handleCommand(
 - /push: Push to remote
 - /pr <title>: Create a pull request (requires gh CLI)
 - /highlight <on|off|theme|status>: Control syntax highlighting (themes: default/dark/minimal)
+- /diff <status|test|git|show>: Color-coded diff display and git integration
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -1842,6 +1847,86 @@ async function handleCommand(
       console.log('  /highlight off         - Disable syntax highlighting');
       console.log('  /highlight theme dark  - Change to dark theme');
       console.log('  /highlight status      - Show current settings');
+    }
+
+    return true;
+  } else if (input.startsWith('/diff')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand) {
+      console.log('Usage: /diff <command>');
+      console.log('Commands:');
+      console.log('  /diff status        - Show diff viewer status');
+      console.log('  /diff test          - Run diff viewer test');
+      console.log('  /diff git <args>    - Run git diff with color highlighting');
+      console.log('  /diff show <file>   - Show git diff for specific file');
+      console.log('Examples:');
+      console.log('  /diff git status');
+      console.log('  /diff git diff HEAD~1');
+      console.log('  /diff show src/app.js');
+    } else if (subcommand === 'status') {
+      const stats = diffViewer.getStats();
+      console.log('\n📊 Diff Viewer Status:');
+      console.log('═'.repeat(30));
+      console.log(`Syntax highlighting: ${stats.syntaxHighlighterEnabled ? '✅' : '❌'}`);
+      console.log(`Theme: ${stats.theme}`);
+      console.log(`Context lines: ${stats.contextLines}`);
+    } else if (subcommand === 'test') {
+      console.log('\n🧪 Running Diff Viewer Test...\n');
+      console.log(diffViewer.testDiffViewer('unified'));
+    } else if (subcommand === 'git') {
+      const gitArgs = parts.slice(2).join(' ');
+      if (!gitArgs) {
+        console.log('Usage: /diff git <git-diff-command>');
+        console.log('Examples: /diff git diff, /diff git diff --staged, /diff git diff HEAD~1');
+        return true;
+      }
+
+      try {
+        const { execSync } = await import('child_process');
+        const gitCommand = `git ${gitArgs}`;
+        const diffOutput = execSync(gitCommand, { encoding: 'utf8' });
+
+        if (diffOutput.trim()) {
+          console.log(`\n🔍 Git diff output (${gitCommand}):`);
+          console.log('═'.repeat(50));
+          console.log(diffViewer.displayDiff(diffOutput));
+
+          // Show summary
+          const summary = diffViewer.getDiffSummary(diffOutput);
+          console.log('\n📈 Summary:');
+          console.log(diffViewer.formatDiffSummary(summary));
+        } else {
+          console.log(`No differences found for: ${gitCommand}`);
+        }
+      } catch (error) {
+        console.log(`❌ Error running git command: ${error.message}`);
+      }
+    } else if (subcommand === 'show') {
+      const filePath = parts[2];
+      if (!filePath) {
+        console.log('Usage: /diff show <file-path>');
+        return true;
+      }
+
+      try {
+        const { execSync } = await import('child_process');
+        const diffOutput = execSync(`git diff ${filePath}`, { encoding: 'utf8' });
+
+        if (diffOutput.trim()) {
+          console.log(`\n🔍 Git diff for ${filePath}:`);
+          console.log('═'.repeat(40));
+          console.log(diffViewer.displayDiff(diffOutput));
+        } else {
+          console.log(`No changes found for ${filePath}`);
+        }
+      } catch (error) {
+        console.log(`❌ Error showing diff for ${filePath}: ${error.message}`);
+      }
+    } else {
+      console.log(`Unknown diff subcommand: ${subcommand}`);
+      console.log('Use /diff for help');
     }
 
     return true;
