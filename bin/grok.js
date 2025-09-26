@@ -1138,6 +1138,22 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     frameworkPromptLoader = null;
   }
 
+  // Initialize convention analyzer
+  let conventionAnalyzer;
+  try {
+    const { ConventionAnalyzer } = await import('../lib/conventions/analyzer.js');
+    conventionAnalyzer = new ConventionAnalyzer({
+      projectRoot: process.cwd(),
+      maxFiles: 50, // Analyze up to 50 files for performance
+      maxFileSize: 1024 * 1024
+    });
+    logger.info('Convention analyzer initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize convention analyzer', { error: error.message });
+    console.log('⚠️  Warning: Convention analysis may not work properly');
+    conventionAnalyzer = null;
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1274,7 +1290,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         modelFile,
         frameworkDetector,
         frameworkPatterns,
-        frameworkPromptLoader
+        frameworkPromptLoader,
+        conventionAnalyzer
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1514,7 +1531,8 @@ async function handleCommand(
   modelFile,
   frameworkDetector,
   frameworkPatterns,
-  frameworkPromptLoader
+  frameworkPromptLoader,
+  conventionAnalyzer
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -3658,6 +3676,49 @@ async function handleCommand(
         });
         console.log('');
       }
+    } else if (subcommand === 'conventions') {
+      console.log('🔍 Analyzing project coding conventions...\n');
+
+      if (!conventionAnalyzer) {
+        console.log('❌ Convention analyzer not available.');
+        return true;
+      }
+
+      try {
+        const results = await conventionAnalyzer.analyzeProject();
+        const report = conventionAnalyzer.generateReport();
+
+        console.log(report);
+
+        // Show detailed breakdown
+        const conv = results.conventions;
+        console.log('📊 Detailed Analysis:\n');
+
+        if (conv.preferences) {
+          console.log('🎯 Project Preferences:');
+          Object.entries(conv.preferences).forEach(([key, value]) => {
+            console.log(`  • ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`);
+          });
+          console.log('');
+        }
+
+        if (conv.statistics) {
+          console.log('📈 Statistics:');
+          Object.entries(conv.statistics).forEach(([key, value]) => {
+            const label = key.replace(/([A-Z])/g, ' $1').toLowerCase();
+            console.log(`  • ${label.charAt(0).toUpperCase() + label.slice(1)}: ${value}`);
+          });
+          console.log('');
+        }
+
+        console.log(`✅ Analysis complete! Based on ${results.stats.filesAnalyzed} files.`);
+
+      } catch (error) {
+        console.log(`❌ Failed to analyze conventions: ${error.message}`);
+        logger.error('Convention analysis failed', { error: error.message });
+      }
+
+      return true;
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
       if (!filePath) {
@@ -3743,10 +3804,9 @@ async function handleCommand(
       console.log('Analyze project structure and dependencies to detect frameworks.\n');
       console.log('Commands:');
       console.log('  /framework detect        - Scan project and detect frameworks');
-      console.log('  /framework report        - Generate detailed analysis report');
+      console.log('  /framework conventions   - Analyze project coding standards');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
-      console.log('  /framework conventions <fw> - Show conventions for a framework');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
       console.log('  /framework export [f]    - Export results (json/markdown)');
       console.log('  /framework list [cat]    - List supported frameworks');
