@@ -268,10 +268,15 @@ function addToHistory(command, history) {
 }
 
 // RPG Planning Function
-function makeRPG(prompt, openai, model) {
+function makeRPG(prompt, openai, model, existingFiles = 'none') {
   return new Promise((resolve, reject) => {
     const planningPrompt = `
 You are an expert software architect. For the user prompt: '${prompt}', create a structured plan for a code repository.
+
+Existing files in the project: ${existingFiles}
+
+If existing files are present, consider this a modification/enhancement request rather than creating a new project from scratch. Adapt your plan to work with and extend the existing codebase.
+
 Output ONLY a JSON object with:
 - "features": Array of high-level functionalities (e.g., ["data_loading", "model_training"]).
 - "files": Object mapping features to file paths (e.g., {"data_loading": "src/data.js"}).
@@ -313,16 +318,28 @@ Keep it concise and modular.
 }
 
 // RPG-Guided Code Generation
-async function generateCodeWithRPG(prompt, openai, model) {
+async function generateCodeWithRPG(prompt, openai, model, fileContext = {}) {
   // Step 1: Generate RPG with progress indicator
   const planSpinner = ora('🔄 Planning project structure...').start();
-  const rpg = await makeRPG(prompt, openai, model);
+
+  // Get existing file information to provide context
+  const existingFiles = Object.keys(fileContext).length > 0 ?
+    Object.keys(fileContext).join(', ') : 'none';
+
+  const rpg = await makeRPG(prompt, openai, model, existingFiles);
   const plan = rpg.plan;
   const graph = rpg.graph;
   planSpinner.succeed('📋 Project structure planned');
 
   // Step 2: Guide code gen with plan
   const codeSpinner = ora('⚙️ Generating code files...').start();
+
+  // Include existing file contents for context
+  const existingFileContents = Object.keys(fileContext).length > 0 ?
+    '\nExisting files:\n' + Object.entries(fileContext).map(([path, content]) =>
+      `=== ${path} ===\n${content}\n`
+    ).join('') : '';
+
   const codePrompt = `
 Using this repository plan:
 Features: ${JSON.stringify(plan.features)}
@@ -330,8 +347,13 @@ Files: ${JSON.stringify(plan.files)}
 Data Flows: ${JSON.stringify(plan.flows)}
 Dependencies: ${JSON.stringify(plan.deps)}
 
-Generate complete, modular code for: '${prompt}'.
+User request: '${prompt}'
+
+${existingFileContents}
+
+Generate complete, modular code for the user's request.
 For each file in Files, create a code block. Respect deps and flows.
+If modifying existing files, ensure the new code integrates properly with the existing codebase.
 Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
   `;
 
@@ -583,9 +605,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
                          userInput.toLowerCase().includes('new ') && userInput.toLowerCase().includes('file');
 
     if (shouldUseRPG) {
-      logger.info('RPG mode triggered', { userInput });
+      logger.info('RPG mode triggered', { userInput, existingFiles: Object.keys(fileContext) });
       try {
-        await generateCodeWithRPG(userInput, client, model);
+        await generateCodeWithRPG(userInput, client, model, fileContext);
         continue;
       } catch (error) {
         logger.error('RPG generation failed, falling back to regular chat', error, { userInput });
