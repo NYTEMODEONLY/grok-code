@@ -1126,6 +1126,18 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     frameworkPatterns = null;
   }
 
+  // Initialize framework-specific prompt loader
+  let frameworkPromptLoader;
+  try {
+    const { FrameworkPromptLoader } = await import('../lib/frameworks/prompt-loader.js');
+    frameworkPromptLoader = new FrameworkPromptLoader();
+    logger.info('Framework prompt loader initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize framework prompt loader', { error: error.message });
+    console.log('⚠️  Warning: Framework-specific prompts may not work properly');
+    frameworkPromptLoader = null;
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1261,7 +1273,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         systemPrompt,
         modelFile,
         frameworkDetector,
-        frameworkPatterns
+        frameworkPatterns,
+        frameworkPromptLoader
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1500,7 +1513,8 @@ async function handleCommand(
   systemPrompt,
   modelFile,
   frameworkDetector,
-  frameworkPatterns
+  frameworkPatterns,
+  frameworkPromptLoader
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -3586,6 +3600,64 @@ async function handleCommand(
         });
         console.log('');
       }
+    } else if (subcommand === 'prompts') {
+      const frameworkArg = args[0];
+      if (!frameworkArg) {
+        console.log('❌ Please specify a framework. Use /framework list to see available frameworks.');
+        return true;
+      }
+
+      if (!frameworkPromptLoader) {
+        console.log('❌ Framework prompt loader not available.');
+        return true;
+      }
+
+      if (!frameworkPromptLoader.hasPrompts(frameworkArg)) {
+        console.log(`❌ Framework '${frameworkArg}' does not have specific prompts. Use /framework list to see supported frameworks.`);
+        return true;
+      }
+
+      // First detect frameworks to get context
+      let detectedFrameworks = [];
+      try {
+        const detectionResults = await frameworkDetector.detectFrameworks();
+        detectedFrameworks = detectionResults.frameworks || [];
+      } catch (error) {
+        console.log('⚠️  Could not detect current project frameworks, showing general prompts.');
+      }
+
+      const prompts = frameworkPromptLoader.loadPrompts(detectedFrameworks);
+      const contextualPrompt = frameworkPromptLoader.getContextualPrompt(detectedFrameworks, 'general');
+
+      console.log(`🎭 Framework-Specific Prompts for ${frameworkArg}\n`);
+
+      console.log('System Prompt:');
+      console.log('```');
+      console.log(contextualPrompt || 'No specific prompts available');
+      console.log('```');
+      console.log('');
+
+      console.log('Code Generation Guidelines:');
+      console.log('```');
+      console.log(prompts.codeGenerationPrompt || 'Use general coding best practices');
+      console.log('```');
+      console.log('');
+
+      console.log('Code Review Focus Areas:');
+      console.log('```');
+      console.log(prompts.reviewPrompt || 'Follow general code quality standards');
+      console.log('```');
+      console.log('');
+
+      // Show framework rules if available
+      const rules = frameworkPromptLoader.getRules(detectedFrameworks);
+      if (rules.fileNaming && Object.keys(rules.fileNaming).length > 0) {
+        console.log('Naming Conventions:');
+        Object.entries(rules.fileNaming).forEach(([type, convention]) => {
+          console.log(`  • ${type}: ${convention}`);
+        });
+        console.log('');
+      }
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
       if (!filePath) {
@@ -3675,6 +3747,7 @@ async function handleCommand(
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework conventions <fw> - Show conventions for a framework');
+      console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
       console.log('  /framework export [f]    - Export results (json/markdown)');
       console.log('  /framework list [cat]    - List supported frameworks');
       console.log('  /framework help          - Show this help');
