@@ -279,11 +279,15 @@ Repository generation completed!
 You: Create a function to reverse a string in JavaScript
 
 Grok: Here's a simple function to reverse a string:
+```
 
+```javascript
 function reverseString(str) {
   return str.split('').reverse().join('');
 }
+```
 
+```bash
 # User immediately tests the function
 You: /run node -e "console.log(reverseString('hello'))"
 
