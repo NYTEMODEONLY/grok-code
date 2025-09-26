@@ -1247,7 +1247,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         model,
         currentDir,
         systemPrompt,
-        modelFile
+        modelFile,
+        frameworkDetector
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1484,7 +1485,8 @@ async function handleCommand(
   model,
   currentDir,
   systemPrompt,
-  modelFile
+  modelFile,
+  frameworkDetector
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
