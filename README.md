@@ -21,7 +21,7 @@
 ### 🎯 What Makes Grok Code Special?
 
 - **🤖 AI-First Architecture**: Natural language prompts for any coding task
-- **📊 RPG Planning**: Inspired by ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276) - structured planning before code generation
+- **📊 RPG Planning**: Inspired by ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2509.16198) - structured planning before code generation
 - **🧠 Memory System**: Remembers conversations across sessions with undo/redo
 - **🔄 Stateful & Agentic**: Maintains context, plans ahead, and iterates autonomously
 - **⚡ Full-Stack Ready**: From simple scripts to deploy-ready Next.js apps
@@ -34,7 +34,7 @@
 
 ## 🏗️ RPG Repository Planning
 
-**Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
+**Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2509.16198), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
 
 ### 📖 RPG Technical Details
 
@@ -362,7 +362,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **🤖 Powered by** [xAI's Grok](https://x.ai) models - The foundation of intelligent assistance
-- **📚 Inspired by** ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276) - Structured planning for better code generation
+- **📚 Inspired by** ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2509.16198) - Structured planning for better code generation
 - **👨‍💻 Built by** nytemode - Personal project exploring AI-assisted development
 - **🌟 xAI Community** - For providing the amazing models that make this possible
 
