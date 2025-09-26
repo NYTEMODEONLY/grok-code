@@ -21,6 +21,7 @@ import { tokenManager } from '../lib/context/token-manager.js';
 import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
 import { DiffViewer } from '../lib/display/diff-viewer.js';
 import { ProgressIndicator } from '../lib/display/progress-indicator.js';
+import { FileBrowser } from '../lib/interactive/file-browser.js';
 
 /**
  * Error Logging System
@@ -918,6 +919,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Initialize progress indicator for operation feedback
   const progressIndicator = new ProgressIndicator();
 
+  // Initialize file browser for interactive navigation
+  const fileBrowser = new FileBrowser({ syntaxHighlighter });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1679,6 +1683,7 @@ async function handleCommand(
 - /highlight <on|off|theme|status>: Control syntax highlighting (themes: default/dark/minimal)
 - /diff <status|test|git|show>: Color-coded diff display and git integration
 - /progress <status|test|spinner|multistep>: Progress indicators and status displays
+- /browse <start|find|preview|stats>: Interactive file browser and navigation
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2029,6 +2034,108 @@ async function handleCommand(
     } else {
       console.log(`Unknown progress subcommand: ${subcommand}`);
       console.log('Use /progress for help');
+    }
+
+    return true;
+  } else if (input.startsWith('/browse')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand) {
+      console.log('Usage: /browse <command>');
+      console.log('Commands:');
+      console.log('  /browse start          - Start interactive file browser');
+      console.log('  /browse find <pattern> - Find files matching pattern');
+      console.log('  /browse preview <file> - Preview a specific file');
+      console.log('  /browse stats          - Show browser statistics');
+      console.log('Examples:');
+      console.log('  /browse start');
+      console.log('  /browse find .js');
+      console.log('  /browse preview package.json');
+    } else if (subcommand === 'start') {
+      console.log('Starting interactive file browser...');
+      console.log('Use arrow keys to navigate, Enter to select files, Ctrl+C to finish.');
+
+      fileBrowser.browse().then(selectedFiles => {
+        if (selectedFiles.length > 0) {
+          console.log(`\n📋 Adding ${selectedFiles.length} selected files to context:`);
+          selectedFiles.forEach(file => {
+            const relativePath = path.relative(currentDir, file);
+            console.log(`  ✅ ${relativePath}`);
+            // Add to context if not already there
+            if (!fileContext[relativePath]) {
+              try {
+                const content = fs.readFileSync(file, 'utf8');
+                fileContext[relativePath] = content;
+                messages.push({
+                  role: 'system',
+                  content: `Auto-added file ${relativePath} from browser:\n${content}`,
+                });
+              } catch (error) {
+                console.log(`  ❌ Error reading ${relativePath}: ${error.message}`);
+              }
+            }
+          });
+          console.log(`\n💾 ${selectedFiles.length} files added to context.`);
+        }
+      }).catch(error => {
+        console.log(`❌ Browser error: ${error.message}`);
+      });
+    } else if (subcommand === 'find') {
+      const pattern = parts.slice(2).join(' ');
+      if (!pattern) {
+        console.log('Usage: /browse find <pattern>');
+        return true;
+      }
+
+      const results = fileBrowser.findFiles(pattern);
+      console.log(`\n🔍 Found ${results.length} files matching "${pattern}":`);
+
+      if (results.length === 0) {
+        console.log('  No files found.');
+      } else {
+        results.slice(0, 20).forEach(file => {
+          const relativePath = path.relative(currentDir, file.fullPath);
+          console.log(`  ${file.icon} ${relativePath} (${file.readable})`);
+        });
+        if (results.length > 20) {
+          console.log(`  ... and ${results.length - 20} more files`);
+        }
+      }
+    } else if (subcommand === 'preview') {
+      const filePath = parts.slice(2).join(' ');
+      if (!filePath) {
+        console.log('Usage: /browse preview <file-path>');
+        return true;
+      }
+
+      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+
+      if (!fs.existsSync(fullPath)) {
+        console.log(`❌ File not found: ${filePath}`);
+        return true;
+      }
+
+      console.log(`\n👁️  Previewing: ${path.relative(currentDir, fullPath)}`);
+      console.log('═'.repeat(50));
+      console.log(fileBrowser.previewFile(fullPath));
+    } else if (subcommand === 'stats') {
+      const stats = fileBrowser.getStats();
+      console.log('\n🗂️  File Browser Statistics:');
+      console.log('═'.repeat(35));
+      console.log(`Current Path: ${path.relative(process.cwd(), stats.currentPath)}`);
+      console.log(`Selected Files: ${stats.selectedFiles}`);
+      console.log(`Show Hidden: ${stats.showHidden ? '✅' : '❌'}`);
+      console.log(`Max Preview Lines: ${stats.maxPreviewLines}`);
+
+      // Show current directory info
+      const contents = fileBrowser.getDirectoryContents(stats.currentPath);
+      const dirs = contents.filter(item => item.isDirectory && !item.isParent).length;
+      const files = contents.filter(item => !item.isDirectory).length;
+      console.log(`Current Directory: ${dirs} directories, ${files} files`);
+    } else {
+      console.log(`Unknown browse subcommand: ${subcommand}`);
+      console.log('Use /browse for help');
     }
 
     return true;
