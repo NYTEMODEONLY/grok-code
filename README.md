@@ -270,24 +270,26 @@ Generated: package.json
 Repository generation completed!
 ```
 
-#### 🤖 Regular Chat Example
+#### 🤖 Interactive Development Example
 
-````bash
+**Create and test code instantly:**
+
+```bash
+# User creates a function
 You: Create a function to reverse a string in JavaScript
 
 Grok: Here's a simple function to reverse a string:
 
-```javascript
 function reverseString(str) {
   return str.split('').reverse().join('');
 }
-````
 
+# User immediately tests the function
 You: /run node -e "console.log(reverseString('hello'))"
+
 [Command executed: node -e "console.log(reverseString('hello'))"]
 Output: olleh
-
-````
+```
 
 ## 💡 Best Practices & Tips
 
