@@ -1,7 +1,7 @@
 {
   "commands": [
-    "help",
     "yo",
-    "sup"
+    "sup",
+    "hey"
   ]
 }

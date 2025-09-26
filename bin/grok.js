@@ -18,11 +18,34 @@ import { dirname } from 'path';
 import { fileSuggester } from '../lib/context/file-suggester.js';
 import { autoContextBuilder } from '../lib/context/auto-context.js';
 import { tokenManager } from '../lib/context/token-manager.js';
+import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
 
 /**
  * Error Logging System
  * Manages logging to a file and console.
  */
+
+/**
+ * Process and highlight code blocks in text
+ * @param {string} text - Text containing code blocks
+ * @param {SyntaxHighlighter} highlighter - Syntax highlighter instance
+ * @returns {string} Text with highlighted code blocks
+ */
+function processCodeBlocks(text, highlighter) {
+  // Match code blocks with optional language specification
+  // ```language\ncode\n```
+  const codeBlockRegex = /```(\w+)?\n?([\s\S]*?)```/g;
+
+  return text.replace(codeBlockRegex, (match, language, code) => {
+    if (!code.trim()) return match; // Skip empty code blocks
+
+    const detectedLang = language || highlighter.detectLanguage(code);
+    const highlighted = highlighter.highlight(code, detectedLang);
+
+    // Return the highlighted code in the same format
+    return `\`\`\`${detectedLang}\n${highlighted}\`\`\``;
+  });
+}
 class ErrorLogger {
   /**
    * Creates an instance of ErrorLogger.
@@ -856,6 +879,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   let messages = [{ role: 'system', content: systemPrompt }];
   let fileContext = {};
 
+  // Initialize syntax highlighter for code display
+  const syntaxHighlighter = new SyntaxHighlighter();
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1178,7 +1204,11 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
         spinner.stop();
 
-        const grokResponse = response.choices[0].message.content;
+        let grokResponse = response.choices[0].message.content;
+
+        // Apply syntax highlighting to code blocks
+        grokResponse = processCodeBlocks(grokResponse, syntaxHighlighter);
+
         console.log(`\nGrok: ${grokResponse}\n`);
 
         logger.info('Received API response', {
@@ -1626,6 +1656,7 @@ async function handleCommand(
 - /commit <message>: Commit changes
 - /push: Push to remote
 - /pr <title>: Create a pull request (requires gh CLI)
+- /highlight <on|off|theme|status>: Control syntax highlighting (themes: default/dark/minimal)
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -1793,6 +1824,48 @@ async function handleCommand(
     console.log('   • Use /remove <file> to free up space');
 
     return true;
+  } else if (input.startsWith('/highlight')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand || subcommand === 'status') {
+      const stats = syntaxHighlighter.getStats();
+      console.log('\n🎨 Syntax Highlighting Status:');
+      console.log('═'.repeat(40));
+      console.log(`Enabled: ${stats.enabled ? '✅' : '❌'}`);
+      console.log(`Theme: ${stats.theme}`);
+      console.log(`Languages: ${stats.supportedLanguages.join(', ')}`);
+      console.log(`Themes: ${stats.availableThemes.join(', ')}`);
+    } else if (subcommand === 'on') {
+      syntaxHighlighter.setEnabled(true);
+      console.log('✅ Syntax highlighting enabled');
+    } else if (subcommand === 'off') {
+      syntaxHighlighter.setEnabled(false);
+      console.log('❌ Syntax highlighting disabled');
+    } else if (subcommand === 'theme') {
+      const theme = parts[2];
+      if (theme) {
+        try {
+          syntaxHighlighter.setTheme(theme);
+          console.log(`🎨 Theme changed to: ${theme}`);
+        } catch (error) {
+          console.log(`❌ Invalid theme: ${theme}`);
+          console.log(`Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`);
+        }
+      } else {
+        console.log(`Current theme: ${syntaxHighlighter.getStats().theme}`);
+        console.log(`Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`);
+      }
+    } else {
+      console.log('Usage: /highlight <on|off|theme [name]|status>');
+      console.log('Examples:');
+      console.log('  /highlight on          - Enable syntax highlighting');
+      console.log('  /highlight off         - Disable syntax highlighting');
+      console.log('  /highlight theme dark  - Change to dark theme');
+      console.log('  /highlight status      - Show current settings');
+    }
+
+    return true;
   } else if (input === '/clear') {
     messages = [{ role: 'system', content: systemPrompt }];
     fileContext = {};
@@ -1860,7 +1933,11 @@ async function handleCommand(
           temperature: 0.7,
         });
         spinner.stop();
-        const grokResponse = response.choices[0].message.content;
+        let grokResponse = response.choices[0].message.content;
+
+        // Apply syntax highlighting to code blocks
+        grokResponse = processCodeBlocks(grokResponse, syntaxHighlighter);
+
         console.log(`\nGrok: ${grokResponse}\n`);
         await parseAndApplyActions(grokResponse, messages, fileContext);
         messages.push({ role: 'assistant', content: grokResponse });
