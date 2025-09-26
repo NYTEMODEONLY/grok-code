@@ -7,8 +7,7 @@
     "grok": "./bin/grok.js"
   },
   "scripts": {
-    "start": "node bin/grok.js",
-    "test": "node test/basic-test.js"
+    "start": "node bin/grok.js"
   },
   "dependencies": {
     "openai": "^4.0.0",
