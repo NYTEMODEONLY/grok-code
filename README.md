@@ -61,13 +61,15 @@
 
 ## 📋 Changelog
 
-### v1.6.0 - ASCII Art Workflow Diagrams (Phase 3.4)
+### v1.7.0 - Complete IDE-like Terminal Experience (Phase 3 Complete!)
 - **🖼️ ASCII Art Diagram Generator**: Beautiful terminal visualizations of RPG plans and workflows
 - **📊 Multiple Diagram Types**: Flowchart, mind map, dependency graph, and statistical overview
 - **🎨 Customizable Styles**: Default, minimal, and fancy visual themes with emojis and symbols
 - **🧠 Intelligent Plan Detection**: Automatic extraction of RPG plans from conversation history
-- **🎯 Workflow Visualization**: Features, files, data flows, and dependency relationships
-- **⚙️ Enhanced CLI Commands**: `/diagram show|style|types` for stunning visual plan representations
+- **⏳ Advanced Progress Tracking**: Real-time progress bars, ETA calculations, and operation analytics
+- **✅ Rich Confirmation Dialogs**: File previews, impact assessment, and safety confirmations
+- **🎯 Complete Workflow Visualization**: Progress tracking with visual indicators and interactive confirmations
+- **⚙️ Enhanced CLI Commands**: `/diagram`, `/progress`, `/confirm` for comprehensive terminal experience
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions

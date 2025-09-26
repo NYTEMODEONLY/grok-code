@@ -32,6 +32,7 @@ import { HistorySearch } from '../lib/commands/history-search.js';
 import { ContextualSuggestions } from '../lib/commands/suggestions.js';
 import { WorkflowDiagram } from '../lib/visualization/workflow-diagram.js';
 import { ProgressTracker } from '../lib/visualization/progress-tracker.js';
+import { ConfirmDialog } from '../lib/interactive/confirm-dialog.js';
 
 /**
  * Error Logging System
@@ -984,6 +985,14 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     updateInterval: 100,
   });
 
+  // Initialize confirmation dialog system
+  const confirmDialog = new ConfirmDialog({
+    maxPreviewLines: 15,
+    showFilePreviews: true,
+    showImpactAssessment: true,
+    enableSafetyMode: true,
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1764,6 +1773,7 @@ async function handleCommand(
 - /suggest <show|stats|reset>: Intelligent contextual command suggestions
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
+- /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -3110,6 +3120,138 @@ async function handleCommand(
       console.log('• Category-based operation organization');
     } else {
       console.log('Unknown progress subcommand. Use /progress help for available commands.');
+    }
+
+    return true;
+  } else if (input.startsWith('/confirm')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+    const args = parts.slice(2);
+
+    if (!subcommand || subcommand === 'demo') {
+      console.log('🎭 Running Confirmation Dialog Demo...\n');
+
+      // Demo 1: Basic file operation confirmation
+      console.log('Demo 1: File Operation Confirmation');
+      const confirmed1 = await confirmDialog.confirmFileOperation({
+        operation: 'modify_source_files',
+        files: [
+          'src/main.js',
+          'src/utils.js',
+          'package.json'
+        ],
+        action: 'modify',
+        description: 'This will refactor the main application files to use async/await patterns.',
+        warnings: ['May break existing functionality if not tested thoroughly']
+      });
+
+      console.log(`Result: ${confirmed1 ? '✅ Confirmed' : '❌ Cancelled'}\n`);
+
+      if (!confirmed1) return true;
+
+      // Demo 2: Destructive operation with typing confirmation
+      console.log('Demo 2: Destructive Operation (requires typing confirmation)');
+      const confirmed2 = await confirmDialog.confirmDestructiveOperation({
+        operation: 'delete_database',
+        description: 'This will permanently delete the development database and all associated data.',
+        impact: {
+          affectedFiles: 1,
+          affectedLines: 0,
+          dependencies: ['application data', 'user sessions']
+        },
+        requiresTyping: true,
+        confirmationPhrase: 'DELETE DATABASE'
+      });
+
+      console.log(`Result: ${confirmed2 ? '✅ Confirmed' : '❌ Cancelled'}\n`);
+
+      // Demo 3: Multiple choice confirmation
+      console.log('Demo 3: Multiple Choice Confirmation');
+      const confirmed3 = await confirmDialog.confirm({
+        message: 'Choose how to handle the configuration conflict:',
+        type: 'warning',
+        operation: 'resolve_config_conflict',
+        choices: [
+          { label: 'Overwrite local config with remote', value: 'overwrite' },
+          { label: 'Keep local config and ignore remote', value: 'keep_local' },
+          { label: 'Merge configurations manually', value: 'merge' },
+          { label: 'Cancel operation', value: 'cancel' }
+        ],
+        impact: {
+          riskLevel: 'medium',
+          affectedFiles: 2,
+          breakingChanges: false
+        }
+      });
+
+      console.log(`Result: ${confirmed3 ? '✅ Option selected' : '❌ Cancelled'}\n`);
+
+    } else if (subcommand === 'stats') {
+      const stats = confirmDialog.getStatistics();
+      console.log('\n📊 Confirmation Dialog Statistics:\n');
+      console.log(`Total Confirmations: ${stats.total}`);
+      console.log(`Confirmed: ${stats.confirmed}`);
+      console.log(`Denied: ${stats.denied}`);
+      console.log(`Confirmation Rate: ${stats.confirmationRate}%`);
+
+      if (stats.lastConfirmation) {
+        const lastTime = new Date(stats.lastConfirmation.timestamp).toLocaleString();
+        console.log(`Last Confirmation: ${lastTime} (${stats.lastConfirmation.operation})`);
+      }
+    } else if (subcommand === 'history') {
+      const limit = args[0] ? parseInt(args[0]) : 5;
+      const history = confirmDialog.getConfirmationHistory({ limit });
+
+      if (history.length === 0) {
+        console.log('📜 No confirmation history available.');
+        return true;
+      }
+
+      console.log(`📜 Confirmation History (Last ${limit} entries):\n`);
+
+      history.forEach(entry => {
+        const time = new Date(entry.timestamp).toLocaleString();
+        const status = entry.confirmed ? '✅' : '❌';
+        console.log(`${status} ${entry.operation} - ${time}`);
+        console.log(`   Files: ${entry.files} | Changes: ${entry.changes} | Warnings: ${entry.warnings}\n`);
+      });
+    } else if (subcommand === 'reset') {
+      const { inquirer } = await import('inquirer');
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Reset confirmation history?',
+          default: false
+        }
+      ]);
+
+      if (confirm) {
+        confirmDialog.resetHistory();
+        console.log('✅ Confirmation history reset.');
+      } else {
+        console.log('❌ Reset cancelled.');
+      }
+    } else if (subcommand === 'help') {
+      console.log('✅ Confirmation Dialog Help');
+      console.log('═'.repeat(27));
+      console.log('Rich confirmation dialogs with previews, warnings, and impact assessment.\n');
+      console.log('Commands:');
+      console.log('  /confirm demo     - Run interactive confirmation demos');
+      console.log('  /confirm stats    - Show confirmation statistics');
+      console.log('  /confirm history  - Show confirmation history');
+      console.log('  /confirm reset    - Reset confirmation history');
+      console.log('  /confirm help     - Show this help');
+      console.log('\nFeatures:');
+      console.log('• File previews with syntax highlighting');
+      console.log('• Change previews with diff display');
+      console.log('• Impact assessment and risk analysis');
+      console.log('• Warning system with safety checks');
+      console.log('• Typing confirmations for dangerous operations');
+      console.log('• Multiple choice options');
+      console.log('• Confirmation history and analytics');
+    } else {
+      console.log('Unknown confirm subcommand. Use /confirm help for available commands.');
     }
 
     return true;

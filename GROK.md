@@ -94,7 +94,8 @@ lib/
 │   └── code-preview.js       # Enhanced code display with line numbers
 ├── interactive/     # Terminal UI components
 │   ├── file-browser.js       # Interactive file navigation and selection
-│   └── code-search.js        # Advanced codebase search and highlighting
+│   ├── code-search.js        # Advanced codebase search and highlighting
+│   └── confirm-dialog.js     # Rich confirmation dialogs with previews
 ├── commands/        # CLI command implementations
 │   ├── debug.js             # Interactive debugging and error recovery
 │   ├── auto-complete.js     # Intelligent command and file path auto-completion
