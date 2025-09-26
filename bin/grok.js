@@ -15,13 +15,27 @@ const stream = require('stream');
 const pipeline = promisify(stream.pipeline);
 const os = require('os');
 
-// Error Logging System
+/**
+ * Error Logging System
+ * Manages logging to a file and console.
+ */
 class ErrorLogger {
+  /**
+   * Creates an instance of ErrorLogger.
+   * @param {string} [logFile='.grok/error.log'] - Path to the error log file.
+   */
   constructor(logFile = '.grok/error.log') {
     this.logFile = path.join(process.cwd(), logFile);
     fs.ensureDirSync(path.dirname(this.logFile));
   }
 
+  /**
+   * Logs an entry to the error log file.
+   * @param {string} level - Log level (e.g., 'info', 'warn', 'error', 'debug').
+   * @param {string} message - The message to log.
+   * @param {Error|null} error - The error object (if applicable).
+   * @param {Object} context - Additional context for the log entry.
+   */
   log(level, message, error = null, context = {}) {
     const timestamp = new Date().toISOString();
     const logEntry = {
@@ -52,18 +66,39 @@ class ErrorLogger {
     }
   }
 
+  /**
+   * Logs an informational message.
+   * @param {string} message - The message to log.
+   * @param {Object} context - Additional context for the log entry.
+   */
   info(message, context = {}) {
     this.log('info', message, null, context);
   }
 
+  /**
+   * Logs a warning message.
+   * @param {string} message - The message to log.
+   * @param {Object} context - Additional context for the log entry.
+   */
   warn(message, context = {}) {
     this.log('warn', message, null, context);
   }
 
+  /**
+   * Logs an error message.
+   * @param {string} message - The message to log.
+   * @param {Error|null} error - The error object (if applicable).
+   * @param {Object} context - Additional context for the log entry.
+   */
   error(message, error = null, context = {}) {
     this.log('error', message, error, context);
   }
 
+  /**
+   * Logs a debug message if DEBUG environment variable is set.
+   * @param {string} message - The message to log.
+   * @param {Object} context - Additional context for the log entry.
+   */
   debug(message, context = {}) {
     if (process.env.DEBUG) {
       this.log('debug', message, null, context);
@@ -85,52 +120,35 @@ program.action(async () => {
 program.parse();
 
 
-// Set up proper exit handling
-function setupExitHandlers(rl = null) {
+/**
+ * Sets up process event handlers for graceful shutdown.
+ */
+function setupExitHandlers() {
   let isShuttingDown = false;
-  let intentionalExit = false;
 
-  // Handle Ctrl+C
   process.on('SIGINT', () => {
     if (isShuttingDown) return;
     isShuttingDown = true;
     logger.info('Received SIGINT, shutting down gracefully');
     console.log('\n\nExiting Grok Code...');
-    try {
-      if (rl && !rl.closed) {
-        rl.close();
-      }
-    } catch (error) {
-      logger.error('Error closing readline interface', error);
-    }
     process.exit(0);
   });
 
-  // Handle normal exit
   process.on('exit', (code) => {
     logger.info('Process exiting', { exitCode: code });
   });
 
-  // Handle uncaught exceptions
   process.on('uncaughtException', (err) => {
-    logger.error('Uncaught exception occurred', err, { stack: err.stack });
+    logger.error('Uncaught exception occurred', err);
     if (!isShuttingDown) {
       isShuttingDown = true;
       console.error('\n💥 An unexpected error occurred. Check .grok/error.log for details.');
-      try {
-        if (rl && !rl.closed) {
-          rl.close();
-        }
-      } catch (closeError) {
-        // Silent fail during emergency shutdown
-      }
       process.exit(1);
     }
   });
 
-  // Handle unhandled promise rejections
-  process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled promise rejection', reason, { promise: promise.toString() });
+  process.on('unhandledRejection', (reason) => {
+    logger.error('Unhandled promise rejection', reason);
     console.error('\n💥 An unhandled promise rejection occurred. Check .grok/error.log for details.');
   });
 }
@@ -285,6 +303,8 @@ Output ONLY a JSON object with:
 Keep it concise and modular.
     `;
 
+    logger.debug('Making RPG planning request', { promptLength: planningPrompt.length, model });
+
     openai.chat.completions.create({
       model: model,
       messages: [
@@ -294,7 +314,28 @@ Keep it concise and modular.
       max_tokens: 500
     }).then(response => {
       try {
-        const plan = JSON.parse(response.choices[0].message.content.trim());
+        const rawResponse = response.choices[0].message.content.trim();
+        logger.debug('Received RPG planning response', { responseLength: rawResponse.length, responsePreview: rawResponse.substring(0, 200) });
+
+        const plan = JSON.parse(rawResponse);
+        logger.info('Successfully parsed RPG planning JSON', {
+          features: plan.features?.length || 0,
+          files: Object.keys(plan.files || {}).length
+        });
+
+        // Validate plan structure
+        if (!plan.features || !Array.isArray(plan.features)) {
+          throw new Error('Plan missing required "features" array');
+        }
+        if (!plan.files || typeof plan.files !== 'object') {
+          throw new Error('Plan missing required "files" object');
+        }
+        if (!plan.flows || !Array.isArray(plan.flows)) {
+          throw new Error('Plan missing required "flows" array');
+        }
+        if (!plan.deps || !Array.isArray(plan.deps)) {
+          throw new Error('Plan missing required "deps" array');
+        }
 
         // Build simple graph as JSON (nodes + edges)
         const graph = {
@@ -311,36 +352,56 @@ Keep it concise and modular.
 
         resolve({ graph, plan });
       } catch (e) {
+        logger.error('Failed to parse RPG planning response', e, {
+          rawResponse: response.choices[0]?.message?.content?.substring(0, 500) || 'No response'
+        });
         reject(e);
       }
-    }).catch(reject);
+    }).catch(error => {
+      logger.error('RPG planning API request failed', error);
+      reject(error);
+    });
   });
 }
 
-// RPG-Guided Code Generation
+/**
+ * Generates code using RPG planning.
+ * @param {string} prompt - User request
+ * @param {Object} openai - OpenAI client
+ * @param {string} model - AI model name
+ * @param {Object} fileContext - Existing files context
+ * @returns {Promise<Object>} Generated code files
+ */
 async function generateCodeWithRPG(prompt, openai, model, fileContext = {}) {
-  // Step 1: Generate RPG with progress indicator
-  const planSpinner = ora('🔄 Planning project structure...').start();
+  try {
+    logger.info('Starting RPG code generation', { prompt: prompt.substring(0, 100) });
 
-  // Get existing file information to provide context
-  const existingFiles = Object.keys(fileContext).length > 0 ?
-    Object.keys(fileContext).join(', ') : 'none';
+    // Step 1: Generate RPG with progress indicator
+    const planSpinner = ora('🔄 Planning project structure...').start();
 
-  const rpg = await makeRPG(prompt, openai, model, existingFiles);
-  const plan = rpg.plan;
-  const graph = rpg.graph;
-  planSpinner.succeed('📋 Project structure planned');
+    // Get existing file information to provide context
+    const existingFiles = Object.keys(fileContext).length > 0 ?
+      Object.keys(fileContext).join(', ') : 'none';
 
-  // Step 2: Guide code gen with plan
-  const codeSpinner = ora('⚙️ Generating code files...').start();
+    logger.debug('Making RPG plan request', { existingFiles, promptLength: prompt.length });
 
-  // Include existing file contents for context
-  const existingFileContents = Object.keys(fileContext).length > 0 ?
-    '\nExisting files:\n' + Object.entries(fileContext).map(([path, content]) =>
-      `=== ${path} ===\n${content}\n`
-    ).join('') : '';
+    const rpg = await makeRPG(prompt, openai, model, existingFiles);
+    const plan = rpg.plan;
+    const graph = rpg.graph;
+    planSpinner.succeed('📋 Project structure planned');
 
-  const codePrompt = `
+    logger.info('RPG plan generated', { features: plan.features.length, files: Object.keys(plan.files).length });
+
+    // Step 2: Guide code gen with plan
+    const codeSpinner = ora('⚙️ Generating code files...').start();
+
+    // Include existing file contents for context
+    const existingFileContents = Object.keys(fileContext).length > 0 ?
+      '\nExisting files:\n' + Object.entries(fileContext).map(([path, content]) =>
+        `=== ${path} ===\n${content}\n`
+      ).join('') : '';
+
+    const codePrompt = `
 Using this repository plan:
 Features: ${JSON.stringify(plan.features)}
 Files: ${JSON.stringify(plan.files)}
@@ -355,36 +416,77 @@ Generate complete, modular code for the user's request.
 For each file in Files, create a code block. Respect deps and flows.
 If modifying existing files, ensure the new code integrates properly with the existing codebase.
 Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
-  `;
+    `;
 
-  const response = await openai.chat.completions.create({
-    model: model,
-    messages: [
-      { role: "system", content: "You are a precise code generator. Respond with valid JSON only." },
-      { role: "user", content: codePrompt }
-    ],
-    max_tokens: 2000
-  });
+    logger.debug('Making code generation API request', { promptLength: codePrompt.length });
 
-  const codeOutput = JSON.parse(response.choices[0].message.content.trim());
-  codeSpinner.succeed('✨ Code generation complete');
+    const response = await openai.chat.completions.create({
+      model: model,
+      messages: [
+        { role: "system", content: "You are a precise code generator. Respond with valid JSON only." },
+        { role: "user", content: codePrompt }
+      ],
+      max_tokens: 2000
+    });
 
-  // Write files to disk with progress
-  const writeSpinner = ora('📁 Writing files to disk...').start();
-  const fileCount = Object.keys(codeOutput.files).length;
-  let filesWritten = 0;
-  
-  Object.entries(codeOutput.files).forEach(([filepath, code]) => {
-    fs.ensureDirSync(path.dirname(filepath));
-    fs.writeFileSync(filepath, code);
-    filesWritten++;
-    writeSpinner.text = `📁 Writing files to disk... (${filesWritten}/${fileCount})`;
-  });
-  
-  writeSpinner.succeed(`✅ Generated ${fileCount} files successfully`);
-  return codeOutput;
+    const rawResponse = response.choices[0].message.content.trim();
+    logger.debug('Received code generation response', { responseLength: rawResponse.length, responsePreview: rawResponse.substring(0, 200) });
+
+    let codeOutput;
+    try {
+      codeOutput = JSON.parse(rawResponse);
+      logger.info('Successfully parsed code generation JSON', { fileCount: Object.keys(codeOutput.files || {}).length });
+    } catch (parseError) {
+      logger.error('Failed to parse code generation response as JSON', parseError, { rawResponse: rawResponse.substring(0, 500) });
+      throw new Error(`AI response was not valid JSON: ${parseError.message}`);
+    }
+
+    if (!codeOutput.files || typeof codeOutput.files !== 'object') {
+      logger.error('Code output missing files object', { codeOutput });
+      throw new Error('AI response did not contain a valid files object');
+    }
+
+    codeSpinner.succeed('✨ Code generation complete');
+
+    // Write files to disk with progress
+    const writeSpinner = ora('📁 Writing files to disk...').start();
+    const fileCount = Object.keys(codeOutput.files).length;
+    let filesWritten = 0;
+    let filesFailed = 0;
+
+    logger.info('Starting file writing', { fileCount });
+
+    Object.entries(codeOutput.files).forEach(([filepath, code]) => {
+      try {
+        fs.ensureDirSync(path.dirname(filepath));
+        fs.writeFileSync(filepath, code);
+        filesWritten++;
+        logger.debug('File written successfully', { filepath, codeLength: code.length });
+        writeSpinner.text = `📁 Writing files to disk... (${filesWritten}/${fileCount})`;
+      } catch (fileError) {
+        filesFailed++;
+        logger.error('Failed to write file', fileError, { filepath });
+        console.error(`❌ Failed to write ${filepath}: ${fileError.message}`);
+      }
+    });
+
+    writeSpinner.succeed(`✅ Generated ${filesWritten} files successfully${filesFailed > 0 ? ` (${filesFailed} failed)` : ''}`);
+
+    if (filesFailed > 0) {
+      logger.warn('Some files failed to write', { filesWritten, filesFailed });
+    }
+
+    return codeOutput;
+  } catch (error) {
+    logger.error('RPG code generation failed', error, { prompt: prompt.substring(0, 100) });
+    throw error;
+  }
 }
 
+/**
+ * Main entry point for the Grok Code CLI.
+ * Handles setup, user interaction, and AI integration.
+ */
 async function main() {
   logger.info('Starting Grok Code CLI');
 
@@ -432,9 +534,10 @@ async function main() {
     }
   }
 
+  // Update OpenAI client for v5.x
   const client = new OpenAI({
     baseURL: 'https://api.x.ai/v1',
-    apiKey
+    apiKey: apiKey
   });
 
   // Model configuration
@@ -524,101 +627,77 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   console.log("Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n");
 
-  // Create persistent readline interface for arrow key history
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    history: [...commandHistory].reverse() // Most recent first for up arrow
-  });
-
-  // Update exit handlers with readline reference
-  setupExitHandlers(rl);
+  // No readline; use inquirer for all input
+  const mainQuestion = {
+    type: 'input',
+    name: 'input',
+    message: 'You: ',
+    history: commandHistory  // inquirer supports history via external lib, but for simplicity, use array
+  };
 
   while (true) {
-    let userInput;
+    const { input: userInputRaw } = await inquirer.prompt([mainQuestion]);
+    const userInput = userInputRaw.trim();
 
-    try {
-      userInput = await new Promise((resolve, reject) => {
-        rl.question('You: ', (answer) => {
-          resolve(answer.trim());
-        });
+    if (!userInput) continue;
 
-        // Add timeout to prevent hanging
-        setTimeout(() => {
-          reject(new Error('Readline timeout'));
-        }, 30000); // 30 second timeout
-      });
-    } catch (error) {
-      logger.warn('Error reading user input', { error: error.message });
-      userInput = '';
-    }
-
-    if (userInput.toLowerCase() === '/exit' || userInput.toLowerCase() === 'exit') {
+    if (userInput.toLowerCase() === 'exit' || userInput.toLowerCase() === '/exit') {
       logger.info('User requested exit');
       console.log("Exiting Grok Code. Happy coding!");
-      // Force immediate exit to prevent hanging
-      setImmediate(() => process.exit(0));
-      return; // Don't continue processing
+      process.exit(0);
     }
 
-    try {
-      const handled = await handleCommand(userInput, messages, fileContext, client, model);
-      if (handled) continue;
-    } catch (error) {
-      logger.error('Error handling command', error, { userInput });
-      console.error('❌ Error processing command. Check .grok/error.log for details.');
+    // Handle commands
+    const handled = await handleCommand(userInput, messages, fileContext, client, model);
+    if (handled) {
+      // Update history
+      commandHistory = addToHistory(userInput, commandHistory);
+      saveCommandHistory(commandHistory);
       continue;
     }
 
-    // Add command to history and save
+    // Add to history
     commandHistory = addToHistory(userInput, commandHistory);
     saveCommandHistory(commandHistory);
-    
-    // Update readline history
-    rl.history = [...commandHistory].reverse();
 
-    // Check if prompt should use RPG planning - comprehensive detection
+    // RPG check
     const shouldUseRPG = userInput.toLowerCase().includes('generate repo') ||
-                         userInput.toLowerCase().includes('build') ||
-                         userInput.toLowerCase().includes('create a') ||
-                         userInput.toLowerCase().includes('implement a') ||
-                         userInput.toLowerCase().includes('develop a') ||
-                         userInput.toLowerCase().includes('add ') ||
-                         userInput.toLowerCase().includes('make ') ||
-                         userInput.toLowerCase().includes('modify ') ||
-                         userInput.toLowerCase().includes('update') ||
-                         userInput.toLowerCase().includes('change ') ||
-                         userInput.toLowerCase().includes('fix ') ||
-                         userInput.toLowerCase().includes('improve ') ||
-                         userInput.toLowerCase().includes('enhance ') ||
-                         userInput.toLowerCase().includes('extend ') ||
-                         // Additional code-related patterns
-                         userInput.toLowerCase().includes('write code') ||
-                         userInput.toLowerCase().includes('code for') ||
-                         userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('function') ||
-                         userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('component') ||
-                         userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('class') ||
-                         userInput.toLowerCase().includes('generate ') && userInput.toLowerCase().includes('code') ||
-                         userInput.toLowerCase().includes('implement ') && userInput.toLowerCase().includes('feature') ||
-                         userInput.toLowerCase().includes('add ') && userInput.toLowerCase().includes('feature') ||
-                         userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('file') ||
-                         userInput.toLowerCase().includes('new ') && userInput.toLowerCase().includes('file');
+                           userInput.toLowerCase().includes('build') ||
+                           userInput.toLowerCase().includes('create a') ||
+                           userInput.toLowerCase().includes('implement a') ||
+                           userInput.toLowerCase().includes('develop a') ||
+                           userInput.toLowerCase().includes('add ') ||
+                           userInput.toLowerCase().includes('make ') ||
+                           userInput.toLowerCase().includes('modify ') ||
+                           userInput.toLowerCase().includes('update') ||
+                           userInput.toLowerCase().includes('change ') ||
+                           userInput.toLowerCase().includes('fix ') ||
+                           userInput.toLowerCase().includes('improve ') ||
+                           userInput.toLowerCase().includes('enhance ') ||
+                           userInput.toLowerCase().includes('extend ') ||
+                           // Additional code-related patterns
+                           userInput.toLowerCase().includes('write code') ||
+                           userInput.toLowerCase().includes('code for') ||
+                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('function') ||
+                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('component') ||
+                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('class') ||
+                           userInput.toLowerCase().includes('generate ') && userInput.toLowerCase().includes('code') ||
+                           userInput.toLowerCase().includes('implement ') && userInput.toLowerCase().includes('feature') ||
+                           userInput.toLowerCase().includes('add ') && userInput.toLowerCase().includes('feature') ||
+                           userInput.toLowerCase().includes('create ') && userInput.toLowerCase().includes('file') ||
+                           userInput.toLowerCase().includes('new ') && userInput.toLowerCase().includes('file');
 
     if (shouldUseRPG) {
       logger.info('RPG mode triggered', { userInput, existingFiles: Object.keys(fileContext) });
       try {
         await generateCodeWithRPG(userInput, client, model, fileContext);
-        continue;
       } catch (error) {
-        logger.error('RPG generation failed, falling back to regular chat', error, { userInput });
-        const errorSpinner = ora().start();
-        errorSpinner.fail("Generation failed, falling back to regular chat...");
-        // Continue to regular chat flow
+        // fallback
       }
-    } else {
-      logger.debug('Using regular chat mode', { userInput });
+      continue;
     }
 
+    // Regular chat
     messages.push({ role: 'user', content: userInput });
 
     if (Object.keys(fileContext).length > 0) {
@@ -977,7 +1056,7 @@ async function parseAndApplyActions(responseText, messages, fileContext) {
         logger.debug('Executing command', { command: cmd });
 
         try {
-          const result = execSync(cmd, { encoding: 'utf8', timeout: 10000 }); // 10 second timeout
+          const result = execSync(cmd, { encoding: 'utf8' }); // 10 second timeout
           console.log(`Command '${cmd}' output:\n${result}`);
           messages.push({ role: 'system', content: `Command '${cmd}' output:\n${result}` });
           logger.info('Command executed successfully', { command: cmd, outputLength: result.length });
