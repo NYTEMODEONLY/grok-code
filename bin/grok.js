@@ -926,80 +926,193 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   let fileContext = {};
 
   // Initialize syntax highlighter for code display
-  const syntaxHighlighter = new SyntaxHighlighter();
+  let syntaxHighlighter;
+  try {
+    syntaxHighlighter = new SyntaxHighlighter();
+    logger.info('Syntax highlighter initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize syntax highlighter', { error: error.message });
+    console.log('⚠️  Warning: Syntax highlighting may not work properly');
+  }
 
   // Initialize diff viewer for color-coded diffs
-  const diffViewer = new DiffViewer({ syntaxHighlighter });
+  let diffViewer;
+  try {
+    diffViewer = new DiffViewer({ syntaxHighlighter });
+    logger.info('Diff viewer initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize diff viewer', { error: error.message });
+    console.log('⚠️  Warning: Diff viewing may not work properly');
+  }
 
   // Initialize progress indicator for operation feedback
-  const progressIndicator = new ProgressIndicator();
+  let progressIndicator;
+  try {
+    progressIndicator = new ProgressIndicator();
+    logger.info('Progress indicator initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize progress indicator', { error: error.message });
+    console.log('⚠️  Warning: Progress indicators may not work properly');
+  }
 
   // Initialize file browser for interactive navigation
-  const fileBrowser = new FileBrowser({ syntaxHighlighter });
+  let fileBrowser;
+  try {
+    fileBrowser = new FileBrowser({ syntaxHighlighter });
+    logger.info('File browser initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize file browser', { error: error.message });
+    console.log('⚠️  Warning: File browser may not work properly');
+  }
 
   // Initialize code preview for enhanced code display
-  const codePreview = new CodePreview({ syntaxHighlighter });
+  let codePreview;
+  try {
+    codePreview = new CodePreview({ syntaxHighlighter });
+    logger.info('Code preview initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize code preview', { error: error.message });
+    console.log('⚠️  Warning: Code preview may not work properly');
+  }
 
   // Initialize code search for interactive codebase search
-  const codeSearch = new CodeSearch({ syntaxHighlighter, codePreview });
+  let codeSearch;
+  try {
+    codeSearch = new CodeSearch({ syntaxHighlighter, codePreview });
+    logger.info('Code search initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize code search', { error: error.message });
+    console.log('⚠️  Warning: Code search may not work properly');
+  }
 
   // Initialize error recovery workflow system
-  const errorRecoveryWorkflow = new ErrorRecoveryWorkflow({
-    progress: progressIndicator,
-  });
+  let errorRecoveryWorkflow;
+  try {
+    errorRecoveryWorkflow = new ErrorRecoveryWorkflow({
+      progress: progressIndicator,
+    });
+    logger.info('Error recovery workflow initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize error recovery workflow', { error: error.message });
+    console.log('⚠️  Warning: Error recovery may not work properly');
+  }
 
   // Initialize debug command for interactive error analysis
-  const debugCommand = new DebugCommand();
+  let debugCommand;
+  try {
+    debugCommand = new DebugCommand();
+    logger.info('Debug command initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize debug command', { error: error.message });
+    console.log('⚠️  Warning: Debug commands may not work properly');
+  }
 
   // Initialize error analytics for recovery statistics
-  const errorStats = new ErrorStats();
+  let errorStats;
+  try {
+    errorStats = new ErrorStats();
+    logger.info('Error analytics initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize error analytics', { error: error.message });
+    console.log('⚠️  Warning: Error analytics may not work properly');
+  }
 
   // Initialize auto-complete system for intelligent command completion
-  const autoComplete = new AutoComplete({
-    currentDir: currentDir,
-    maxSuggestions: 10,
-  });
+  let autoComplete;
+  try {
+    autoComplete = new AutoComplete({
+      currentDir: currentDir,
+      maxSuggestions: 10,
+    });
+    logger.info('Auto-complete system initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize auto-complete system', { error: error.message });
+    console.log('⚠️  Warning: Auto-complete may not work properly');
+  }
 
   // Initialize command history search system
-  const historySearch = new HistorySearch({
-    maxHistorySize: 500,
-  });
+  let historySearch;
+  try {
+    historySearch = new HistorySearch({
+      maxHistorySize: 500,
+    });
+    logger.info('Command history search initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize command history search', { error: error.message });
+    console.log('⚠️  Warning: Command history may not work properly');
+  }
 
   // Initialize contextual suggestions system
-  const contextualSuggestions = new ContextualSuggestions({
-    maxSuggestions: 5,
-    confidenceThreshold: 0.3,
-  });
+  let contextualSuggestions;
+  try {
+    contextualSuggestions = new ContextualSuggestions({
+      maxSuggestions: 5,
+      confidenceThreshold: 0.3,
+    });
+    logger.info('Contextual suggestions initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize contextual suggestions', { error: error.message });
+    console.log('⚠️  Warning: Contextual suggestions may not work properly');
+  }
 
   // Initialize workflow diagram generator
-  const workflowDiagram = new WorkflowDiagram({
-    maxWidth: 100,
-    maxHeight: 50,
-    style: 'default',
-  });
+  let workflowDiagram;
+  try {
+    workflowDiagram = new WorkflowDiagram({
+      maxWidth: 100,
+      maxHeight: 50,
+      style: 'default',
+    });
+    logger.info('Workflow diagram generator initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize workflow diagram generator', { error: error.message });
+    console.log('⚠️  Warning: Workflow diagrams may not work properly');
+  }
 
   // Initialize progress tracking system
-  const progressTracker = new ProgressTracker({
-    maxConcurrent: 5,
-    showDetails: true,
-    autoCleanup: true,
-    updateInterval: 100,
-  });
+  let progressTracker;
+  try {
+    progressTracker = new ProgressTracker({
+      maxConcurrent: 5,
+      showDetails: true,
+      autoCleanup: true,
+      updateInterval: 100,
+    });
+    logger.info('Progress tracking system initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize progress tracking system', { error: error.message });
+    console.log('⚠️  Warning: Progress tracking may not work properly');
+  }
 
   // Initialize confirmation dialog system
-  const confirmDialog = new ConfirmDialog({
-    maxPreviewLines: 15,
-    showFilePreviews: true,
-    showImpactAssessment: true,
-    enableSafetyMode: true,
-  });
+  let confirmDialog;
+  try {
+    confirmDialog = new ConfirmDialog({
+      maxPreviewLines: 15,
+      showFilePreviews: true,
+      showImpactAssessment: true,
+      enableSafetyMode: true,
+    });
+    logger.info('Confirmation dialog system initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize confirmation dialog system', { error: error.message });
+    console.log('⚠️  Warning: Confirmation dialogs may not work properly');
+  }
 
   // Initialize framework detection system
-  const frameworkDetector = new FrameworkDetector({
-    projectRoot: process.cwd(),
-    confidenceThreshold: 0.7,
-    maxFileSize: 1024 * 1024,
-  });
+  let frameworkDetector;
+  try {
+    frameworkDetector = new FrameworkDetector({
+      projectRoot: process.cwd(),
+      confidenceThreshold: 0.7,
+      maxFileSize: 1024 * 1024,
+    });
+    logger.info('Framework detection system initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize framework detection system', { error: error.message });
+    console.log('⚠️  Warning: Framework detection may not work properly');
+    frameworkDetector = null;
+  }
 
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
@@ -3273,8 +3386,14 @@ async function handleCommand(
       console.log('🔍 Detecting frameworks and technologies...\n');
 
       // Check if frameworkDetector is available
-      if (!frameworkDetector) {
-        console.log('❌ Framework detector not available. Please restart the application.');
+      if (typeof frameworkDetector === 'undefined' || frameworkDetector === null) {
+        console.log('❌ Framework detector failed to initialize.');
+        console.log('   This may be due to a missing dependency or configuration error.');
+        console.log('   Check .grok/error.log for details and try restarting the application.');
+        logger.error('Framework detector is not available in command handler', {
+          frameworkDetector: typeof frameworkDetector,
+          initialized: frameworkDetector ? 'available' : 'null/undefined'
+        });
         return true;
       }
 
@@ -3283,6 +3402,7 @@ async function handleCommand(
 
         if (results.error) {
           console.log(`❌ Detection failed: ${results.error}`);
+          logger.error('Framework detection returned error', { error: results.error });
           return true;
         }
 
@@ -3317,6 +3437,10 @@ async function handleCommand(
 
       } catch (error) {
         console.log(`❌ Framework detection failed: ${error.message}`);
+        logger.error('Framework detection threw exception', {
+          error: error.message,
+          stack: error.stack
+        });
       }
     } else if (subcommand === 'report') {
       console.log('📋 Generating detailed framework report...\n');
