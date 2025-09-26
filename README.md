@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.12.0 - Team-Specific Learning System (Phase 4.2)
+### v1.13.0 - Auto-Apply Project Conventions (Phase 4.2)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -81,7 +81,10 @@
 - **🧠 Team Learning System**: Learns from user interactions and corrections over time
 - **🎯 Personalized Recommendations**: Builds confidence-based preferences from team behavior
 - **📈 Adaptive Intelligence**: Evolves suggestions based on accepted vs rejected patterns
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn` for intelligent project analysis
+- **🔧 Auto-Apply Conventions**: Automatically format code to match learned standards
+- **💾 Safe Application**: Automatic backups with rollback capability and dry-run mode
+- **🎛️ Smart Fixes**: Quote normalization, indentation fixes, semicolon consistency
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply` for intelligent project analysis
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
