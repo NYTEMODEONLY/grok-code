@@ -37,7 +37,7 @@
 - **🔍 Intelligent File Linking**: Semantic search across codebases, auto-context building, token-efficient conversation management
 - **💰 Context Budgeting**: Reserves capacity for different context types (essentials vs conversation) to prevent capacity exhaustion
 
-**Phase 2: Advanced Error Recovery System** _(Latest Addition)_
+**Phase 2: Advanced Error Recovery System**
 
 - **🔍 Intelligent Error Detection**: Parses ESLint, TypeScript, Prettier output with context-aware analysis
 - **🔧 Automated Fix Generation**: 20+ fix templates for common errors (semicolons, unused vars, imports, etc.)
@@ -45,7 +45,28 @@
 - **🛡️ Safe Fix Application**: Automatic backups, rollback capability, risk assessment, and validation
 - **📊 Learning & Intelligence**: Cross-session error pattern analysis, personalized recommendations, and proactive prevention
 
+**Phase 3: IDE-like Terminal Experience** _(Latest Addition)_
+
+- **🎨 Syntax Highlighting**: Multi-language code highlighting (JavaScript, TypeScript, Python, JSON, Shell, SQL)
+- **🌈 Multiple Color Themes**: Default, dark, and minimal themes with ANSI terminal compatibility
+- **📊 Color-Coded Diff Display**: Unified diff parsing with green/red/gray color coding for additions/deletions
+- **🔍 Git Integration**: `/diff git` command for seamless git diff workflows with syntax highlighting
+- **⏳ Progress Indicators**: Advanced spinners and status displays for long-running operations
+- **🗂️ Interactive File Browser**: Terminal navigation with arrow keys and file selection
+- **📄 Enhanced Code Preview**: Line numbers, gutter, and IDE-style formatting with search highlighting
+- **🔍 Interactive Code Search**: Multi-file, multi-mode search across entire codebases
+- **⚡ Smart Command Interface**: Auto-complete for commands and file paths with intelligent suggestions
+- **🕐 Advanced Command History**: Full-text search, time-based filtering, and usage analytics
+
 ## 📋 Changelog
+
+### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
+- **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
+- **🕐 Advanced Command History**: Full-text search across command history with time-based filtering and analytics
+- **🔄 Intelligent Auto-Complete**: Fuzzy matching, priority-based sorting, and context-aware completions
+- **📊 Command History Analytics**: Usage statistics, frequency analysis, and command pattern insights
+- **🎯 Enhanced CLI Commands**: `/complete` for testing auto-complete, `/history` for advanced history management
+- **🧠 IDE-like Experience**: Tab completion, command suggestions, and intelligent terminal interactions
 
 ### v1.4.0 - Complete Error Recovery System (Phase 2.4)
 
