@@ -192,6 +192,27 @@ function setupExitHandlers() {
 }
 
 // GitHub Update Functions
+/**
+ * Compare two semantic version strings
+ * @param {string} v1 - First version
+ * @param {string} v2 - Second version
+ * @returns {number} -1 if v1 < v2, 0 if equal, 1 if v1 > v2
+ */
+function compareVersions(v1, v2) {
+  const parts1 = v1.split('.').map(Number);
+  const parts2 = v2.split('.').map(Number);
+
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const part1 = parts1[i] || 0;
+    const part2 = parts2[i] || 0;
+
+    if (part1 > part2) return 1;
+    if (part1 < part2) return -1;
+  }
+
+  return 0;
+}
+
 async function checkForUpdates() {
   return new Promise((resolve) => {
     const options = {
@@ -220,8 +241,15 @@ async function checkForUpdates() {
             readFileSync(path.join(__dirname, '../package.json'), 'utf8')
           );
           const currentVersion = packageJson.version;
+
+          // Compare versions properly
+          const versionComparison = compareVersions(latestVersion, currentVersion);
+          const hasUpdate = versionComparison > 0; // latest > current
+          const isAhead = versionComparison < 0; // current > latest (development version)
+
           resolve({
-            hasUpdate: latestVersion !== currentVersion,
+            hasUpdate,
+            isAhead,
             currentVersion,
             latestVersion,
             downloadUrl: release.zipball_url,
@@ -942,6 +970,11 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
           `\n🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
         );
         console.log("Type '/update' to update to the latest version.\n");
+      } else if (updateCheck.isAhead) {
+        console.log(
+          `\n🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
+        );
+        console.log("You're running a development version.\n");
       }
       // Only show error if it's not the common "no releases" case
       else if (
@@ -2023,6 +2056,7 @@ async function handleCommand(
   } else if (input === '/update' || input.toLowerCase() === 'update') {
     console.log('Checking for updates...');
     const updateCheck = await checkForUpdates();
+
     if (updateCheck.hasUpdate) {
       console.log(
         `🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
@@ -2040,12 +2074,20 @@ async function handleCommand(
           process.exit(0); // Exit after successful update
         }
       }
-    } else if (updateCheck.error) {
-      console.log(`❌ Could not check for updates: ${updateCheck.error}`);
+    } else if (updateCheck.isAhead) {
+      console.log(
+        `🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
+      );
+      console.log('You are already running a development version newer than the latest release.');
+      console.log('To get the latest stable release, you may need to switch to the main branch or wait for a new release.');
     } else {
       console.log(
-        `✅ You're already running the latest version (v${updateCheck.currentVersion})`
+        `✅ You are running the latest version: v${updateCheck.currentVersion}`
       );
+    }
+
+    if (updateCheck.error) {
+      console.log(`❌ Could not check for updates: ${updateCheck.error}`);
     }
     return true;
   } else if (input.startsWith('/')) {
