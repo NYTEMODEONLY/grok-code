@@ -51,17 +51,23 @@ class ErrorLogger {
       }),
     };
 
-    const logLine = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
-    if (error) {
-      console.error(logLine, error.message);
-    } else {
-      console.log(logLine);
+    // Only console for errors; suppress info/warn/debug for clean UX
+    if (level === 'error') {
+      const logLine = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
+      console.error(logLine, error ? error.message : '');
+    } else if (level === 'warn') {
+      // Optional: console.warn for warnings if needed, but suppress for minimalism
+      // console.warn(`[${timestamp}] WARN: ${message}`);
     }
+    // Info and debug: silent on console
 
     try {
       fs.appendFileSync(this.logFile, JSON.stringify(logEntry) + '\n');
     } catch (logError) {
-      console.error('Failed to write to error log:', logError.message);
+      // Fallback if file write fails
+      if (level === 'error') {
+        console.error('Failed to write to error log:', logError.message);
+      }
     }
   }
 
