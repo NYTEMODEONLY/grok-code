@@ -88,6 +88,7 @@ program.parse();
 // Set up proper exit handling
 function setupExitHandlers(rl = null) {
   let isShuttingDown = false;
+  let intentionalExit = false;
 
   // Handle Ctrl+C
   process.on('SIGINT', () => {
@@ -533,12 +534,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     if (userInput.toLowerCase() === '/exit' || userInput.toLowerCase() === 'exit') {
       logger.info('User requested exit');
       console.log("Exiting Grok Code. Happy coding!");
-      try {
-        rl.close();
-      } catch (error) {
-        logger.error('Error closing readline interface', error);
-      }
-      break;
+      // Force immediate exit to prevent hanging
+      setImmediate(() => process.exit(0));
+      return; // Don't continue processing
     }
 
     try {
