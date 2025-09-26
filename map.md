@@ -217,10 +217,10 @@ Transform the terminal interface into a modern, interactive development environm
   - Files to modify: `lib/display/syntax-highlighter.js`
   - Testing: Highlight JavaScript, Python, and other languages ✅ COMPLETED
 
-- [ ] **Task 3.1.2**: Add color-coded diff display
+- [x] **Task 3.1.2**: Add color-coded diff display
   - Dependencies: Syntax highlighter
   - Files to modify: `lib/display/diff-viewer.js`
-  - Testing: Show colored diffs for file changes
+  - Testing: Show colored diffs for file changes ✅ COMPLETED
 
 - [ ] **Task 3.1.3**: Create progress indicators and status displays
   - Dependencies: `ora` spinner enhancement
