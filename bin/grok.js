@@ -15,6 +15,9 @@ import os from 'os';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { fileSuggester } from '../lib/context/file-suggester.js';
+import { autoContextBuilder } from '../lib/context/auto-context.js';
+import { tokenManager } from '../lib/context/token-manager.js';
 
 /**
  * Error Logging System
@@ -115,7 +118,10 @@ class ErrorLogger {
 
 const logger = new ErrorLogger();
 
-program.name('grok').description('Grok Code CLI - built by nytemode').version('1.1.1');
+program
+  .name('grok')
+  .description('Grok Code CLI - built by nytemode')
+  .version('1.1.1');
 
 program.action(async () => {
   await main();
@@ -855,20 +861,65 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     messages.push(...conversationHistory);
   }
 
-  // Automatic codebase scanning on start
+  // Reset context budget for new session
+  tokenManager.resetBudget();
+
+  // Automatic codebase scanning on start (with budget constraints)
   const essentialFiles = ['package.json', 'README.md', 'GROK.md'];
-  essentialFiles.forEach((f) => {
+  let loadedFiles = 0;
+  let skippedFiles = 0;
+
+  console.log('🔄 Loading essential project context...');
+
+  for (const f of essentialFiles) {
     const filePath = path.join(currentDir, f);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf8');
-      fileContext[f] = content;
-      messages.push({
-        role: 'system',
-        content: `Auto-added essential file ${f}:\n${content}`,
-      });
+      const estimatedTokens = Math.ceil(content.length / 4); // Rough token estimation
+
+      // Check if we can add this file to the essentials budget
+      const budgetCheck = tokenManager.canAddToBudget(
+        'essentials',
+        estimatedTokens,
+        model
+      );
+
+      if (budgetCheck.canAdd) {
+        fileContext[f] = content;
+        messages.push({
+          role: 'system',
+          content: `Auto-added essential file ${f}:\n${content}`,
+        });
+
+        // Track the token usage in the essentials budget
+        tokenManager.addToBudget('essentials', estimatedTokens);
+        loadedFiles++;
+
+        console.log(`   ✅ ${f} (${estimatedTokens} tokens)`);
+      } else {
+        skippedFiles++;
+        console.log(
+          `   ⚠️ Skipped ${f} (${estimatedTokens} tokens) - would exceed essentials budget`
+        );
+        console.log(
+          `      Available: ${budgetCheck.available} tokens, Needed: ${estimatedTokens}`
+        );
+      }
     }
-  });
-  console.log('Auto-scanned essential files for initial context.');
+  }
+
+  // Show budget status after loading
+  const budgetStatus = tokenManager.getBudgetStatus(model);
+  console.log(`\n💰 Context Budget Status:`);
+  console.log(
+    `   Essentials: ${budgetStatus.categories.essentials.utilizationPercent}% (${budgetStatus.categories.essentials.currentUsage}/${budgetStatus.categories.essentials.categoryLimit} tokens)`
+  );
+  console.log(
+    `   Conversation: ${budgetStatus.categories.conversation.utilizationPercent}% available (${budgetStatus.categories.conversation.available} tokens)`
+  );
+  console.log(
+    `   Total: ${budgetStatus.totalUtilizationPercent}% used, ${budgetStatus.availableCapacity} tokens free\n`
+  );
 
   // Check for updates on startup (non-blocking)
   checkForUpdates()
@@ -955,6 +1006,81 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         // Save conversation after command execution
         saveConversationHistory(messages);
         continue;
+      }
+
+      // Auto-context analysis and file addition
+      try {
+        const autoAddResult = await autoContextBuilder.analyzeAndAutoAdd(
+          trimmedInput,
+          fileContext,
+          messages.slice(-5) // Last 5 messages for context
+        );
+
+        if (autoAddResult.autoAdded && autoAddResult.filesAdded.length > 0) {
+          console.log(
+            `🤖 Auto-added ${autoAddResult.filesAdded.length} relevant file(s) to context:`
+          );
+          autoAddResult.filesAdded.forEach((file) => {
+            console.log(`   ✅ ${file.name} (${file.tokens} tokens)`);
+          });
+
+          // Add to conversation context
+          messages.push({
+            role: 'system',
+            content: `Automatically added ${autoAddResult.filesAdded.length} relevant files to context for query: "${trimmedInput}"`,
+          });
+        }
+      } catch (autoContextError) {
+        // Don't break the conversation flow for auto-context errors
+        logger.warn('Auto-context addition failed', autoContextError);
+      }
+
+      // Token management and context pruning
+      try {
+        const tokenAnalysis = tokenManager.analyzeContext(
+          messages,
+          fileContext,
+          model
+        );
+        const budgetStatus = tokenManager.getBudgetStatus(model);
+
+        if (tokenAnalysis.status === 'critical') {
+          console.log(
+            `🚨 Context at ${tokenAnalysis.utilizationPercent}% capacity (${tokenAnalysis.currentTokens}/${tokenAnalysis.tokenLimit} tokens)`
+          );
+          console.log('💰 Budget breakdown:');
+          console.log(
+            `   Essentials: ${budgetStatus.categories.essentials.utilizationPercent}% (${budgetStatus.categories.essentials.currentUsage} tokens)`
+          );
+          console.log(
+            `   Conversation: ${budgetStatus.categories.conversation.utilizationPercent}% (${budgetStatus.categories.conversation.currentUsage} tokens)`
+          );
+          console.log('🔄 Auto-pruning context...');
+
+          const pruneResult = tokenManager.autoPruneContext(
+            messages,
+            fileContext,
+            model
+          );
+          if (pruneResult.pruned) {
+            console.log(
+              `✅ Pruned ${pruneResult.filesPruned} files, removed ${pruneResult.tokensRemoved} tokens`
+            );
+            const newBudgetStatus = tokenManager.getBudgetStatus(model);
+            console.log(
+              `📊 Context now at ${newBudgetStatus.totalUtilizationPercent}% capacity (${newBudgetStatus.availableCapacity} tokens free)`
+            );
+          }
+        } else if (tokenAnalysis.status === 'warning') {
+          console.log(
+            `⚠️ Context at ${tokenAnalysis.utilizationPercent}% capacity (${budgetStatus.availableCapacity} tokens remaining)`
+          );
+          console.log(
+            '💡 Tip: Use /prune-context if you need more space for conversation'
+          );
+        }
+      } catch (tokenError) {
+        logger.warn('Token management failed', tokenError);
       }
 
       // RPG check
@@ -1108,27 +1234,72 @@ async function handleCommand(
     const filename = input.split(' ').slice(1).join(' ');
     if (fs.existsSync(filename)) {
       const content = fs.readFileSync(filename, 'utf8');
-      fileContext[filename] = content;
-      messages.push({
-        role: 'system',
-        content: `File ${filename} added to context:\n${content}`,
-      });
-      console.log(`Added ${filename} to context.`);
+      const estimatedTokens = Math.ceil(content.length / 4);
+
+      // Check if we can add this file to the conversation budget
+      const budgetCheck = tokenManager.canAddToBudget(
+        'conversation',
+        estimatedTokens,
+        model
+      );
+
+      if (budgetCheck.canAdd) {
+        fileContext[filename] = content;
+        messages.push({
+          role: 'system',
+          content: `File ${filename} added to context:\n${content}`,
+        });
+
+        // Track the token usage in the conversation budget
+        tokenManager.addToBudget('conversation', estimatedTokens);
+
+        console.log(
+          `✅ Added ${filename} to context (${estimatedTokens} tokens).`
+        );
+        const budgetStatus = tokenManager.getBudgetStatus(model);
+        console.log(
+          `💰 Conversation capacity: ${budgetStatus.categories.conversation.available} tokens remaining`
+        );
+      } else {
+        console.log(
+          `❌ Cannot add ${filename} (${estimatedTokens} tokens) - would exceed conversation budget.`
+        );
+        console.log(
+          `💰 Available: ${budgetCheck.available} tokens, Need: ${estimatedTokens}`
+        );
+        console.log(
+          '💡 Try /prune-context to free up space, or use /scan to selectively add files.'
+        );
+      }
     } else {
-      console.log(`File ${filename} not found.`);
+      console.log(`❌ File ${filename} not found.`);
     }
     return true;
   } else if (input.startsWith('/remove ')) {
     const filename = input.split(' ').slice(1).join(' ');
     if (filename in fileContext) {
+      const content = fileContext[filename];
+      const estimatedTokens = Math.ceil(content.length / 4);
+
       delete fileContext[filename];
       messages.push({
         role: 'system',
         content: `File ${filename} removed from context.`,
       });
-      console.log(`Removed ${filename} from context.`);
+
+      // Remove tokens from the appropriate budget category
+      // (Could be either essentials or conversation, but we'll remove from conversation as it's more common)
+      tokenManager.removeFromBudget('conversation', estimatedTokens);
+
+      console.log(
+        `✅ Removed ${filename} from context (${estimatedTokens} tokens freed).`
+      );
+      const budgetStatus = tokenManager.getBudgetStatus(model);
+      console.log(
+        `💰 Conversation capacity: ${budgetStatus.categories.conversation.available} tokens now available`
+      );
     } else {
-      console.log(`File ${filename} not in context.`);
+      console.log(`❌ File ${filename} not in context.`);
     }
     return true;
   } else if (input === '/scan') {
@@ -1182,6 +1353,261 @@ async function handleCommand(
       console.log(`Model remains: ${model}`);
     }
     return true;
+  } else if (input.startsWith('/semantic-search ')) {
+    const query = input.substring('/semantic-search '.length).trim();
+    if (!query) {
+      console.log('❌ Usage: /semantic-search "your coding query"');
+      console.log('Example: /semantic-search "fix authentication bug"');
+      return true;
+    }
+
+    console.log(`🔍 Analyzing codebase for: "${query}"`);
+    console.log('─'.repeat(50));
+
+    try {
+      const result = await fileSuggester.suggestFiles(query, ['.'], {
+        maxSuggestions: 5,
+        includeContext: false, // Don't optimize context for CLI display
+      });
+
+      if (result.suggestions.length === 0) {
+        console.log('❌ No relevant files found for this query.');
+        return true;
+      }
+
+      console.log(
+        `🎯 Task Type: ${result.task.analysis.type} (${result.task.analysis.confidence}% confidence)`
+      );
+      console.log(`📂 Found ${result.suggestions.length} relevant files:\n`);
+
+      result.suggestions.forEach((suggestion, index) => {
+        const priorityEmoji =
+          {
+            critical: '🔴',
+            high: '🟠',
+            medium: '🟡',
+            low: '🟢',
+            optional: '⚪',
+          }[suggestion.priority] || '⚪';
+
+        console.log(`${index + 1}. ${priorityEmoji} ${suggestion.file.name}`);
+        console.log(
+          `   Relevance: ${suggestion.relevance.level} (${suggestion.relevance.score} pts)`
+        );
+        console.log(`   Action: ${suggestion.action}`);
+        console.log(`   Why: ${suggestion.reasoning}`);
+        console.log('');
+      });
+
+      console.log('💡 Recommendations:');
+      result.recommendations.forEach((rec) => {
+        console.log(`   ${rec}`);
+      });
+
+      // Add to conversation context
+      messages.push({
+        role: 'system',
+        content: `Semantic search results for "${query}": Found ${result.suggestions.length} relevant files. ${result.recommendations[0]}`,
+      });
+    } catch (error) {
+      console.log(`❌ Semantic search failed: ${error.message}`);
+      logger.error('Semantic search error', error, { query });
+    }
+
+    return true;
+  } else if (input.startsWith('/analyze ')) {
+    const query = input.substring('/analyze '.length).trim();
+    if (!query) {
+      console.log('❌ Usage: /analyze "your coding query"');
+      console.log('Example: /analyze "implement user login"');
+      return true;
+    }
+
+    console.log(`🔬 Deep analysis for: "${query}"`);
+    console.log('─'.repeat(50));
+
+    try {
+      const result = await fileSuggester.suggestFiles(query, ['.'], {
+        maxSuggestions: 10,
+        includeContext: true,
+        model: 'grok-code-fast-1',
+        detailLevel: 'detailed',
+      });
+
+      if (result.suggestions.length === 0) {
+        console.log('❌ No relevant files found for deep analysis.');
+        return true;
+      }
+
+      console.log(
+        `🎯 Task Analysis: ${result.task.analysis.type} (${result.task.analysis.confidence}% confidence)`
+      );
+      console.log(
+        `📊 Context Optimization: ${result.optimization.tokenUtilization}% of ${result.optimization.tokenLimit} tokens used`
+      );
+      console.log(`📂 Selected ${result.files.length} files for context:\n`);
+
+      result.files.forEach((file, index) => {
+        console.log(
+          `${index + 1}. ${file.shortName} (${file.relevanceScore} pts, ${file.tokens} tokens)`
+        );
+        console.log(`   Language: ${file.language}`);
+
+        if (file.optimization) {
+          console.log(
+            `   Optimized: ${file.optimization.compressionRatio}% of original size`
+          );
+        }
+
+        // Show first few lines of content
+        const lines = file.content.split('\n').slice(0, 3);
+        console.log(
+          `   Preview: ${lines.join(' ').substring(0, 80)}${file.content.length > 80 ? '...' : ''}`
+        );
+        console.log('');
+      });
+
+      // Automatically add top files to context
+      console.log('🔄 Auto-adding relevant files to context...');
+      result.files.slice(0, 3).forEach((file) => {
+        fileContext[file.filePath] = file.content;
+        console.log(`   ✅ Added ${file.shortName} to context`);
+      });
+
+      console.log('\n💡 Analysis complete. Top recommendations:');
+      result.recommendations.slice(0, 3).forEach((rec) => {
+        console.log(`   ${rec}`);
+      });
+
+      // Add comprehensive analysis to conversation
+      messages.push({
+        role: 'system',
+        content: `Deep analysis for "${query}": ${result.files.length} files optimized for context (${result.totalTokens} tokens). ${result.recommendations[0]}`,
+      });
+    } catch (error) {
+      console.log(`❌ Analysis failed: ${error.message}`);
+      logger.error('Analysis error', error, { query });
+    }
+
+    return true;
+  } else if (input.startsWith('/auto-context')) {
+    const parts = input.split(' ').slice(1);
+    const command = parts[0];
+
+    if (command === 'on') {
+      autoContextBuilder.configure({ autoAddEnabled: true });
+      console.log('✅ Auto-context building enabled');
+    } else if (command === 'off') {
+      autoContextBuilder.configure({ autoAddEnabled: false });
+      console.log('❌ Auto-context building disabled');
+    } else if (command === 'status') {
+      const stats = autoContextBuilder.getStatistics();
+      console.log('🤖 Auto-Context Status:');
+      console.log(
+        `   Enabled: ${autoContextBuilder.autoAddEnabled ? '✅' : '❌'}`
+      );
+      console.log(`   Files tracked: ${stats.totalFilesTracked}`);
+      console.log(`   Learned patterns: ${stats.learnedPatterns}`);
+      console.log(`   Auto-adds performed: ${stats.autoAddedFiles}`);
+      console.log(
+        `   Conversation memory: ${stats.conversationMemorySize} items`
+      );
+
+      if (
+        stats.taskTypeDistribution &&
+        Object.keys(stats.taskTypeDistribution).length > 0
+      ) {
+        console.log('   Task types learned:');
+        Object.entries(stats.taskTypeDistribution).forEach(([type, count]) => {
+          console.log(`     ${type}: ${count} queries`);
+        });
+      }
+    } else if (command === 'clear') {
+      autoContextBuilder.clearLearning();
+      console.log('🧹 Auto-context learning cleared');
+    } else {
+      console.log('Usage: /auto-context <on|off|status|clear>');
+      console.log('  on    - Enable automatic context building');
+      console.log('  off   - Disable automatic context building');
+      console.log('  status - Show auto-context statistics');
+      console.log('  clear - Clear learned patterns');
+    }
+    return true;
+  } else if (input.startsWith('/prune-context')) {
+    const parts = input.split(' ').slice(1);
+    const command = parts[0];
+
+    if (command === 'status') {
+      const analysis = tokenManager.analyzeContext(
+        messages,
+        fileContext,
+        model
+      );
+      const stats = tokenManager.getStatistics();
+
+      console.log('📊 Context Status:');
+      console.log(
+        `   Current tokens: ${analysis.currentTokens}/${analysis.tokenLimit}`
+      );
+      console.log(
+        `   Utilization: ${analysis.utilizationPercent}% (${analysis.status})`
+      );
+      console.log(`   Files in context: ${Object.keys(fileContext).length}`);
+      console.log(`   Strategy: ${stats.currentStrategy}`);
+      console.log(`   Auto-pruning: ${stats.autoPruneEnabled ? '✅' : '❌'}`);
+      console.log(`   Total prunings: ${stats.totalPrunings}`);
+    } else if (command === 'prune') {
+      const strategy = parts[1] || tokenManager.currentStrategy;
+      console.log(`🔄 Pruning context using ${strategy} strategy...`);
+
+      const result = tokenManager.pruneContext(
+        messages,
+        fileContext,
+        model,
+        strategy
+      );
+      if (result.pruned) {
+        console.log(
+          `✅ Pruned ${result.filesPruned} files, removed ${result.tokensRemoved} tokens`
+        );
+        console.log(`📊 Context now at ${result.finalUtilization}% capacity`);
+        console.log('Pruned files:');
+        result.prunedFiles.forEach((file) => {
+          console.log(`   🗑️ ${file.name} (${file.tokensRemoved} tokens)`);
+        });
+      } else {
+        console.log(`❌ ${result.reason}`);
+      }
+    } else if (command === 'strategy') {
+      const newStrategy = parts[1];
+      if (newStrategy && tokenManager.getAvailableStrategies()[newStrategy]) {
+        tokenManager.configure({ currentStrategy: newStrategy });
+        console.log(`✅ Pruning strategy changed to: ${newStrategy}`);
+      } else {
+        console.log('Available strategies:');
+        Object.entries(tokenManager.getAvailableStrategies()).forEach(
+          ([key, strategy]) => {
+            console.log(`   ${key}: ${strategy.description}`);
+          }
+        );
+        console.log(`Current: ${tokenManager.currentStrategy}`);
+      }
+    } else if (command === 'auto') {
+      const enabled = parts[1] !== 'off';
+      tokenManager.configure({ autoPruneEnabled: enabled });
+      console.log(
+        `${enabled ? '✅' : '❌'} Auto-pruning ${enabled ? 'enabled' : 'disabled'}`
+      );
+    } else {
+      console.log('Usage: /prune-context <status|prune|strategy|auto>');
+      console.log('  status          - Show current context status');
+      console.log('  prune [strategy] - Manually prune context');
+      console.log(
+        '  strategy <name>  - Set pruning strategy (balanced/aggressive/conservative)'
+      );
+      console.log('  auto <on|off>    - Enable/disable auto-pruning');
+    }
+    return true;
   } else if (input === '/help') {
     console.log(`Commands:
 - /add <file>: Add file to context
@@ -1189,6 +1615,10 @@ async function handleCommand(
 - /scan: Scan and add all files to context
 - /ls: List files in directory
 - /model: Change AI model (grok-code-fast-1, grok-4-fast-reasoning, grok-4-fast-non-reasoning, etc.)
+- /semantic-search "query": Find relevant files for coding tasks (e.g., /semantic-search "fix auth bug")
+- /analyze "query": Deep analysis with automatic context building (e.g., /analyze "implement login")
+- /auto-context <on|off|status|clear>: Control automatic context building
+- /prune-context <status|prune|strategy|auto>: Manage context size and token limits
 - /update or update: Check for and install updates from GitHub
 - /run <cmd>: Run shell command
 - /git <command>: Run git command (e.g., /git status)
@@ -1209,6 +1639,9 @@ async function handleCommand(
 - Auto-update check: Notifies you of new versions on startup
 - Error logging: Automatic logging to .grok/error.log
 - Smart code generation: Automatically detects requests like "build", "add", "update", "make", etc. and generates code
+- Intelligent file analysis: /semantic-search and /analyze commands use AI to find and prioritize relevant files
+- Automatic context building: Proactively adds relevant files to context during conversation (/auto-context to control)
+- Smart token management: Monitors and manages context size to stay within AI model limits (/prune-context to control)
 `);
     return true;
   } else if (input.startsWith('/run ')) {
@@ -1327,6 +1760,38 @@ async function handleCommand(
     } catch (error) {
       console.log(`❌ Error reading logs: ${error.message}`);
     }
+    return true;
+  } else if (input === '/budget') {
+    const budgetStatus = tokenManager.getBudgetStatus(model);
+    console.log('\n💰 Context Budget Status:');
+    console.log('═'.repeat(50));
+    console.log(
+      `Total Usage: ${budgetStatus.totalUtilizationPercent}% (${budgetStatus.totalUsed}/${budgetStatus.totalLimit} tokens)`
+    );
+    console.log(`Available: ${budgetStatus.availableCapacity} tokens\n`);
+
+    console.log('Budget Categories:');
+    Object.entries(budgetStatus.categories).forEach(([category, stats]) => {
+      const bar =
+        '█'.repeat(Math.floor(stats.utilization * 20)) +
+        '░'.repeat(20 - Math.floor(stats.utilization * 20));
+      console.log(
+        `  ${category.padEnd(12)} ${bar} ${stats.utilizationPercent}% (${stats.currentUsage}/${stats.categoryLimit})`
+      );
+    });
+
+    console.log('\n💡 Tips:');
+    if (budgetStatus.categories.conversation.available < 1000) {
+      console.log('   • Low conversation space - consider /prune-context');
+    }
+    if (budgetStatus.categories.essentials.utilization > 0.8) {
+      console.log(
+        '   • High essentials usage - project files taking most space'
+      );
+    }
+    console.log('   • Use /add <file> to add files to conversation context');
+    console.log('   • Use /remove <file> to free up space');
+
     return true;
   } else if (input === '/clear') {
     messages = [{ role: 'system', content: systemPrompt }];

@@ -1,0 +1,117 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "update"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: update"
+    },
+    {
+      "role": "user",
+      "content": "/model"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: /model"
+    },
+    {
+      "role": "user",
+      "content": "what model are you right now?"
+    },
+    {
+      "role": "assistant",
+      "content": "I am currently using the `grok-code-fast-1` model, which is the default optimized for coding tasks—it's fast, cost-effective, and designed for efficient code generation and assistance. If you'd like to switch models (e.g., for better reasoning on complex RPG planning), you can use the `/model` command to select from available options like `grok-4-fast-reasoning` or others listed in the README. Let me know if you need help with that!"
+    },
+    {
+      "role": "user",
+      "content": "update"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: update"
+    },
+    {
+      "role": "user",
+      "content": "who made you?"
+    },
+    {
+      "role": "assistant",
+      "content": "I am Grok, a helpful AI built by xAI. In this context, the Grok Code CLI tool you're interacting with was created by nytemodeonly as a personal project (see the `package.json` and README for details—it's not officially affiliated with xAI). If you meant something else, let me know!"
+    },
+    {
+      "role": "user",
+      "content": "update"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: update"
+    },
+    {
+      "role": "user",
+      "content": "update"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: update"
+    },
+    {
+      "role": "user",
+      "content": "/model"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: /model"
+    },
+    {
+      "role": "user",
+      "content": "help"
+    },
+    {
+      "role": "assistant",
+      "content": "### Grok Code Help\n\nWelcome to Grok Code! Here's a quick reference for commands and usage. Type any message for AI assistance, or use these slash commands:\n\n#### 🤖 AI & Chat\n- `/model` - Switch AI models (default: grok-code-fast-1)\n- `/clear` - Clear conversation history\n- `/undo` - Undo the last action\n\n#### 📁 File Management\n- `/add <file>` - Add a file to context (e.g., `/add src/app.js`)\n- `/scan` - Auto-scan and add all relevant files to context\n- `/ls` - List current directory contents\n\n#### 🌐 Git & Version Control\n- `/init-git` - Initialize a new Git repository\n- `/commit <message>` - Stage all changes and commit (e.g., `/commit Add new feature`)\n- `/push` - Push commits to remote repository\n- `/git <command>` - Run any Git command (e.g., `/git status`)\n\n#### 🔧 Workflow & Automation\n- `/run <command>` - Execute shell commands (e.g., `/run npm test`)\n- `/lint` - Run ESLint (if defined in custom commands)\n- `/test` - Run tests (if defined in custom commands)\n\n#### ⚙️ Custom Commands\nDefine prompts in `.grok/commands/<cmd_name>.txt` and invoke with `/<cmd_name>`.\n\n#### 🚪 Session Control\n- `exit` or `/exit` - Exit Grok Code\n- `/help` - Show this help menu\n\n#### 💡 Tips\n- For complex projects, use natural language like \"Build a REST API\" to trigger RPG planning.\n- Add files to context before asking for modifications.\n- Conversations persist across sessions.\n\nFor more details, see the [README.md](README.md). What's your next task?"
+    },
+    {
+      "role": "user",
+      "content": "/help"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: /help"
+    },
+    {
+      "role": "user",
+      "content": "/clear"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: /clear"
+    },
+    {
+      "role": "user",
+      "content": "yo"
+    },
+    {
+      "role": "assistant",
+      "content": "Hey there! What's up? Ready to tackle some code? Whether it's debugging, building a new project, or optimizing something, just let me know what you're working on. 🚀"
+    },
+    {
+      "role": "user",
+      "content": "/model"
+    },
+    {
+      "role": "assistant",
+      "content": "Command executed: /model"
+    },
+    {
+      "role": "user",
+      "content": "sup"
+    },
+    {
+      "role": "assistant",
+      "content": "Hey! Not much, just here to help with coding. What's up—got a project or task in mind? Let's build something! 🚀"
+    }
+  ],
+  "lastUpdated": "2025-09-26T05:24:53.199Z"
+}
