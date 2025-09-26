@@ -895,8 +895,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   let loadedFiles = 0;
   let skippedFiles = 0;
 
-  console.log('🔄 Loading essential project context...');
-
+  // Load essential project context silently (no verbose output)
   for (const f of essentialFiles) {
     const filePath = path.join(currentDir, f);
     if (fs.existsSync(filePath)) {
@@ -920,32 +919,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         // Track the token usage in the essentials budget
         tokenManager.addToBudget('essentials', estimatedTokens);
         loadedFiles++;
-
-        console.log(`   ✅ ${f} (${estimatedTokens} tokens)`);
       } else {
         skippedFiles++;
-        console.log(
-          `   ⚠️ Skipped ${f} (${estimatedTokens} tokens) - would exceed essentials budget`
-        );
-        console.log(
-          `      Available: ${budgetCheck.available} tokens, Needed: ${estimatedTokens}`
-        );
+        // Silently skip files that would exceed budget
       }
     }
   }
-
-  // Show budget status after loading
-  const budgetStatus = tokenManager.getBudgetStatus(model);
-  console.log(`\n💰 Context Budget Status:`);
-  console.log(
-    `   Essentials: ${budgetStatus.categories.essentials.utilizationPercent}% (${budgetStatus.categories.essentials.currentUsage}/${budgetStatus.categories.essentials.categoryLimit} tokens)`
-  );
-  console.log(
-    `   Conversation: ${budgetStatus.categories.conversation.utilizationPercent}% available (${budgetStatus.categories.conversation.available} tokens)`
-  );
-  console.log(
-    `   Total: ${budgetStatus.totalUtilizationPercent}% used, ${budgetStatus.availableCapacity} tokens free\n`
-  );
 
   // Check for updates on startup (non-blocking)
   checkForUpdates()
