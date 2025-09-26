@@ -1,8 +1,8 @@
 {
   "name": "grok-code-cli",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
-  "description": "🚀 Grok Code: Personal AI-powered CLI coding assistant with RPG planning. Transform your terminal into an intelligent coding environment with structured repository planning and seamless code generation.",
+  "description": "🚀 Grok Code: Personal AI-powered CLI coding assistant with IDE-like terminal experience. Syntax highlighting, color-coded diffs, intelligent error recovery, and RPG planning transform your terminal into a world-class coding environment.",
   "main": "bin/grok.js",
   "bin": {
     "grok": "./bin/grok.js"
