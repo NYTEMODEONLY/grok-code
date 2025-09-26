@@ -27,6 +27,7 @@ import { CodeSearch } from '../lib/interactive/code-search.js';
 import { ErrorRecoveryWorkflow } from '../lib/workflows/error-recovery.js';
 import { DebugCommand } from './commands/debug.js';
 import { ErrorStats } from '../lib/analytics/error-stats.js';
+import { AutoComplete } from '../lib/commands/auto-complete.js';
 
 /**
  * Error Logging System
@@ -947,6 +948,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Initialize error analytics for recovery statistics
   const errorStats = new ErrorStats();
 
+  // Initialize auto-complete system for intelligent command completion
+  const autoComplete = new AutoComplete({
+    currentDir: currentDir,
+    maxSuggestions: 10,
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1712,6 +1719,7 @@ async function handleCommand(
 - /preview <file|code|line|search|config>: Enhanced code preview with line numbers
 - /search <query|regex|word|fuzzy|interactive|history|stats>: Interactive code search across codebase
 - /debug <interactive|file|errors|fix|history|stats>: Interactive error analysis and recovery
+- /complete <test|status|config>: Auto-complete system for commands and file paths
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2496,6 +2504,103 @@ async function handleCommand(
     }
 
     return true;
+  } else if (input.startsWith('/complete')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+    const query = parts.slice(2).join(' ');
+
+    if (!subcommand || subcommand === 'test') {
+      if (!query) {
+        console.log('Usage: /complete test "<partial command or path>"');
+        console.log('Examples:');
+        console.log('  /complete test "/add"');
+        console.log('  /complete test "lib/"');
+        console.log('  /complete test "/debug"');
+        return true;
+      }
+
+      console.log(`\n🧠 Testing auto-complete for: "${query}"`);
+      console.log('═'.repeat(40));
+
+      const completions = autoComplete.getCompletions(query, query.length, {
+        currentDir: currentDir,
+        fileContext: fileContext,
+      });
+
+      if (completions.completions.length === 0) {
+        console.log('❌ No completions found.');
+      } else {
+        console.log(
+          `✅ Found ${completions.completions.length} completions:\n`
+        );
+
+        completions.completions.forEach((completion, index) => {
+          const icon = this.getCompletionIcon(completion.type);
+          console.log(`${index + 1}. ${icon} ${completion.display}`);
+          if (completion.description) {
+            console.log(`   ${completion.description}`);
+          }
+          console.log(`   → ${completion.value}\n`);
+        });
+      }
+    } else if (subcommand === 'status') {
+      const stats = autoComplete.getStats();
+      console.log('\n⚡ Auto-Complete Status:');
+      console.log('═'.repeat(35));
+      console.log(`Max Suggestions: ${stats.maxSuggestions}`);
+      console.log(`Include Hidden Files: ${stats.includeHidden ? '✅' : '❌'}`);
+      console.log(`Case Sensitive: ${stats.caseSensitive ? '✅' : '❌'}`);
+      console.log(`Fuzzy Matching: ${stats.fuzzyMatch ? '✅' : '❌'}`);
+      console.log(`Available Commands: ${stats.availableCommands}`);
+      console.log(`Available Models: ${stats.availableModels}`);
+      console.log(`Cache Size: ${stats.cacheSize} entries`);
+    } else if (subcommand === 'config') {
+      const configArgs = parts.slice(2);
+      const config = {};
+
+      for (let i = 0; i < configArgs.length; i += 2) {
+        const key = configArgs[i];
+        const value = configArgs[i + 1];
+
+        if (value !== undefined) {
+          if (value === 'true' || value === 'false') {
+            config[key] = value === 'true';
+          } else if (!isNaN(value)) {
+            config[key] = parseInt(value);
+          } else {
+            config[key] = value;
+          }
+        }
+      }
+
+      if (Object.keys(config).length === 0) {
+        console.log('Usage: /complete config <option> <value> [...]');
+        console.log('Options:');
+        console.log('  maxSuggestions <number>  - Max completion suggestions');
+        console.log('  includeHidden <true|false> - Include hidden files');
+        console.log('  caseSensitive <true|false> - Case sensitive matching');
+        console.log('  fuzzyMatch <true|false>   - Enable fuzzy matching');
+        console.log('Examples:');
+        console.log('  /complete config maxSuggestions 20 fuzzyMatch false');
+        return true;
+      }
+
+      autoComplete.updateConfig(config);
+      console.log('✅ Auto-complete configuration updated');
+      console.log('Current config:', autoComplete.getStats());
+    } else {
+      console.log('Usage: /complete <test|status|config>');
+      console.log('Commands:');
+      console.log(
+        '  /complete test "<query>"    - Test completion for a query'
+      );
+      console.log('  /complete status            - Show auto-complete status');
+      console.log(
+        '  /complete config <options>  - Configure auto-complete settings'
+      );
+    }
+
+    return true;
   } else if (input.startsWith('/debug')) {
     const args = input.split(' ').slice(1);
     const result = await debugCommand.execute(args, {
@@ -2513,7 +2618,34 @@ async function handleCommand(
     }
 
     return true;
-  } else if (input === '/clear') {
+  }
+
+  // Helper function for completion icons
+  function getCompletionIcon(type) {
+    const icons = {
+      command: '📝',
+      builtin: '⚡',
+      custom: '🔧',
+      file: '📄',
+      directory: '📁',
+      model: '🤖',
+      setting: '⚙️',
+      action: '🔄',
+      'git-command': '🔀',
+      'highlight-command': '🎨',
+      'diff-command': '📊',
+      'progress-command': '⏳',
+      'browse-command': '🗂️',
+      'preview-command': '👁️',
+      'search-mode': '🔍',
+      'debug-command': '🐛',
+      'pr-template': '📋',
+      theme: '🎭',
+    };
+    return icons[type] || '❓';
+  }
+
+  if (input === '/clear') {
     messages = [{ role: 'system', content: systemPrompt }];
     fileContext = {};
     console.clear();
