@@ -1,61 +1,118 @@
-# Grok Code: Your CLI-Based AI Coding Assistant
+# 🚀 Grok Code: AI-Powered CLI Coding Assistant with RPG Planning
 
-## Overview
+<div align="center">
 
-**Grok Code** is a powerful, terminal-based coding assistant powered by Grok AI from xAI. It transforms your command line into an intelligent coding environment. Whether you're building a simple script, debugging complex code, or generating entire projects (e.g., a Next.js app ready for Vercel deployment), Grok Code handles it all with natural language prompts.
+![Grok Code Logo](https://img.shields.io/badge/Grok_Code-CLI_AI_Assistant-000?style=for-the-badge&logo=terminal&logoColor=white)
+![xAI Powered](https://img.shields.io/badge/Powered_by-xAI-000?style=for-the-badge&logo=x&logoColor=white)
+![RPG Planning](https://img.shields.io/badge/Planning-RPG_Graph-FF6B35?style=for-the-badge&logo=graph&logoColor=white)
 
-Built for developers who prefer staying in the terminal, Grok Code supports multi-file edits, autonomous workflows, git integration, custom commands, and more. It's stateful, agentic, and optimized for efficiency—leveraging Grok's advanced reasoning to plan, code, test, and iterate.
+**Transform your terminal into an intelligent coding environment with AI planning and generation**
 
-**Current Version:** 1.0.0 (Released: July 10, 2025)  
+[Installation](#installation) • [Quick Start](#usage) • [RPG Planning](#-rpg-repository-planning) • [Features](#key-features)
+
+</div>
+
+---
+
+## ✨ Overview
+
+**Grok Code** is a revolutionary, terminal-based coding assistant powered by Grok AI from xAI. It elevates your command line into an intelligent coding environment with **Repository Planning Graph (RPG)** technology - a structured approach to software architecture that ensures modular, well-planned code generation.
+
+### 🎯 What Makes Grok Code Special?
+
+- **🤖 AI-First Architecture**: Natural language prompts for any coding task
+- **📊 RPG Planning**: Inspired by ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276) - structured planning before code generation
+- **🔄 Stateful & Agentic**: Maintains context, plans ahead, and iterates autonomously
+- **⚡ Full-Stack Ready**: From simple scripts to deploy-ready Next.js apps
+- **🎨 Terminal-Native**: Designed for developers who live in the command line
+
+**Current Version:** 1.0.0 (Released: September 26, 2025)  
 **Built by:** nytemode  
 **License:** MIT  
+**Repository:** [NYTEMODEONLY/grok-code](https://github.com/NYTEMODEONLY/grok-code)  
 
-## Key Features
+## 🏗️ RPG Repository Planning
 
-Grok Code is designed to be a full-featured coding assistant with enhancements for seamless integration and user control:
+**Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
 
-- **AI-Powered Coding Assistance**: Interact with Grok AI via natural language. Ask to write code, debug errors, optimize functions, or generate entire projects. Grok thinks step-by-step, proposes plans, and outputs in markdown for clarity.
+### How RPG Works
+
+1. **📋 Planning Phase**: Grok analyzes your request and creates a structured JSON plan with:
+   - **Features**: High-level functionalities (e.g., `data_processing`, `model_training`)
+   - **Files**: Feature-to-file mappings (e.g., `data_processing` → `src/data.js`)
+   - **Data Flows**: How features interact (e.g., data → processing → output)
+   - **Dependencies**: File relationships and imports
+
+2. **🗂️ Graph Construction**: Builds a dependency graph with nodes (features/files) and edges (flows/dependencies)
+
+3. **⚙️ Guided Generation**: Uses the plan to generate modular, well-structured code
+
+4. **💾 Direct Output**: Writes files directly to your filesystem with proper organization
+
+### When RPG Activates
+
+RPG planning automatically triggers for prompts containing:
+- `"generate repo"`
+- `"build a"`
+- `"create a"`
+- `"implement a"`
+- `"develop a"`
+
+**Example**: `"Build a simple ML library in JavaScript"` → RPG generates `src/data.js`, `src/model.js`, etc.
+
+---
+
+## ⚡ Key Features
+
+Grok Code combines AI assistance with structured planning for unparalleled coding productivity:
+
+### 🤖 AI-Powered Coding with RPG Planning
+
+- **Intelligent Code Generation**: Natural language prompts powered by Grok AI
+- **RPG Planning Integration**: Structured repository planning for complex projects
+- **Step-by-Step Reasoning**: Grok thinks ahead, plans, and iterates on solutions
+- **Multi-Paradigm Support**: Scripts, libraries, web apps, APIs, and more
   
-- **Multi-File Management**: 
-  - Create, edit, or delete multiple files in one go using XML tags in responses (e.g., `<edit file="path/to/file.js">`).
-  - Automatic directory creation for subfolders (e.g., for project structures like Next.js apps).
-  - File context: Add files to AI's knowledge with `/add <file>`, remove with `/remove <file>`, or scan all with `/scan`.
+- **🗂️ Multi-File Management**:
+  - Create, edit, or delete multiple files simultaneously using XML tags
+  - Automatic directory creation for complex project structures
+  - File context management: Add files to AI knowledge with `/add <file>`, scan with `/scan`
 
-- **Autonomous Workflows**: 
-  - Propose and run shell commands (e.g., `npm install`, tests, linting) via `<run command="...">` tags.
-  - Handle errors iteratively: Grok can suggest fixes based on command outputs.
-  - Project generation: E.g., create a deploy-ready Next.js site with all files (app/, components/, package.json, etc.) and suggest deployment commands.
+- **🔄 Autonomous Workflows**:
+  - Execute shell commands via `<run command="...">` tags (npm install, tests, linting)
+  - Iterative error handling with AI-suggested fixes
+  - End-to-end project generation with deployment commands
 
-- **Git Integration**:
-  - Built-in commands: `/git <command>` for any git action, `/init-git` to initialize a repo, `/commit <message>` to stage and commit, `/push` to push changes.
-  - Propose git sequences in responses (e.g., add, commit, push) for PR automation.
-  - Supports GitHub/GitLab: Ask Grok to generate commit messages, resolve merge conflicts, or create PRs (if `gh` CLI is installed).
+- **🌐 Git Integration**:
+  - Built-in commands: `/git <command>`, `/init-git`, `/commit <message>`, `/push`
+  - Automated git workflows and PR creation (requires `gh` CLI)
+  - Conflict resolution and commit message generation
 
-- **Custom Commands**:
-  - Define reusable prompts in `.grok/commands/<cmd_name>.txt`.
-  - Invoke with `/<cmd_name>`, e.g., `/lint` could trigger "Run ESLint on all JS files".
-  - Project-wide or personal: Store in repo for team use.
+- **⚙️ Custom Commands**:
+  - Define reusable prompts in `.grok/commands/<cmd_name>.txt`
+  - Team-shared commands for project consistency
+  - Example: `/lint` → "Run ESLint on all JS files"
 
-- **Shell and Environment Awareness**:
-  - Detects OS (Windows, macOS, Linux) for adapted commands and paths.
-  - Runs arbitrary shell commands with `/run <cmd>`.
-  - Stateful REPL-like interaction: Maintains conversation history for context-aware follow-ups.
+- **🖥️ Environment Awareness**:
+  - Cross-platform support (Windows, macOS, Linux)
+  - OS-adapted commands and paths
+  - Stateful conversation with full context retention
 
-- **UI/UX Enhancements**:
-  - Thinking animation during API calls.
-  - Clear screen on `/clear` for fresh starts.
-  - Help menu with `/help` listing all commands.
-  - Directory listing with `/ls`.
+- **🎨 Terminal-First UX**:
+  - Thinking animations during API calls
+  - Interactive confirmation for all actions
+  - Comprehensive help system with `/help`
+  - Session management with `/clear`
 
-- **Configuration and Extensibility**:
-  - `GROK.md`: Place in your repo for project-specific notes (e.g., style guides, build commands). Grok ingests it automatically.
-  - API key management: Secure local storage with menu for change/delete.
-  - Model flexibility: Defaults to `grok-3-beta`; customizable in code.
+- **🔧 Configuration & Extensibility**:
+  - `GROK.md`: Project-specific guidelines and commands
+  - Secure API key management with local storage
+  - Model flexibility (defaults to `grok-3-beta`)
 
-- **Security and Best Practices**:
-  - User confirmation for all actions (edits, deletes, runs).
-  - No auto-execution: Always previews proposed changes.
-  - Token-efficient: Manages context to avoid bloating prompts.
+- **🛡️ Security & Best Practices**:
+  - User confirmation required for all destructive actions
+  - Token-efficient context management
+  - No automatic execution without approval
 
 ## Installation
 
@@ -90,90 +147,189 @@ Grok Code is designed to be a full-featured coding assistant with enhancements f
    ```
    Then use `grok` from anywhere.
 
-## Usage
+## 🚀 Quick Start
 
-Launch Grok Code in your project directory:
+Get started with Grok Code in seconds:
 
 ```bash
+# Clone and install
+git clone https://github.com/NYTEMODEONLY/grok-code.git
+cd grok-code
+npm install
+
+# Launch
 npm start
 ```
-or
+
+Or install globally for system-wide access:
 ```bash
-./bin/grok.js
-```
-or globally:
-```bash
+npm install -g @xai/grok-code
 grok
 ```
 
-- **Basic Interaction**: Type prompts like "Create a JavaScript function to reverse a string" or "Debug this error in app.js".
-- **Project Creation**: "Build a Next.js website for a blog, ready to deploy on Vercel."
-- **Debugging**: "Fix the bug in this code: [paste code]".
-- **Git Workflow**: "/init-git", then "Generate commit message for recent changes", followed by "/commit <msg>".
-- **Custom Command Example**: Create `.grok/commands/test.txt` with "Run all unit tests and report failures". Invoke with `/test`.
+### 💡 Usage Examples
 
-Exit with `/exit`. Clear session with `/clear`.
-
-### Example Session
-
-```
-Welcome to Grok Code! ...
-
-You: Create a simple Pong game in a new folder 'pong'
-[Thinking animation...]
-
-Grok: [Plan and proposed actions...]
-
-Proposed actions:
-Run command: mkdir -p pong
-Edit/Create file: pong/index.html
-
-Apply these actions? (y/n): y
-[Applies changes]
-
-You: /commit "Add Pong game"
-[Commits changes]
+#### 🏗️ RPG Planning (Recommended for Complex Projects)
+```bash
+# Automatic RPG activation
+"Build a simple ML library in JavaScript"
+"Create a REST API for task management"
+"Implement a React dashboard with charts"
+"Develop a Node.js CLI tool for file processing"
 ```
 
-## Best Practices
+#### 🤖 Regular AI Chat
+```bash
+# General coding assistance
+"Write a function to validate email addresses"
+"Debug this JavaScript error: [paste error]"
+"Optimize this SQL query for performance"
+```
 
-- **GROK.md**: Use for repo-specific info, e.g.:
-  ```
-  # GROK.md
-  Style: Use ESLint with Airbnb preset.
-  Build: npm run build
-  Test: npm test
+#### 🔧 Workflow Commands
+```bash
+# Git operations
+"/init-git"                    # Initialize repository
+"/commit Add new feature"      # Stage and commit
+"/push"                        # Push to remote
+
+# File management
+"/add src/app.js"              # Add file to context
+"/scan"                        # Scan all files
+"/ls"                          # List directory
+
+# Custom commands
+"/test"                        # Run tests (if defined)
+```
+
+Exit anytime with `/exit`. Clear session with `/clear`.
+
+### 📋 Example Sessions
+
+#### 🏗️ RPG Planning Example
+```bash
+Welcome to Grok Code! Type your message or use /help for commands.
+
+You: Build a simple ML library in JavaScript
+
+Grok: Using RPG planning for code generation...
+RPG Plan Generated: {
+  "features": ["data_loading", "model_training", "prediction"],
+  "files": {"data_loading": "src/data.js", "model_training": "src/model.js"},
+  "flows": [["data_loading", "model_training"]],
+  "deps": [["data.js", "model.js"]]
+}
+
+Generated: src/data.js
+Generated: src/model.js
+Generated: package.json
+
+Repository generation completed!
+```
+
+#### 🤖 Regular Chat Example
+```bash
+You: Create a function to reverse a string in JavaScript
+
+Grok: Here's a simple function to reverse a string:
+
+```javascript
+function reverseString(str) {
+  return str.split('').reverse().join('');
+}
+```
+
+You: /run node -e "console.log(reverseString('hello'))"
+[Command executed: node -e "console.log(reverseString('hello'))"]
+Output: olleh
+```
+
+## 💡 Best Practices & Tips
+
+### 🏗️ RPG Planning Tips
+- **Use Descriptive Prompts**: "Build a REST API for user authentication" works better than "Make an API"
+- **Complex Projects**: Always use RPG for multi-feature projects to ensure proper architecture
+- **Review Plans**: RPG plans are logged to console—review them before generation
+- **Fallback Available**: If RPG fails, Grok Code automatically falls back to regular chat
+
+### 🤖 General AI Usage
+- **Context Matters**: Add relevant files with `/add <file>` before complex tasks
+- **Iterative Development**: Use Grok's error analysis for debugging workflows
+- **Token Efficiency**: Add files selectively rather than scanning everything
+
+### 📁 Project Configuration
+- **GROK.md**: Define project standards:
+  ```markdown
+  # Project Standards
+  - Style: ESLint with Airbnb preset
+  - Build: npm run build
+  - Test: npm test
+  - Architecture: Feature-based folder structure
   ```
 
-- **Custom Commands**: Keep prompts concise. Example for `/deploy`:
-  ```
+- **Custom Commands**: Create reusable workflows:
+  ```bash
+  # .grok/commands/deploy.txt
   Deploy the current Next.js app to Vercel and output the URL.
   ```
 
-- **Context Management**: Use `/scan` for large repos, but add selectively to save tokens.
-- **Error Handling**: If a command fails, Grok can iterate—paste errors back in.
-- **Performance**: For faster responses, switch to `grok-3-mini-beta` in the code.
+### ⚡ Performance Optimization
+- **Model Selection**: Switch to `grok-3-mini-beta` in code for faster responses
+- **Context Management**: Clear context with `/clear` for fresh sessions
+- **Selective Scanning**: Use `/add` instead of `/scan` for large codebases
 
-## Contributing
+## 🤝 Contributing
 
-We welcome contributions! Fork the repo, create a feature branch, and submit a PR. Follow these steps:
+We love contributions! Whether it's bug fixes, new features, or documentation improvements, every contribution helps make Grok Code better.
 
-1. Fork on GitHub.
-2. Clone your fork: `git clone https://github.com/your-username/grok-code.git`.
-3. Create branch: `git checkout -b feature/new-thing`.
-4. Commit: `git commit -m "Add new thing"`.
-5. Push: `git push origin feature/new-thing`.
-6. Open PR.
+### 🚀 How to Contribute
 
-Report issues [here](https://github.com/xai-org/grok-code/issues).
+1. **Fork** the repository on GitHub
+2. **Clone** your fork: `git clone https://github.com/your-username/grok-code.git`
+3. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+4. **Make** your changes and test thoroughly
+5. **Commit** with clear messages: `git commit -m "Add amazing feature"`
+6. **Push** to your branch: `git push origin feature/amazing-feature`
+7. **Open** a Pull Request with a detailed description
 
-## License
+### 🐛 Found a Bug?
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+- Check [existing issues](https://github.com/NYTEMODEONLY/grok-code/issues) first
+- Open a new issue with detailed steps to reproduce
+- Include your OS, Node.js version, and error messages
 
-## Acknowledgments
+### 💡 Feature Requests
 
-- Powered by [xAI's Grok](https://x.ai).
-- Built by nytemode.
+- Use GitHub Discussions for feature ideas
+- Check if the feature aligns with RPG planning principles
+- Provide use cases and examples
 
-For questions, tweet @xai or join the discussion on GitHub. Happy coding! 🚀 
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **🤖 Powered by** [xAI's Grok](https://x.ai) - The foundation of intelligent assistance
+- **📚 Inspired by** ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2401.04276) - Structured planning for better code generation
+- **👨‍💻 Built by** nytemode - Crafting the future of AI-powered development
+- **🌟 Community** - Every contributor and user making this tool better
+
+## 📞 Support & Community
+
+- **🐛 Issues**: [GitHub Issues](https://github.com/NYTEMODEONLY/grok-code/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/NYTEMODEONLY/grok-code/discussions)
+- **🐦 Twitter**: Follow [@xai](https://twitter.com/xai) for updates
+- **📧 Contact**: Open an issue for direct support
+
+---
+
+<div align="center">
+
+**Ready to revolutionize your coding workflow?** 🚀
+
+[Get Started](#-quick-start) • [RPG Planning](#-rpg-repository-planning) • [Contribute](#-contributing)
+
+*Made with ❤️ by the AI coding community*
+
+</div> 
