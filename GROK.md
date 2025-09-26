@@ -12,22 +12,26 @@
 ## 🧠 Intelligence Features
 
 ### Semantic Code Analysis
+
 - AST-based parsing for JavaScript, TypeScript, Python
 - Dependency graph generation and circular dependency detection
 - Symbol extraction and cross-file relationship mapping
 
 ### Context Management
+
 - Intelligent file relevance scoring
 - Context window optimization with budgeting (15% essentials, 70% conversation, 15% buffer)
 - Session-aware context that learns from interaction patterns
 
 ### Error Recovery System
+
 - Automated parsing of ESLint, TypeScript, Prettier errors
 - 20+ fix templates for common errors with confidence scoring
 - AI-powered complex error resolution with Grok integration
 - Safe fix application with automatic rollback capability
 
 ### Learning & Intelligence Systems
+
 - Error pattern analysis across sessions and projects
 - Personalized fix recommendations based on user history
 - Proactive prevention suggestions and configuration guidance
@@ -79,6 +83,10 @@ lib/
 │   ├── error-patterns.js    # Cross-session error pattern analysis
 │   ├── personalized-fixes.js # User-specific fix recommendations
 │   └── prevention-tips.js   # Proactive error prevention guidance
+├── workflows/       # Error recovery orchestration
+│   └── error-recovery.js    # End-to-end error recovery workflows
+├── analytics/       # Error recovery statistics & insights
+│   └── error-stats.js       # Recovery analytics, trends, and reporting
 ├── display/         # Visual terminal enhancements
 │   ├── syntax-highlighter.js # Multi-language syntax highlighting
 │   ├── diff-viewer.js        # Color-coded diff display and git integration
@@ -87,6 +95,8 @@ lib/
 ├── interactive/     # Terminal UI components
 │   ├── file-browser.js       # Interactive file navigation and selection
 │   └── code-search.js        # Advanced codebase search and highlighting
+├── commands/        # CLI command implementations
+│   └── debug.js             # Interactive debugging and error recovery
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
@@ -94,12 +104,14 @@ lib/
 ## Build & Testing
 
 ### Commands
+
 - **Development**: `npm start` - Launch CLI
 - **Linting**: `npm run lint` - ESLint + Prettier
 - **Formatting**: `npm run format` - Auto-fix formatting
 - **Testing**: Unit tests for all intelligence components
 
 ### Testing Strategy
+
 - **Unit Tests**: Individual component functionality
 - **Integration Tests**: End-to-end workflows (RPG planning, error recovery)
 - **Performance Tests**: Token usage, response times, memory usage
@@ -187,12 +199,14 @@ lib/
 ## Git Workflow
 
 ### Branch Strategy
+
 - **main**: Production-ready code
 - **feature/**: New capabilities (RPG planning, error recovery, etc.)
 - **fix/**: Bug fixes and improvements
 - **docs/**: Documentation updates
 
 ### Commit Conventions
+
 - **feat:**: New features (Phase 1 intelligence, Phase 2 error recovery)
 - **fix:**: Bug fixes
 - **docs:**: Documentation improvements
@@ -201,6 +215,7 @@ lib/
 - **chore:**: Maintenance tasks
 
 ### Release Process
+
 - **Versioning**: Semantic (major.minor.patch)
 - **Changelog**: Auto-generated from conventional commits
 - **Testing**: Full test suite + integration validation
@@ -209,17 +224,20 @@ lib/
 ## Security & Best Practices
 
 ### API Security
+
 - **Keys**: Never committed, environment variables only
 - **Rate Limiting**: Built-in protection against quota exhaustion
 - **Error Handling**: Graceful degradation without exposing sensitive data
 
 ### Code Security
+
 - **Dependencies**: Regular audits with `npm audit`
 - **Input Validation**: All user inputs sanitized
 - **File Operations**: Permission checks and safe rollback
 - **Backups**: Automatic file snapshots before modifications
 
 ### Data Protection
+
 - **Conversation History**: Local storage, user-controlled retention
 - **Context Files**: Temporary loading, no persistent storage
 - **Error Logs**: Structured logging without sensitive information
@@ -227,16 +245,19 @@ lib/
 ## Performance Optimization
 
 ### Token Management
+
 - **Budgeting**: Prevents capacity exhaustion
 - **Optimization**: Selective context loading
 - **Monitoring**: Real-time capacity tracking with `/budget`
 
 ### Response Optimization
+
 - **Model Selection**: Task-appropriate AI models
 - **Caching**: Frequently used context optimization
 - **Streaming**: Progressive response handling
 
 ### Memory Management
+
 - **Garbage Collection**: Automatic cleanup of unused context
 - **File Limits**: Capacity-aware file addition
 - **Session Management**: Efficient conversation compression
