@@ -383,6 +383,6 @@ _This is a personal project and not officially affiliated with xAI._
 
 [Get Started](#quick-start) • [RPG Planning](#rpg-repository-planning) • [Contribute](#contributing)
 
-_Made with ❤️ by the AI coding community_
+_Made with ❤️ by nytemode_
 
 </div>
