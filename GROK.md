@@ -99,6 +99,8 @@ lib/
 │   ├── debug.js             # Interactive debugging and error recovery
 │   ├── auto-complete.js     # Intelligent command and file path auto-completion
 │   └── history-search.js    # Advanced command history search and analytics
+├── visualization/   # ASCII art diagram generators
+│   └── workflow-diagram.js  # RPG plan visualization with multiple styles
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```

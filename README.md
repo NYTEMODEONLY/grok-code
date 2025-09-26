@@ -57,8 +57,17 @@
 - **🔍 Interactive Code Search**: Multi-file, multi-mode search across entire codebases
 - **⚡ Smart Command Interface**: Auto-complete for commands and file paths with intelligent suggestions
 - **🕐 Advanced Command History**: Full-text search, time-based filtering, and usage analytics
+- **🖼️ ASCII Art Workflow Diagrams**: Beautiful terminal visualizations of RPG plans and complex workflows
 
 ## 📋 Changelog
+
+### v1.6.0 - ASCII Art Workflow Diagrams (Phase 3.4)
+- **🖼️ ASCII Art Diagram Generator**: Beautiful terminal visualizations of RPG plans and workflows
+- **📊 Multiple Diagram Types**: Flowchart, mind map, dependency graph, and statistical overview
+- **🎨 Customizable Styles**: Default, minimal, and fancy visual themes with emojis and symbols
+- **🧠 Intelligent Plan Detection**: Automatic extraction of RPG plans from conversation history
+- **🎯 Workflow Visualization**: Features, files, data flows, and dependency relationships
+- **⚙️ Enhanced CLI Commands**: `/diagram show|style|types` for stunning visual plan representations
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
