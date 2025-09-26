@@ -9,11 +9,11 @@ export default [
       ecmaVersion: 2021,
       sourceType: 'module',
       globals: {
-        process: 'readonly'
-      }
+        process: 'readonly',
+      },
     },
     rules: {
-      'no-console': 'off'
-    }
-  }
+      'no-console': 'off',
+    },
+  },
 ];

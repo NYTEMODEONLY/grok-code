@@ -1,10 +1,10 @@
-const fs = require('fs-extra');
-const path = require('path');
-const ErrorLogger = require('../bin/grok.js').ErrorLogger; // Adjust path if modularized
+import fs from 'fs-extra';
+import path from 'path';
+import { ErrorLogger } from '../bin/grok.js'; // Export class from grok.js if needed, or adjust
 
 describe('ErrorLogger', () => {
   let logger;
-  const logFile = path.join(__dirname, '../.grok/test.log');
+  const logFile = path.join(import.meta.dirname, '../.grok/test.log'); // For ES modules, use import.meta.dirname if supported, or fallback
 
   beforeEach(() => {
     logger = new ErrorLogger(logFile);
