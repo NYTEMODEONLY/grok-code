@@ -1097,7 +1097,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer;
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
@@ -1202,6 +1202,20 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
   } catch (error) {
     logger.error('Failed to initialize flow analyzer', { error: error.message });
+  }
+
+  try {
+    // File placement advisor
+    const { FilePlacementAdvisor } = await import('../lib/structure/file-placement.js');
+    filePlacementAdvisor = new FilePlacementAdvisor({
+      projectRoot: process.cwd(),
+      architectureMapper,
+      flowAnalyzer,
+      frameworkDetector,
+      conventionAnalyzer
+    });
+  } catch (error) {
+    logger.error('Failed to initialize file placement advisor', { error: error.message });
   }
 
   // Append previous conversation history to maintain memory
@@ -1354,7 +1368,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         teamPatternsLearner,
         conventionAutoApplier,
         architectureMapper,
-        flowAnalyzer
+        flowAnalyzer,
+        filePlacementAdvisor
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1599,7 +1614,8 @@ async function handleCommand(
   teamPatternsLearner,
   conventionAutoApplier,
   architectureMapper,
-  flowAnalyzer
+  flowAnalyzer,
+  filePlacementAdvisor
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -4061,6 +4077,53 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'placement') {
+      const fileName = args[0];
+      if (!fileName) {
+        console.log('❌ Please specify a file name to get placement suggestions.');
+        console.log('Usage: /framework placement <filename> [type]');
+        console.log('Example: /framework placement UserService.js service');
+        return true;
+      }
+
+      console.log(`📁 Analyzing optimal placement for: ${fileName}\n`);
+
+      if (!filePlacementAdvisor) {
+        console.log('❌ File placement advisor not available.');
+        return true;
+      }
+
+      try {
+        const fileType = args[1] || 'general';
+        const result = await filePlacementAdvisor.suggestPlacement(fileName, fileType);
+
+        console.log(`📋 Placement Suggestions for "${fileName}" (${fileType})\n`);
+
+        if (result.suggestions.length === 0) {
+          console.log('❌ No placement suggestions available.');
+          console.log('Consider organizing by feature or domain.');
+          return true;
+        }
+
+        result.suggestions.forEach((suggestion, index) => {
+          const marker = index === 0 ? '🎯' : `  ${index + 1}.`;
+          const confidence = Math.round(suggestion.confidence * 100);
+          console.log(`${marker} ${suggestion.path} (${confidence}% confidence)`);
+          console.log(`   ${suggestion.reasoning}`);
+          console.log('');
+        });
+
+        console.log('💡 Reasoning:');
+        console.log(result.reasoning);
+
+        console.log('\n✅ Placement analysis complete!');
+
+      } catch (error) {
+        console.log(`❌ Failed to analyze file placement: ${error.message}`);
+        logger.error('File placement analysis failed', { error: error.message, fileName });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4152,6 +4215,7 @@ async function handleCommand(
       console.log('  /framework apply <tgt>   - Auto-apply project conventions');
       console.log('  /framework architecture  - Analyze project architecture');
       console.log('  /framework flows         - Analyze application flows & entry points');
+      console.log('  /framework placement <f> - Suggest optimal file placement');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
