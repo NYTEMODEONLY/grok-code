@@ -1,0 +1,37 @@
+{
+  "features": [
+    "user_authentication",
+    "request_validation",
+    "api_routing",
+    "business_logic",
+    "database_operations",
+    "error_handling",
+    "response_formatting"
+  ],
+  "files": {
+    "user_authentication": "src/auth.js",
+    "request_validation": "src/validation.js",
+    "api_routing": "src/routes.js",
+    "business_logic": "src/controllers.js",
+    "database_operations": "src/database.js",
+    "error_handling": "src/errors.js",
+    "response_formatting": "src/responses.js"
+  },
+  "flows": [
+    ["user_authentication", "api_routing"],
+    ["request_validation", "api_routing"],
+    ["api_routing", "business_logic"],
+    ["business_logic", "database_operations"],
+    ["business_logic", "error_handling"],
+    ["business_logic", "response_formatting"]
+  ],
+  "deps": [
+    ["auth.js", "routes.js"],
+    ["validation.js", "routes.js"],
+    ["routes.js", "controllers.js"],
+    ["controllers.js", "database.js"],
+    ["controllers.js", "errors.js"],
+    ["controllers.js", "responses.js"],
+    ["errors.js", "responses.js"]
+  ]
+}

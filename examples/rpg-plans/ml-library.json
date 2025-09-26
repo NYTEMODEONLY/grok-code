@@ -1,0 +1,28 @@
+{
+  "features": [
+    "data_loading",
+    "data_preprocessing",
+    "model_training",
+    "model_evaluation",
+    "prediction_api"
+  ],
+  "files": {
+    "data_loading": "src/data.js",
+    "data_preprocessing": "src/preprocessing.js",
+    "model_training": "src/model.js",
+    "model_evaluation": "src/evaluation.js",
+    "prediction_api": "src/predict.js"
+  },
+  "flows": [
+    ["data_loading", "data_preprocessing"],
+    ["data_preprocessing", "model_training"],
+    ["model_training", "model_evaluation"],
+    ["model_training", "prediction_api"]
+  ],
+  "deps": [
+    ["data.js", "preprocessing.js"],
+    ["preprocessing.js", "model.js"],
+    ["model.js", "evaluation.js"],
+    ["model.js", "predict.js"]
+  ]
+}

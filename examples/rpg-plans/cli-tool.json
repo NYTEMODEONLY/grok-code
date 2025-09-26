@@ -1,0 +1,35 @@
+{
+  "features": [
+    "command_parsing",
+    "file_operations",
+    "data_processing",
+    "output_formatting",
+    "error_handling",
+    "help_system"
+  ],
+  "files": {
+    "command_parsing": "src/cli.js",
+    "file_operations": "src/files.js",
+    "data_processing": "src/processor.js",
+    "output_formatting": "src/formatter.js",
+    "error_handling": "src/errors.js",
+    "help_system": "src/help.js"
+  },
+  "flows": [
+    ["command_parsing", "file_operations"],
+    ["command_parsing", "data_processing"],
+    ["file_operations", "data_processing"],
+    ["data_processing", "output_formatting"],
+    ["data_processing", "error_handling"],
+    ["command_parsing", "help_system"]
+  ],
+  "deps": [
+    ["cli.js", "files.js"],
+    ["cli.js", "processor.js"],
+    ["cli.js", "help.js"],
+    ["files.js", "processor.js"],
+    ["processor.js", "formatter.js"],
+    ["processor.js", "errors.js"],
+    ["errors.js", "formatter.js"]
+  ]
+}
