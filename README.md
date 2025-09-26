@@ -232,6 +232,16 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **File metadata display** with size, type, and modification info
 - **Interactive preview commands**: `/preview file/line/search/code/config`
 
+### 🔍 Interactive Code Search
+
+- **Multi-file codebase search** with configurable search modes
+- **Regex pattern matching** with fuzzy and whole word search options
+- **File type filtering** (JavaScript, TypeScript, Python, web files, configs)
+- **Real-time result highlighting** with context previews and line numbers
+- **Search history tracking** and usage statistics
+- **Interactive search interface** with guided menu-driven experience
+- **Advanced search commands**: `/search query/regex/word/fuzzy/interactive/history/stats`
+
 ### 🔄 Autonomous Workflows
 
 - **Execute shell commands via `<run command="...">` tags (npm install, tests, linting)**
