@@ -24,6 +24,9 @@ import { ProgressIndicator } from '../lib/display/progress-indicator.js';
 import { FileBrowser } from '../lib/interactive/file-browser.js';
 import { CodePreview } from '../lib/display/code-preview.js';
 import { CodeSearch } from '../lib/interactive/code-search.js';
+import { ErrorRecoveryWorkflow } from '../lib/workflows/error-recovery.js';
+import { DebugCommand } from './commands/debug.js';
+import { ErrorStats } from '../lib/analytics/error-stats.js';
 
 /**
  * Error Logging System
@@ -246,7 +249,10 @@ async function checkForUpdates() {
           const currentVersion = packageJson.version;
 
           // Compare versions properly
-          const versionComparison = compareVersions(latestVersion, currentVersion);
+          const versionComparison = compareVersions(
+            latestVersion,
+            currentVersion
+          );
           const hasUpdate = versionComparison > 0; // latest > current
           const isAhead = versionComparison < 0; // current > latest (development version)
 
@@ -929,6 +935,17 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Initialize code search for interactive codebase search
   const codeSearch = new CodeSearch({ syntaxHighlighter, codePreview });
+
+  // Initialize error recovery workflow system
+  const errorRecoveryWorkflow = new ErrorRecoveryWorkflow({
+    progress: progressIndicator,
+  });
+
+  // Initialize debug command for interactive error analysis
+  const debugCommand = new DebugCommand();
+
+  // Initialize error analytics for recovery statistics
+  const errorStats = new ErrorStats();
 
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
@@ -1694,6 +1711,7 @@ async function handleCommand(
 - /browse <start|find|preview|stats>: Interactive file browser and navigation
 - /preview <file|code|line|search|config>: Enhanced code preview with line numbers
 - /search <query|regex|word|fuzzy|interactive|history|stats>: Interactive code search across codebase
+- /debug <interactive|file|errors|fix|history|stats>: Interactive error analysis and recovery
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -1887,11 +1905,15 @@ async function handleCommand(
           console.log(`🎨 Theme changed to: ${theme}`);
         } catch (error) {
           console.log(`❌ Invalid theme: ${theme}`);
-          console.log(`Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`);
+          console.log(
+            `Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`
+          );
         }
       } else {
         console.log(`Current theme: ${syntaxHighlighter.getStats().theme}`);
-        console.log(`Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`);
+        console.log(
+          `Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`
+        );
       }
     } else {
       console.log('Usage: /highlight <on|off|theme [name]|status>');
@@ -1912,7 +1934,9 @@ async function handleCommand(
       console.log('Commands:');
       console.log('  /diff status        - Show diff viewer status');
       console.log('  /diff test          - Run diff viewer test');
-      console.log('  /diff git <args>    - Run git diff with color highlighting');
+      console.log(
+        '  /diff git <args>    - Run git diff with color highlighting'
+      );
       console.log('  /diff show <file>   - Show git diff for specific file');
       console.log('Examples:');
       console.log('  /diff git status');
@@ -1922,7 +1946,9 @@ async function handleCommand(
       const stats = diffViewer.getStats();
       console.log('\n📊 Diff Viewer Status:');
       console.log('═'.repeat(30));
-      console.log(`Syntax highlighting: ${stats.syntaxHighlighterEnabled ? '✅' : '❌'}`);
+      console.log(
+        `Syntax highlighting: ${stats.syntaxHighlighterEnabled ? '✅' : '❌'}`
+      );
       console.log(`Theme: ${stats.theme}`);
       console.log(`Context lines: ${stats.contextLines}`);
     } else if (subcommand === 'test') {
@@ -1932,7 +1958,9 @@ async function handleCommand(
       const gitArgs = parts.slice(2).join(' ');
       if (!gitArgs) {
         console.log('Usage: /diff git <git-diff-command>');
-        console.log('Examples: /diff git diff, /diff git diff --staged, /diff git diff HEAD~1');
+        console.log(
+          'Examples: /diff git diff, /diff git diff --staged, /diff git diff HEAD~1'
+        );
         return true;
       }
 
@@ -1965,7 +1993,9 @@ async function handleCommand(
 
       try {
         const { execSync } = await import('child_process');
-        const diffOutput = execSync(`git diff ${filePath}`, { encoding: 'utf8' });
+        const diffOutput = execSync(`git diff ${filePath}`, {
+          encoding: 'utf8',
+        });
 
         if (diffOutput.trim()) {
           console.log(`\n🔍 Git diff for ${filePath}:`);
@@ -2010,11 +2040,17 @@ async function handleCommand(
       progressIndicator.testIndicators('all');
     } else if (subcommand === 'spinner') {
       console.log('Starting test spinner...');
-      const spinner = progressIndicator.startSpinner('analyzing', 'Testing spinner functionality...');
+      const spinner = progressIndicator.startSpinner(
+        'analyzing',
+        'Testing spinner functionality...'
+      );
 
       // Auto-complete after 3 seconds
       setTimeout(() => {
-        progressIndicator.succeedSpinner(spinner.id, 'Test spinner completed successfully');
+        progressIndicator.succeedSpinner(
+          spinner.id,
+          'Test spinner completed successfully'
+        );
       }, 3000);
     } else if (subcommand === 'multistep') {
       const steps = [
@@ -2024,7 +2060,10 @@ async function handleCommand(
         { name: 'Completing', operation: 'saving' },
       ];
 
-      const multiStep = progressIndicator.showMultiStepProgress(steps, 'Demo Multi-Step Operation');
+      const multiStep = progressIndicator.showMultiStepProgress(
+        steps,
+        'Demo Multi-Step Operation'
+      );
 
       let stepIndex = 0;
       const runNextStep = () => {
@@ -2064,33 +2103,42 @@ async function handleCommand(
       console.log('  /browse preview package.json');
     } else if (subcommand === 'start') {
       console.log('Starting interactive file browser...');
-      console.log('Use arrow keys to navigate, Enter to select files, Ctrl+C to finish.');
+      console.log(
+        'Use arrow keys to navigate, Enter to select files, Ctrl+C to finish.'
+      );
 
-      fileBrowser.browse().then(selectedFiles => {
-        if (selectedFiles.length > 0) {
-          console.log(`\n📋 Adding ${selectedFiles.length} selected files to context:`);
-          selectedFiles.forEach(file => {
-            const relativePath = path.relative(currentDir, file);
-            console.log(`  ✅ ${relativePath}`);
-            // Add to context if not already there
-            if (!fileContext[relativePath]) {
-              try {
-                const content = fs.readFileSync(file, 'utf8');
-                fileContext[relativePath] = content;
-                messages.push({
-                  role: 'system',
-                  content: `Auto-added file ${relativePath} from browser:\n${content}`,
-                });
-              } catch (error) {
-                console.log(`  ❌ Error reading ${relativePath}: ${error.message}`);
+      fileBrowser
+        .browse()
+        .then((selectedFiles) => {
+          if (selectedFiles.length > 0) {
+            console.log(
+              `\n📋 Adding ${selectedFiles.length} selected files to context:`
+            );
+            selectedFiles.forEach((file) => {
+              const relativePath = path.relative(currentDir, file);
+              console.log(`  ✅ ${relativePath}`);
+              // Add to context if not already there
+              if (!fileContext[relativePath]) {
+                try {
+                  const content = fs.readFileSync(file, 'utf8');
+                  fileContext[relativePath] = content;
+                  messages.push({
+                    role: 'system',
+                    content: `Auto-added file ${relativePath} from browser:\n${content}`,
+                  });
+                } catch (error) {
+                  console.log(
+                    `  ❌ Error reading ${relativePath}: ${error.message}`
+                  );
+                }
               }
-            }
-          });
-          console.log(`\n💾 ${selectedFiles.length} files added to context.`);
-        }
-      }).catch(error => {
-        console.log(`❌ Browser error: ${error.message}`);
-      });
+            });
+            console.log(`\n💾 ${selectedFiles.length} files added to context.`);
+          }
+        })
+        .catch((error) => {
+          console.log(`❌ Browser error: ${error.message}`);
+        });
     } else if (subcommand === 'find') {
       const pattern = parts.slice(2).join(' ');
       if (!pattern) {
@@ -2104,7 +2152,7 @@ async function handleCommand(
       if (results.length === 0) {
         console.log('  No files found.');
       } else {
-        results.slice(0, 20).forEach(file => {
+        results.slice(0, 20).forEach((file) => {
           const relativePath = path.relative(currentDir, file.fullPath);
           console.log(`  ${file.icon} ${relativePath} (${file.readable})`);
         });
@@ -2119,7 +2167,9 @@ async function handleCommand(
         return true;
       }
 
-      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+      const fullPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.join(currentDir, filePath);
 
       if (!fs.existsSync(fullPath)) {
         console.log(`❌ File not found: ${filePath}`);
@@ -2133,15 +2183,19 @@ async function handleCommand(
       const stats = fileBrowser.getStats();
       console.log('\n🗂️  File Browser Statistics:');
       console.log('═'.repeat(35));
-      console.log(`Current Path: ${path.relative(process.cwd(), stats.currentPath)}`);
+      console.log(
+        `Current Path: ${path.relative(process.cwd(), stats.currentPath)}`
+      );
       console.log(`Selected Files: ${stats.selectedFiles}`);
       console.log(`Show Hidden: ${stats.showHidden ? '✅' : '❌'}`);
       console.log(`Max Preview Lines: ${stats.maxPreviewLines}`);
 
       // Show current directory info
       const contents = fileBrowser.getDirectoryContents(stats.currentPath);
-      const dirs = contents.filter(item => item.isDirectory && !item.isParent).length;
-      const files = contents.filter(item => !item.isDirectory).length;
+      const dirs = contents.filter(
+        (item) => item.isDirectory && !item.isParent
+      ).length;
+      const files = contents.filter((item) => !item.isDirectory).length;
       console.log(`Current Directory: ${dirs} directories, ${files} files`);
     } else {
       console.log(`Unknown browse subcommand: ${subcommand}`);
@@ -2156,10 +2210,18 @@ async function handleCommand(
     if (!subcommand) {
       console.log('Usage: /preview <command>');
       console.log('Commands:');
-      console.log('  /preview file <path>     - Preview a file with line numbers');
-      console.log('  /preview code <language> - Preview code from clipboard/input');
-      console.log('  /preview line <file> <n> - Navigate to specific line in file');
-      console.log('  /preview search <file> <term> - Search and highlight in file');
+      console.log(
+        '  /preview file <path>     - Preview a file with line numbers'
+      );
+      console.log(
+        '  /preview code <language> - Preview code from clipboard/input'
+      );
+      console.log(
+        '  /preview line <file> <n> - Navigate to specific line in file'
+      );
+      console.log(
+        '  /preview search <file> <term> - Search and highlight in file'
+      );
       console.log('  /preview config          - Show preview configuration');
       console.log('Examples:');
       console.log('  /preview file package.json');
@@ -2172,24 +2234,32 @@ async function handleCommand(
         return true;
       }
 
-      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+      const fullPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.join(currentDir, filePath);
 
       if (!fs.existsSync(fullPath)) {
         console.log(`❌ File not found: ${filePath}`);
         return true;
       }
 
-      console.log(`\n👁️  Enhanced preview: ${path.relative(currentDir, fullPath)}`);
+      console.log(
+        `\n👁️  Enhanced preview: ${path.relative(currentDir, fullPath)}`
+      );
       console.log('═'.repeat(60));
-      console.log(codePreview.previewFile(fullPath, {
-        showLineNumbers: true,
-        showHeader: true,
-        showFileInfo: true,
-        maxLines: 50,
-      }));
+      console.log(
+        codePreview.previewFile(fullPath, {
+          showLineNumbers: true,
+          showHeader: true,
+          showFileInfo: true,
+          maxLines: 50,
+        })
+      );
     } else if (subcommand === 'code') {
       const language = parts[2] || 'auto';
-      console.log(`Enter code to preview (${language} syntax). Type 'END' on a new line to finish:`);
+      console.log(
+        `Enter code to preview (${language} syntax). Type 'END' on a new line to finish:`
+      );
 
       let codeLines = [];
       const originalPrompt = '> ';
@@ -2198,18 +2268,20 @@ async function handleCommand(
       process.stdin.setEncoding('utf8');
       process.stdin.resume();
 
-      process.stdin.on('data', function(chunk) {
+      process.stdin.on('data', function (chunk) {
         const input = chunk.toString().trim();
         if (input === 'END') {
           process.stdin.pause();
           const code = codeLines.join('\n');
           console.log('\n📄 Code Preview:');
           console.log('═'.repeat(50));
-          console.log(codePreview.previewCode(code, language, {
-            showLineNumbers: true,
-            showHeader: true,
-            maxLines: 30,
-          }));
+          console.log(
+            codePreview.previewCode(code, language, {
+              showLineNumbers: true,
+              showHeader: true,
+              maxLines: 30,
+            })
+          );
           console.log('\n✅ Code preview complete.');
           process.stdout.write('\nYou: ');
           return;
@@ -2226,22 +2298,28 @@ async function handleCommand(
         return true;
       }
 
-      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+      const fullPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.join(currentDir, filePath);
 
       if (!fs.existsSync(fullPath)) {
         console.log(`❌ File not found: ${filePath}`);
         return true;
       }
 
-      console.log(`\n🎯 Navigating to line ${lineNumber} in: ${path.relative(currentDir, fullPath)}`);
+      console.log(
+        `\n🎯 Navigating to line ${lineNumber} in: ${path.relative(currentDir, fullPath)}`
+      );
       console.log('═'.repeat(60));
-      console.log(codePreview.navigateToLine(
-        fs.readFileSync(fullPath, 'utf8'),
-        lineNumber,
-        3, // context lines
-        undefined, // auto-detect language
-        { showLineNumbers: true }
-      ));
+      console.log(
+        codePreview.navigateToLine(
+          fs.readFileSync(fullPath, 'utf8'),
+          lineNumber,
+          3, // context lines
+          undefined, // auto-detect language
+          { showLineNumbers: true }
+        )
+      );
     } else if (subcommand === 'search') {
       const filePath = parts[2];
       const searchTerm = parts.slice(3).join(' ');
@@ -2251,21 +2329,27 @@ async function handleCommand(
         return true;
       }
 
-      const fullPath = path.isAbsolute(filePath) ? filePath : path.join(currentDir, filePath);
+      const fullPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.join(currentDir, filePath);
 
       if (!fs.existsSync(fullPath)) {
         console.log(`❌ File not found: ${filePath}`);
         return true;
       }
 
-      console.log(`\n🔍 Searching for "${searchTerm}" in: ${path.relative(currentDir, fullPath)}`);
+      console.log(
+        `\n🔍 Searching for "${searchTerm}" in: ${path.relative(currentDir, fullPath)}`
+      );
       console.log('═'.repeat(60));
-      console.log(codePreview.searchAndHighlight(
-        fs.readFileSync(fullPath, 'utf8'),
-        searchTerm,
-        undefined, // auto-detect language
-        { showLineNumbers: true, showHeader: true, maxLines: 30 }
-      ));
+      console.log(
+        codePreview.searchAndHighlight(
+          fs.readFileSync(fullPath, 'utf8'),
+          searchTerm,
+          undefined, // auto-detect language
+          { showLineNumbers: true, showHeader: true, maxLines: 30 }
+        )
+      );
     } else if (subcommand === 'config') {
       const stats = codePreview.getStats();
       console.log('\n📄 Code Preview Configuration:');
@@ -2274,7 +2358,9 @@ async function handleCommand(
       console.log(`Line Number Padding: ${stats.lineNumberPadding}`);
       console.log(`Max Lines: ${stats.maxLines}`);
       console.log(`Wrap Lines: ${stats.wrapLines ? '✅' : '❌'}`);
-      console.log(`Highlight Current Line: ${stats.highlightCurrentLine ? '✅' : '❌'}`);
+      console.log(
+        `Highlight Current Line: ${stats.highlightCurrentLine ? '✅' : '❌'}`
+      );
       console.log(`Show Gutter: ${stats.showGutter ? '✅' : '❌'}`);
     } else {
       console.log(`Unknown preview subcommand: ${subcommand}`);
@@ -2302,11 +2388,19 @@ async function handleCommand(
       console.log('  /search word "import"');
     } else if (subcommand === 'interactive') {
       console.log('Starting interactive code search...');
-      codeSearch.interactiveSearch().catch(error => {
+      codeSearch.interactiveSearch().catch((error) => {
         console.log(`❌ Search error: ${error.message}`);
       });
-    } else if (subcommand === 'query' || subcommand === 'regex' || subcommand === 'word' || subcommand === 'fuzzy') {
-      const query = parts.slice(2).join(' ').replace(/^["']|["']$/g, ''); // Remove surrounding quotes
+    } else if (
+      subcommand === 'query' ||
+      subcommand === 'regex' ||
+      subcommand === 'word' ||
+      subcommand === 'fuzzy'
+    ) {
+      const query = parts
+        .slice(2)
+        .join(' ')
+        .replace(/^["']|["']$/g, ''); // Remove surrounding quotes
 
       if (!query) {
         console.log(`Usage: /search ${subcommand} "<search term>"`);
@@ -2318,17 +2412,19 @@ async function handleCommand(
       const results = await codeSearch.search(query, {
         mode: subcommand === 'query' ? 'exact' : subcommand,
         directory: currentDir,
-        maxResults: 20
+        maxResults: 20,
       });
 
       if (results.length === 0) {
         console.log('❌ No matches found.');
       } else {
-        console.log(`✅ Found ${results.length} matches in ${new Set(results.map(r => r.file)).size} files:\n`);
+        console.log(
+          `✅ Found ${results.length} matches in ${new Set(results.map((r) => r.file)).size} files:\n`
+        );
 
         // Group by file
         const fileGroups = {};
-        results.forEach(result => {
+        results.forEach((result) => {
           if (!fileGroups[result.file]) {
             fileGroups[result.file] = [];
           }
@@ -2340,10 +2436,11 @@ async function handleCommand(
           const relativePath = path.relative(currentDir, filePath);
           console.log(`📄 ${relativePath} (${fileResults.length} matches):`);
 
-          fileResults.forEach(result => {
-            const truncated = result.content.length > 80
-              ? result.content.substring(0, 77) + '...'
-              : result.content;
+          fileResults.forEach((result) => {
+            const truncated =
+              result.content.length > 80
+                ? result.content.substring(0, 77) + '...'
+                : result.content;
             console.log(`  ${matchCount}. Line ${result.line}: ${truncated}`);
             matchCount++;
           });
@@ -2399,6 +2496,23 @@ async function handleCommand(
     }
 
     return true;
+  } else if (input.startsWith('/debug')) {
+    const args = input.split(' ').slice(1);
+    const result = await debugCommand.execute(args, {
+      cwd: currentDir,
+      messages,
+      fileContext,
+      client,
+      model,
+      ora,
+      inquirer,
+    });
+
+    if (result && result.success !== false) {
+      return true;
+    }
+
+    return true;
   } else if (input === '/clear') {
     messages = [{ role: 'system', content: systemPrompt }];
     fileContext = {};
@@ -2445,8 +2559,12 @@ async function handleCommand(
       console.log(
         `🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
       );
-      console.log('You are already running a development version newer than the latest release.');
-      console.log('To get the latest stable release, you may need to switch to the main branch or wait for a new release.');
+      console.log(
+        'You are already running a development version newer than the latest release.'
+      );
+      console.log(
+        'To get the latest stable release, you may need to switch to the main branch or wait for a new release.'
+      );
     } else {
       console.log(
         `✅ You are running the latest version: v${updateCheck.currentVersion}`

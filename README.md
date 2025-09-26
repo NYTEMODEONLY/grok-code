@@ -30,13 +30,15 @@
 ### 🧠 **Revolutionary Intelligence Features**
 
 **Phase 1: Enhanced Multi-File Intelligence**
+
 - **🗂️ Semantic Code Parser**: AST-based analysis for JavaScript, TypeScript, and Python
 - **🔗 Dependency Graph Engine**: Maps import/export relationships, detects circular dependencies, visualizes code architecture
 - **🎯 Context Inference System**: Intelligent file relevance scoring, context window optimization, smart file suggestions
 - **🔍 Intelligent File Linking**: Semantic search across codebases, auto-context building, token-efficient conversation management
 - **💰 Context Budgeting**: Reserves capacity for different context types (essentials vs conversation) to prevent capacity exhaustion
 
-**Phase 2: Advanced Error Recovery System** *(Latest Addition)*
+**Phase 2: Advanced Error Recovery System** _(Latest Addition)_
+
 - **🔍 Intelligent Error Detection**: Parses ESLint, TypeScript, Prettier output with context-aware analysis
 - **🔧 Automated Fix Generation**: 20+ fix templates for common errors (semicolons, unused vars, imports, etc.)
 - **🤖 AI-Powered Fixes**: Grok integration for complex error resolution with full codebase context
@@ -45,7 +47,17 @@
 
 ## 📋 Changelog
 
+### v1.4.0 - Complete Error Recovery System (Phase 2.4)
+
+- **🔄 Automated Error Recovery Workflows**: End-to-end error recovery orchestration from detection to resolution
+- **🐛 Interactive Debugging Sessions**: `/debug` command for guided error analysis and fix application
+- **📈 Error Recovery Analytics**: Comprehensive statistics, success rates, and pattern analysis
+- **🎯 Workflow Intelligence**: Context-aware recovery prioritization and batch processing
+- **📊 Recovery Reporting**: Detailed insights, trends, and recommendations for error prevention
+- **🛠️ Enhanced CLI Commands**: `/debug interactive|file|errors|fix|history|stats` for comprehensive error handling
+
 ### v1.3.0 - Interactive Code Display (Phase 3.2)
+
 - **🗂️ Interactive File Browser**: Terminal navigation with arrow keys and file selection
 - **📄 Enhanced Code Preview**: Line numbers, gutter, and IDE-style formatting
 - **🎯 Line Navigation**: Jump to specific lines with contextual display
@@ -55,6 +67,7 @@
 - **🎮 Interactive Commands**: `/browse`, `/preview` commands for advanced file operations
 
 ### v1.2.0 - IDE-like Terminal Experience (Phase 3.1)
+
 - **🎨 Syntax Highlighting**: Multi-language code highlighting (JavaScript, TypeScript, Python, JSON, Shell, SQL)
 - **🌈 Multiple Color Themes**: Default, dark, and minimal themes with ANSI terminal compatibility
 - **📊 Color-Coded Diff Display**: Unified diff parsing with green/red/gray color coding for additions/deletions
@@ -63,6 +76,7 @@
 - **⏳ Progress Indicators**: Advanced spinners and status displays for operations
 
 ### v1.1.1 - CLI User Experience Improvements
+
 - **✨ Enhanced CLI Experience**: Suppressed verbose internal logging from appearing in user console output
 - **🔇 Clean Startup**: Removed detailed context loading and budget status messages during initialization
 - **📝 Improved Logging**: INFO/WARN/DEBUG messages now only write to log files, keeping console clean for users
@@ -118,7 +132,7 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **Step-by-Step Reasoning**: Grok thinks ahead, plans, and iterates on solutions
 - **Multi-Paradigm Support**: Scripts, libraries, web apps, APIs, and more
 
-### 🧠 Enhanced Multi-File Intelligence *(Phase 1)*
+### 🧠 Enhanced Multi-File Intelligence _(Phase 1)_
 
 - **🗂️ Semantic Code Parser**:
   - AST-based analysis for JavaScript, TypeScript, and Python
@@ -143,13 +157,13 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
   - Token-efficient conversation management with pruning strategies
   - Session-aware context that learns from interaction patterns
 
-- **💰 Context Budgeting System** *(Latest Addition)*:
+- **💰 Context Budgeting System** _(Latest Addition)_:
   - Reserves 15% for essential project files (package.json, README, etc.)
   - Allocates 70% for conversation and work context
   - Maintains 15% buffer for system overhead
   - Prevents capacity exhaustion while ensuring project awareness
 
-### 🔧 Advanced Error Recovery System *(Phase 2)*
+### 🔧 Advanced Error Recovery System _(Phase 2)_
 
 - **🔍 Intelligent Error Detection**:
   - Parses output from ESLint, TypeScript compiler, Prettier, and more
@@ -259,7 +273,7 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 
 - **Define reusable prompts in `.grok/commands/<cmd_name>.txt`**
 - **Team-shared commands for project consistency**
-- **GROK.md**: Project-specific guidelines and commands**
+- **GROK.md**: Project-specific guidelines and commands\*\*
 - **Context budgeting configuration** for custom capacity allocation
 
 ### 🧠 Memory & History System
@@ -286,7 +300,7 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 
 ### 🔧 Configuration & Extensibility
 
-- **`GROK.md`**: Project-specific guidelines and commands**
+- **`GROK.md`**: Project-specific guidelines and commands\*\*
 - **Secure API key management with local storage**
 - **Model Selection**: Choose from multiple Grok models via `/model` command:
   - `grok-code-fast-1`: **Default** - Optimized for coding, fast & cost-effective
@@ -527,20 +541,25 @@ You: /budget
 ## 💡 Best Practices & Tips
 
 ### 🏗️ RPG Planning Tips
+
 - **Use Descriptive Prompts**: "Build a REST API for user authentication" works better than "Make an API"
 - **Complex Projects**: Always use RPG for multi-feature projects to ensure proper architecture
 - **Review Plans**: RPG plans are logged to console—review them before generation
 - **Fallback Available**: If RPG fails, Grok Code automatically falls back to regular chat
 
 ### 🤖 General AI Usage
+
 - **Context Matters**: Add relevant files with `/add <file>` before complex tasks
 - **Iterative Development**: Use Grok's error analysis for debugging workflows
 - **Token Efficiency**: Add files selectively rather than scanning everything
 
 ### 📁 Project Configuration
+
 - **GROK.md**: Define project standards:
+
   ```markdown
   # Project Standards
+
   - Style: ESLint with Airbnb preset
   - Build: npm run build
   - Test: npm test

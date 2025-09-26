@@ -1,7 +1,3 @@
 {
-  "commands": [
-    "hey",
-    "exot",
-    "hey"
-  ]
+  "commands": ["hey", "exot", "hey"]
 }
