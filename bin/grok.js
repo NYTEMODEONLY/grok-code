@@ -20,6 +20,7 @@ import { autoContextBuilder } from '../lib/context/auto-context.js';
 import { tokenManager } from '../lib/context/token-manager.js';
 import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
 import { DiffViewer } from '../lib/display/diff-viewer.js';
+import { ProgressIndicator } from '../lib/display/progress-indicator.js';
 
 /**
  * Error Logging System
@@ -886,6 +887,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Initialize diff viewer for color-coded diffs
   const diffViewer = new DiffViewer({ syntaxHighlighter });
 
+  // Initialize progress indicator for operation feedback
+  const progressIndicator = new ProgressIndicator();
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1641,6 +1645,7 @@ async function handleCommand(
 - /pr <title>: Create a pull request (requires gh CLI)
 - /highlight <on|off|theme|status>: Control syntax highlighting (themes: default/dark/minimal)
 - /diff <status|test|git|show>: Color-coded diff display and git integration
+- /progress <status|test|spinner|multistep>: Progress indicators and status displays
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -1927,6 +1932,70 @@ async function handleCommand(
     } else {
       console.log(`Unknown diff subcommand: ${subcommand}`);
       console.log('Use /diff for help');
+    }
+
+    return true;
+  } else if (input.startsWith('/progress')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand) {
+      console.log('Usage: /progress <command>');
+      console.log('Commands:');
+      console.log('  /progress status     - Show progress indicator status');
+      console.log('  /progress test       - Run progress indicator test');
+      console.log('  /progress spinner    - Start a test spinner');
+      console.log('  /progress multistep  - Show multi-step progress demo');
+      console.log('Examples:');
+      console.log('  /progress status');
+      console.log('  /progress test');
+    } else if (subcommand === 'status') {
+      const stats = progressIndicator.getStats();
+      console.log('\n⏳ Progress Indicator Status:');
+      console.log('═'.repeat(35));
+      console.log(`Active Spinners: ${stats.activeSpinners}`);
+      console.log(`Active Progress Bars: ${stats.activeProgressBars}`);
+      console.log(`Theme: ${stats.theme}`);
+      console.log(`Show Time: ${stats.showTime}`);
+    } else if (subcommand === 'test') {
+      console.log('\n🧪 Running Progress Indicator Test...\n');
+      progressIndicator.testIndicators('all');
+    } else if (subcommand === 'spinner') {
+      console.log('Starting test spinner...');
+      const spinner = progressIndicator.startSpinner('analyzing', 'Testing spinner functionality...');
+
+      // Auto-complete after 3 seconds
+      setTimeout(() => {
+        progressIndicator.succeedSpinner(spinner.id, 'Test spinner completed successfully');
+      }, 3000);
+    } else if (subcommand === 'multistep') {
+      const steps = [
+        { name: 'Initializing', operation: 'loading' },
+        { name: 'Processing', operation: 'processing' },
+        { name: 'Validating', operation: 'validating' },
+        { name: 'Completing', operation: 'saving' },
+      ];
+
+      const multiStep = progressIndicator.showMultiStepProgress(steps, 'Demo Multi-Step Operation');
+
+      let stepIndex = 0;
+      const runNextStep = () => {
+        if (stepIndex < steps.length) {
+          const spinner = multiStep.next();
+          setTimeout(() => {
+            progressIndicator.succeedSpinner(spinner.id);
+            stepIndex++;
+            runNextStep();
+          }, 1500);
+        } else {
+          console.log('✅ Multi-step demo completed!');
+        }
+      };
+
+      runNextStep();
+    } else {
+      console.log(`Unknown progress subcommand: ${subcommand}`);
+      console.log('Use /progress for help');
     }
 
     return true;
