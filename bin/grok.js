@@ -8,6 +8,7 @@ const { execSync } = require('child_process');
 const OpenAI = require('openai');
 const ora = require('ora');
 const xml2js = require('xml2js');
+const readline = require('readline');
 
 program
   .name('grok')
@@ -19,6 +20,93 @@ program.action(async () => {
 });
 
 program.parse();
+
+// RPG Planning Function
+function makeRPG(prompt, openai, model) {
+  return new Promise((resolve, reject) => {
+    const planningPrompt = `
+You are an expert software architect. For the user prompt: '${prompt}', create a structured plan for a code repository.
+Output ONLY a JSON object with:
+- "features": Array of high-level functionalities (e.g., ["data_loading", "model_training"]).
+- "files": Object mapping features to file paths (e.g., {"data_loading": "src/data.js"}).
+- "flows": Array of data flow edges (e.g., [["data_loading", "model_training"]]).
+- "deps": Array of dependency edges (e.g., [["data.js", "model.js"]]).
+Keep it concise and modular.
+    `;
+
+    openai.chat.completions.create({
+      model: model,
+      messages: [
+        { role: "system", content: "You are a precise code planner. Respond with valid JSON only." },
+        { role: "user", content: planningPrompt }
+      ],
+      max_tokens: 500
+    }).then(response => {
+      try {
+        const plan = JSON.parse(response.choices[0].message.content.trim());
+
+        // Build simple graph as JSON (nodes + edges)
+        const graph = {
+          nodes: [
+            ...plan.features.map(f => ({ id: f, type: 'feature' })),
+            ...Object.entries(plan.files).map(([f, file]) => ({ id: file, type: 'file' }))
+          ],
+          edges: [
+            ...Object.entries(plan.files).map(([f, file]) => ({ from: f, to: file, type: 'implements' })),
+            ...plan.flows.map(([src, dst]) => ({ from: src, to: dst, type: 'data_flow' })),
+            ...plan.deps.map(([src, dst]) => ({ from: src, to: dst, type: 'depends' }))
+          ]
+        };
+
+        resolve({ graph, plan });
+      } catch (e) {
+        reject(e);
+      }
+    }).catch(reject);
+  });
+}
+
+// RPG-Guided Code Generation
+async function generateCodeWithRPG(prompt, openai, model) {
+  // Step 1: Generate RPG
+  const rpg = await makeRPG(prompt, openai, model);
+  const plan = rpg.plan;
+  const graph = rpg.graph;
+
+  console.log("RPG Plan Generated:", JSON.stringify(plan, null, 2));  // Log for debugging
+
+  // Step 2: Guide code gen with plan
+  const codePrompt = `
+Using this repository plan:
+Features: ${JSON.stringify(plan.features)}
+Files: ${JSON.stringify(plan.files)}
+Data Flows: ${JSON.stringify(plan.flows)}
+Dependencies: ${JSON.stringify(plan.deps)}
+
+Generate complete, modular code for: '${prompt}'.
+For each file in Files, create a code block. Respect deps and flows.
+Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }
+  `;
+
+  const response = await openai.chat.completions.create({
+    model: model,
+    messages: [
+      { role: "system", content: "You are a precise code generator. Respond with valid JSON only." },
+      { role: "user", content: codePrompt }
+    ],
+    max_tokens: 2000
+  });
+
+  const codeOutput = JSON.parse(response.choices[0].message.content.trim());
+
+  // Write files to disk
+  Object.entries(codeOutput.files).forEach(([filepath, code]) => {
+    fs.writeFileSync(filepath, code);
+    console.log(`Generated: ${filepath}`);
+  });
+
+  return codeOutput;
+}
 
 async function main() {
   const configDir = path.join(process.env.HOME || process.env.USERPROFILE, '.grok');
@@ -99,6 +187,18 @@ Always plan actions, confirm before assuming applied, and suggest next steps lik
   let messages = [{ role: 'system', content: systemPrompt }];
   let fileContext = {};
 
+  // Automatic codebase scanning on start
+  const essentialFiles = ['package.json', 'README.md', 'GROK.md'];
+  essentialFiles.forEach(f => {
+    const filePath = path.join(currentDir, f);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      fileContext[f] = content;
+      messages.push({ role: 'system', content: `Auto-added essential file ${f}:\n${content}` });
+    }
+  });
+  console.log('Auto-scanned essential files for initial context.');
+
   console.log("Welcome to Grok Code! Type your message or use /help for commands. Type '/exit' to quit.\n");
 
   while (true) {
@@ -112,6 +212,25 @@ Always plan actions, confirm before assuming applied, and suggest next steps lik
 
     const handled = await handleCommand(userInput, messages, fileContext, client, model);
     if (handled) continue;
+
+    // Check if prompt should use RPG planning
+    const shouldUseRPG = userInput.toLowerCase().includes('generate repo') ||
+                         userInput.toLowerCase().includes('build a') ||
+                         userInput.toLowerCase().includes('create a') ||
+                         userInput.toLowerCase().includes('implement a') ||
+                         userInput.toLowerCase().includes('develop a');
+
+    if (shouldUseRPG) {
+      console.log("Using RPG planning for code generation...");
+      try {
+        await generateCodeWithRPG(userInput, client, model);
+        console.log("Repository generation completed!");
+        continue;
+      } catch (error) {
+        console.error("RPG generation failed:", error);
+        console.log("Falling back to regular chat...");
+      }
+    }
 
     messages.push({ role: 'user', content: userInput });
 
@@ -196,6 +315,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
 - /init-git: Initialize git repo
 - /commit <message>: Commit changes
 - /push: Push to remote
+- /pr <title>: Create a pull request (requires gh CLI)
 - /clear: Clear conversation history
 - /exit: Quit
 - Custom: /<custom_name> for user-defined in .grok/commands/
@@ -241,6 +361,17 @@ async function handleCommand(input, messages, fileContext, client, model) {
       messages.push({ role: 'system', content: `Git commit output:\n${result}` });
     } catch (e) {
       console.log(`Error: ${e.stderr}`);
+    }
+    return true;
+  } else if (input.startsWith('/pr ')) {
+    const title = input.split(' ').slice(1).join(' ');
+    try {
+      const body = 'Auto-generated by Grok Code';  // Could prompt for body or generate via AI
+      const result = execSync(`gh pr create --title "${title}" --body "${body}"`, { encoding: 'utf8' });
+      console.log(result);
+      messages.push({ role: 'system', content: `PR created: ${result}` });
+    } catch (e) {
+      console.log(`Error: Install gh CLI or check setup. ${e.stderr}`);
     }
     return true;
   } else if (input === '/push') {
