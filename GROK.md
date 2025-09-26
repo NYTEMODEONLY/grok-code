@@ -80,7 +80,8 @@ lib/
 │   ├── personalized-fixes.js # User-specific fix recommendations
 │   └── prevention-tips.js   # Proactive error prevention guidance
 ├── display/         # Visual terminal enhancements
-│   └── syntax-highlighter.js # Multi-language syntax highlighting
+│   ├── syntax-highlighter.js # Multi-language syntax highlighting
+│   └── diff-viewer.js        # Color-coded diff display and git integration
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
@@ -135,6 +136,14 @@ lib/
 - **Color Themes**: Default, dark, and minimal themes with ANSI terminal compatibility
 - **Interactive Controls**: Runtime theme switching and highlighting controls
 - **Language Detection**: Automatic language recognition for optimal highlighting
+
+### Diff Display & Git Integration
+
+- **Color-Coded Diffs**: Unified diff parsing with green/red/gray color coding
+- **Syntax Highlighting in Diffs**: Enhanced readability with language-aware highlighting
+- **Git Command Integration**: `/diff git` for seamless git diff workflows
+- **Multi-File Support**: Handle complex diffs across multiple files
+- **Statistics & Summaries**: Automatic diff analysis with change metrics
 
 ## Git Workflow
 

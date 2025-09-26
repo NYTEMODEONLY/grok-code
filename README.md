@@ -178,6 +178,15 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **Line numbers** and enhanced readability
 - **Interactive controls**: `/highlight` command for runtime theme switching
 
+### 📊 Color-Coded Diff Display
+
+- **Unified diff parsing** with full color coding (green/red/gray)
+- **Syntax highlighting within diffs** for enhanced readability
+- **Git integration** with `/diff git` command for seamless workflow
+- **Multi-file diff support** with language-aware highlighting
+- **Diff summary statistics** and side-by-side comparisons
+- **Interactive diff commands**: `/diff status/test/git/show`
+
 ### 🔄 Autonomous Workflows
 
 - **Execute shell commands via `<run command="...">` tags (npm install, tests, linting)**
