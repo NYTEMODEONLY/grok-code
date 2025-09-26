@@ -30,6 +30,7 @@ import { ErrorStats } from '../lib/analytics/error-stats.js';
 import { AutoComplete } from '../lib/commands/auto-complete.js';
 import { HistorySearch } from '../lib/commands/history-search.js';
 import { ContextualSuggestions } from '../lib/commands/suggestions.js';
+import { WorkflowDiagram } from '../lib/visualization/workflow-diagram.js';
 
 /**
  * Error Logging System
@@ -967,6 +968,13 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     confidenceThreshold: 0.3,
   });
 
+  // Initialize workflow diagram generator
+  const workflowDiagram = new WorkflowDiagram({
+    maxWidth: 100,
+    maxHeight: 50,
+    style: 'default',
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1745,6 +1753,7 @@ async function handleCommand(
 - /complete <test|status|config>: Auto-complete system for commands and file paths
 - /history <search|recent|stats|clear|delete|export>: Advanced command history search and management
 - /suggest <show|stats|reset>: Intelligent contextual command suggestions
+- /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2779,6 +2788,147 @@ async function handleCommand(
       console.log('• Conversation context and topics');
     } else {
       console.log('Unknown suggest subcommand. Use /suggest help for available commands.');
+    }
+
+    return true;
+  } else if (input.startsWith('/diagram')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+    const args = parts.slice(2);
+
+    if (!subcommand || subcommand === 'show' || subcommand === 'generate') {
+      console.log('🖼️  Generating workflow diagram...\n');
+
+      // Try to get RPG plan from conversation history
+      let rpgPlan = null;
+
+      // Look for RPG plan in recent messages
+      for (let i = messages.length - 1; i >= Math.max(0, messages.length - 10); i--) {
+        const message = messages[i];
+        if (message.role === 'assistant' && message.content) {
+          try {
+            // Try to extract JSON from the message
+            const jsonMatch = message.content.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[1]);
+              if (parsed.features && parsed.files) {
+                rpgPlan = parsed;
+                break;
+              }
+            }
+          } catch (error) {
+            // Continue searching
+          }
+        }
+      }
+
+      if (!rpgPlan) {
+        // Create a demo plan for testing
+        rpgPlan = {
+          features: ['user_auth', 'data_processing', 'api_endpoints', 'frontend_ui'],
+          files: {
+            'src/auth.js': 'user_auth',
+            'src/middleware.js': 'user_auth',
+            'src/data.js': 'data_processing',
+            'src/processor.js': 'data_processing',
+            'src/api.js': 'api_endpoints',
+            'src/routes.js': 'api_endpoints',
+            'src/app.js': 'frontend_ui',
+            'src/components.js': 'frontend_ui'
+          },
+          flows: [
+            ['user_auth', 'data_processing'],
+            ['data_processing', 'api_endpoints'],
+            ['api_endpoints', 'frontend_ui']
+          ],
+          deps: [
+            ['src/auth.js', 'src/middleware.js'],
+            ['src/data.js', 'src/processor.js'],
+            ['src/api.js', 'src/routes.js'],
+            ['src/app.js', 'src/components.js'],
+            ['src/middleware.js', 'src/api.js']
+          ]
+        };
+
+        console.log('📝 Using demo RPG plan (no recent plan found)\n');
+      }
+
+      // Determine diagram type
+      let diagramType = 'flowchart';
+      let diagramTitle = 'RPG Plan Visualization';
+      let compact = false;
+
+      if (args.length > 0) {
+        const typeArg = args[0].toLowerCase();
+        if (['flowchart', 'mindmap', 'dependency', 'overview'].includes(typeArg)) {
+          diagramType = typeArg;
+        }
+
+        if (args.includes('--compact')) {
+          compact = true;
+        }
+
+        // Check for title
+        const titleIndex = args.findIndex(arg => arg === '--title');
+        if (titleIndex !== -1 && args[titleIndex + 1]) {
+          diagramTitle = args[titleIndex + 1];
+        }
+      }
+
+      try {
+        const diagram = workflowDiagram.generateDiagram(rpgPlan, {
+          type: diagramType,
+          title: diagramTitle,
+          compact,
+          showStats: true
+        });
+
+        console.log(diagram);
+      } catch (error) {
+        console.log(`❌ Failed to generate diagram: ${error.message}`);
+        console.log('Try: /diagram flowchart --compact');
+      }
+    } else if (subcommand === 'style') {
+      const style = args[0];
+      if (style && workflowDiagram.getAvailableStyles().includes(style)) {
+        workflowDiagram.setStyle(style);
+        console.log(`🎨 Diagram style changed to: ${style}`);
+      } else {
+        console.log(`❌ Invalid style. Available styles: ${workflowDiagram.getAvailableStyles().join(', ')}`);
+      }
+    } else if (subcommand === 'styles') {
+      const styles = workflowDiagram.getAvailableStyles();
+      console.log('🎨 Available diagram styles:');
+      styles.forEach(style => {
+        console.log(`  • ${style}`);
+      });
+    } else if (subcommand === 'types') {
+      console.log('📊 Available diagram types:');
+      console.log('  • flowchart  - Flowchart-style diagram');
+      console.log('  • mindmap    - Mind map with hierarchical layout');
+      console.log('  • dependency - File dependency graph');
+      console.log('  • overview   - Statistical overview');
+    } else if (subcommand === 'help') {
+      console.log('🖼️  Workflow Diagram Help');
+      console.log('═'.repeat(25));
+      console.log('Generate beautiful ASCII art diagrams from RPG plans.\n');
+      console.log('Commands:');
+      console.log('  /diagram show [type] [options]  - Generate diagram from recent RPG plan');
+      console.log('  /diagram style <style>          - Change diagram style');
+      console.log('  /diagram styles                 - List available styles');
+      console.log('  /diagram types                  - List available diagram types');
+      console.log('  /diagram help                   - Show this help');
+      console.log('\nDiagram Types:');
+      console.log('  flowchart  - Feature and file flow diagram');
+      console.log('  mindmap    - Hierarchical mind map layout');
+      console.log('  dependency - File dependency relationships');
+      console.log('  overview   - Statistical summary');
+      console.log('\nOptions:');
+      console.log('  --compact    - Use compact layout');
+      console.log('  --title "T"  - Custom diagram title');
+      console.log('\nStyles: default, minimal, fancy');
+    } else {
+      console.log('Unknown diagram subcommand. Use /diagram help for available commands.');
     }
 
     return true;
