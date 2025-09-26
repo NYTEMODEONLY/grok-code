@@ -1,7 +1,7 @@
 {
   "name": "@xai/grok-code",
   "version": "1.0.0",
-  "description": "Grok Code: An agentic coding tool powered by xAI that lives in your terminal, understands your codebase, and helps you code faster.",
+  "description": "🚀 Grok Code: AI-powered CLI coding assistant with RPG planning. Transform your terminal into an intelligent coding environment with structured repository planning and generation.",
   "main": "index.js",
   "bin": {
     "grok": "./bin/grok.js"
