@@ -11,9 +11,7 @@
     "start": "node bin/grok.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "openai": "^5.23.0",
@@ -27,25 +25,19 @@
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",
-    "prettier": "^3.6.2",
-    "jest": "^30.1.3",
-    "babel-jest": "^30.0.0",
-    "@babel/preset-env": "^7.25.0"
+    "prettier": "^3.6.2"
   },
-  "keywords": ["cli", "ai", "coding", "grok", "rpg-planning"],
+  "keywords": [
+    "cli",
+    "ai",
+    "coding",
+    "grok",
+    "rpg-planning"
+  ],
   "author": "nytemodeonly",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/NYTEMODEONLY/grok-code.git"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "transformIgnorePatterns": [
-      "node_modules/(?!(ora)/)"
-    ],
-    "transform": {
-      "^.+\\.(js|jsx)$": "babel-jest"
-    }
   }
 }
