@@ -1154,11 +1154,11 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       );
 
       if (budgetCheck.canAdd) {
-        fileContext[f] = content;
-        messages.push({
-          role: 'system',
-          content: `Auto-added essential file ${f}:\n${content}`,
-        });
+      fileContext[f] = content;
+      messages.push({
+        role: 'system',
+        content: `Auto-added essential file ${f}:\n${content}`,
+      });
 
         // Track the token usage in the essentials budget
         tokenManager.addToBudget('essentials', estimatedTokens);
@@ -1179,28 +1179,28 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     updateCheck = { error: error.message };
   }
 
-  if (updateCheck.hasUpdate) {
-    console.log(
+      if (updateCheck.hasUpdate) {
+        console.log(
       `🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
-    );
-    console.log("Type '/update' to update to the latest version.\n");
+        );
+        console.log("Type '/update' to update to the latest version.\n");
   } else if (updateCheck.isAhead) {
     console.log(
       `🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
     );
     console.log("You're running a development version.\n");
-  }
-  // Only show error if it's not the common "no releases" case
-  else if (
-    updateCheck.error &&
-    !updateCheck.error.includes('No releases found')
-  ) {
-    console.log(
+      }
+      // Only show error if it's not the common "no releases" case
+      else if (
+        updateCheck.error &&
+        !updateCheck.error.includes('No releases found')
+      ) {
+        console.log(
       `⚠️  Could not check for updates: ${updateCheck.error}\n`
-    );
+        );
   } else {
     console.log('✅ Up to date!\n');
-  }
+      }
 
   // Load command history for this workspace
   let commandHistory = loadCommandHistory();
@@ -1516,11 +1516,11 @@ async function handleCommand(
       );
 
       if (budgetCheck.canAdd) {
-        fileContext[filename] = content;
-        messages.push({
-          role: 'system',
-          content: `File ${filename} added to context:\n${content}`,
-        });
+      fileContext[filename] = content;
+      messages.push({
+        role: 'system',
+        content: `File ${filename} added to context:\n${content}`,
+      });
 
         // Track the token usage in the conversation budget
         tokenManager.addToBudget('conversation', estimatedTokens);
@@ -1532,7 +1532,7 @@ async function handleCommand(
         console.log(
           `💰 Conversation capacity: ${budgetStatus.categories.conversation.available} tokens remaining`
         );
-      } else {
+    } else {
         console.log(
           `❌ Cannot add ${filename} (${estimatedTokens} tokens) - would exceed conversation budget.`
         );
