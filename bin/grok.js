@@ -29,6 +29,7 @@ import { DebugCommand } from './commands/debug.js';
 import { ErrorStats } from '../lib/analytics/error-stats.js';
 import { AutoComplete } from '../lib/commands/auto-complete.js';
 import { HistorySearch } from '../lib/commands/history-search.js';
+import { ContextualSuggestions } from '../lib/commands/suggestions.js';
 
 /**
  * Error Logging System
@@ -960,6 +961,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     maxHistorySize: 500,
   });
 
+  // Initialize contextual suggestions system
+  const contextualSuggestions = new ContextualSuggestions({
+    maxSuggestions: 5,
+    confidenceThreshold: 0.3,
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1733,6 +1740,7 @@ async function handleCommand(
 - /debug <interactive|file|errors|fix|history|stats>: Interactive error analysis and recovery
 - /complete <test|status|config>: Auto-complete system for commands and file paths
 - /history <search|recent|stats|clear|delete|export>: Advanced command history search and management
+- /suggest <show|stats|reset>: Intelligent contextual command suggestions
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -2691,6 +2699,82 @@ async function handleCommand(
       console.log(
         'Unknown history subcommand. Use /history help for available commands.'
       );
+    }
+
+    return true;
+  } else if (input.startsWith('/suggest')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+
+    if (!subcommand || subcommand === 'show' || subcommand === 'get') {
+      console.log('🧠 Analyzing your current context...\n');
+
+      // Gather current context
+      const context = {
+        currentDir: currentDir,
+        recentCommands: commandHistory.slice(-5).map(cmd => typeof cmd === 'string' ? cmd : ''),
+        openFiles: Object.keys(fileContext),
+        conversationHistory: messages.slice(-10),
+        projectInfo: {},
+        timeOfDay: new Date().getHours(),
+        userPreferences: {}
+      };
+
+      // Generate suggestions
+      const suggestions = contextualSuggestions.generateSuggestions(context);
+
+      if (suggestions.length === 0) {
+        console.log('🤔 No contextual suggestions available at this time.');
+        console.log('Try using more commands or working with files to get personalized suggestions.');
+      } else {
+        console.log(contextualSuggestions.formatSuggestions(suggestions));
+      }
+    } else if (subcommand === 'stats') {
+      const stats = contextualSuggestions.getStats();
+      console.log('\n🧠 Contextual Suggestions Statistics:');
+      console.log('═'.repeat(40));
+      console.log(`Max Suggestions: ${stats.maxSuggestions}`);
+      console.log(`Confidence Threshold: ${stats.confidenceThreshold}`);
+      console.log(`Learning Enabled: ${stats.learningEnabled ? '✅' : '❌'}`);
+      console.log('\nLearning Data:');
+      console.log(`  User Preferences: ${stats.learningDataSize.userPreferences}`);
+      console.log(`  Command Sequences: ${stats.learningDataSize.commandSequences}`);
+      console.log(`  Context Patterns: ${stats.learningDataSize.contextPatterns}`);
+      console.log(`  Temporal Patterns: ${stats.learningDataSize.temporalPatterns}`);
+    } else if (subcommand === 'reset') {
+      const { inquirer } = await import('inquirer');
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Reset all learning data for contextual suggestions?',
+          default: false
+        }
+      ]);
+
+      if (confirm) {
+        contextualSuggestions.resetLearningData();
+        console.log('✅ Contextual suggestions learning data reset.');
+      } else {
+        console.log('❌ Reset cancelled.');
+      }
+    } else if (subcommand === 'help') {
+      console.log('🧠 Contextual Suggestions Help');
+      console.log('═'.repeat(30));
+      console.log('Get intelligent command suggestions based on your current context.\n');
+      console.log('Commands:');
+      console.log('  /suggest show     - Show contextual suggestions');
+      console.log('  /suggest stats    - Show suggestion statistics');
+      console.log('  /suggest reset    - Reset learning data');
+      console.log('  /suggest help     - Show this help');
+      console.log('\nThe system learns from your usage patterns and suggests');
+      console.log('commands that might be useful based on:');
+      console.log('• Current project and files');
+      console.log('• Recent command history');
+      console.log('• Time of day and work patterns');
+      console.log('• Conversation context and topics');
+    } else {
+      console.log('Unknown suggest subcommand. Use /suggest help for available commands.');
     }
 
     return true;
