@@ -1110,74 +1110,57 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     console.log('⚠️  Warning: Confirmation dialogs may not work properly');
   }
 
-  // Initialize framework detection system
-  let frameworkDetector;
+  // Initialize all systems quietly (no console output during startup)
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner;
+
   try {
+    // Framework detection
     frameworkDetector = new FrameworkDetector({
       projectRoot: process.cwd(),
       confidenceThreshold: 0.7,
       maxFileSize: 1024 * 1024,
     });
-    logger.info('Framework detection system initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize framework detection system', { error: error.message });
-    console.log('⚠️  Warning: Framework detection may not work properly');
-    frameworkDetector = null;
   }
 
-  // Initialize framework patterns knowledge base
-  let frameworkPatterns;
   try {
+    // Framework patterns
     frameworkPatterns = new FrameworkPatterns();
-    logger.info('Framework patterns knowledge base initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize framework patterns system', { error: error.message });
-    console.log('⚠️  Warning: Framework pattern analysis may not work properly');
-    frameworkPatterns = null;
   }
 
-  // Initialize framework-specific prompt loader
-  let frameworkPromptLoader;
   try {
+    // Framework prompts
     const { FrameworkPromptLoader } = await import('../lib/frameworks/prompt-loader.js');
     frameworkPromptLoader = new FrameworkPromptLoader();
-    logger.info('Framework prompt loader initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize framework prompt loader', { error: error.message });
-    console.log('⚠️  Warning: Framework-specific prompts may not work properly');
-    frameworkPromptLoader = null;
   }
 
-  // Initialize convention analyzer
-  let conventionAnalyzer;
   try {
+    // Convention analyzer
     const { ConventionAnalyzer } = await import('../lib/conventions/analyzer.js');
     conventionAnalyzer = new ConventionAnalyzer({
       projectRoot: process.cwd(),
-      maxFiles: 50, // Analyze up to 50 files for performance
+      maxFiles: 50,
       maxFileSize: 1024 * 1024
     });
-    logger.info('Convention analyzer initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize convention analyzer', { error: error.message });
-    console.log('⚠️  Warning: Convention analysis may not work properly');
-    conventionAnalyzer = null;
   }
 
-  // Initialize team patterns learner
-  let teamPatternsLearner;
   try {
+    // Team patterns learner
     const { TeamPatternsLearner } = await import('../lib/conventions/team-patterns.js');
     teamPatternsLearner = new TeamPatternsLearner({
       projectRoot: process.cwd(),
       maxHistorySize: 1000,
       confidenceThreshold: 0.7
     });
-    logger.info('Team patterns learner initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize team patterns learner', { error: error.message });
-    console.log('⚠️  Warning: Team learning may not work properly');
-    teamPatternsLearner = null;
   }
 
   // Append previous conversation history to maintain memory
@@ -1224,8 +1207,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     }
   }
 
-  // Check for updates on startup (synchronously to avoid cursor issues)
-  console.log('🔍 Checking for updates...');
+  // Check for updates quietly
   let updateCheck;
   try {
     updateCheck = await checkForUpdates();
@@ -1233,42 +1215,52 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     updateCheck = { error: error.message };
   }
 
-      if (updateCheck.hasUpdate) {
-        console.log(
-      `🔄 Update available! Current: v${updateCheck.currentVersion} → Latest: v${updateCheck.latestVersion}`
-        );
-        console.log("Type '/update' to update to the latest version.\n");
-  } else if (updateCheck.isAhead) {
-    console.log(
-      `🚀 Development version! Current: v${updateCheck.currentVersion} (ahead of latest release: v${updateCheck.latestVersion})`
-    );
-    console.log("You're running a development version.\n");
-      }
-      // Only show error if it's not the common "no releases" case
-      else if (
-        updateCheck.error &&
-        !updateCheck.error.includes('No releases found')
-      ) {
-        console.log(
-      `⚠️  Could not check for updates: ${updateCheck.error}\n`
-        );
-  } else {
-    console.log('✅ Up to date!\n');
-      }
-
-  // Load command history for this workspace
+  // Load command history
   let commandHistory = loadCommandHistory();
 
-  // Show conversation loading message if history exists
-  if (conversationHistory.length > 0) {
-    console.log(
-      `💬 Loaded ${conversationHistory.length} previous conversation messages.\n`
-    );
+  // Display clean, professional welcome banner
+  console.log('\n╭─────────────────────────────────────────────────────────╮');
+  console.log('│                    🚀 Grok Code v1.12.0                    │');
+  console.log('│            AI-Powered Coding Assistant                     │');
+  console.log('╰─────────────────────────────────────────────────────────╯\n');
+
+  // Show status information cleanly
+  const statusLines = [];
+
+  // Version status
+  if (updateCheck.hasUpdate) {
+    statusLines.push(`🔄 Update available: v${updateCheck.currentVersion} → v${updateCheck.latestVersion}`);
+  } else if (updateCheck.isAhead) {
+    statusLines.push(`🚀 Development version (ahead of v${updateCheck.latestVersion})`);
+  } else if (!updateCheck.error) {
+    statusLines.push('✅ Up to date');
   }
 
-  console.log(
-    "Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n"
-  );
+  // Conversation status
+  if (conversationHistory.length > 0) {
+    statusLines.push(`💬 ${conversationHistory.length} conversation messages loaded`);
+  }
+
+  // System status
+  const systemsLoaded = [
+    frameworkDetector ? '🔍' : '❌',
+    frameworkPatterns ? '📋' : '❌',
+    frameworkPromptLoader ? '🎭' : '❌',
+    conventionAnalyzer ? '📏' : '❌',
+    teamPatternsLearner ? '🧠' : '❌'
+  ].filter(s => s !== '❌').length;
+
+  statusLines.push(`⚙️  ${systemsLoaded}/5 systems ready`);
+
+  // Display status lines
+  if (statusLines.length > 0) {
+    statusLines.forEach(line => console.log(line));
+    console.log('');
+  }
+
+  // Welcome message
+  console.log('💡 Type your message or use /help for commands');
+  console.log('   Type "exit" or "/exit" to quit\n');
 
   const mainPrompt = {
     type: 'input',
