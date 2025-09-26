@@ -204,6 +204,15 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **Performance timing** with formatted duration displays
 - **Interactive progress commands**: `/progress status/test/spinner/multistep`
 
+### 🗂️ Interactive File Browser
+
+- **Terminal navigation** with arrow keys and intuitive file selection
+- **File type icons** with emoji indicators (📁 directories, 🟨 JS, 🔷 TS, 🐍 Python, etc.)
+- **Syntax-highlighted previews** with metadata (size, type, modification date)
+- **Context integration** to add selected files to AI conversation
+- **Search and filtering** across directory trees
+- **Interactive browser commands**: `/browse start/find/preview/stats`
+
 ### 🔄 Autonomous Workflows
 
 - **Execute shell commands via `<run command="...">` tags (npm install, tests, linting)**
