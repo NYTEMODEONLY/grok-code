@@ -1177,6 +1177,18 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     logger.error('Failed to initialize convention auto-applier', { error: error.message });
   }
 
+  try {
+    // Architecture mapper
+    const { ArchitectureMapper } = await import('../lib/structure/architecture-mapper.js');
+    architectureMapper = new ArchitectureMapper({
+      projectRoot: process.cwd(),
+      maxDepth: 5,
+      includeNodeModules: false
+    });
+  } catch (error) {
+    logger.error('Failed to initialize architecture mapper', { error: error.message });
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1325,7 +1337,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         frameworkPromptLoader,
         conventionAnalyzer,
         teamPatternsLearner,
-        conventionAutoApplier
+        conventionAutoApplier,
+        architectureMapper
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1568,7 +1581,8 @@ async function handleCommand(
   frameworkPromptLoader,
   conventionAnalyzer,
   teamPatternsLearner,
-  conventionAutoApplier
+  conventionAutoApplier,
+  architectureMapper
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -3959,6 +3973,42 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'architecture') {
+      console.log('🏗️ Analyzing project architecture...\n');
+
+      if (!architectureMapper) {
+        console.log('❌ Architecture mapper not available.');
+        return true;
+      }
+
+      try {
+        const result = await architectureMapper.analyzeArchitecture();
+        const report = architectureMapper.generateReport();
+
+        console.log(report);
+
+        // Show summary
+        const summary = result.summary;
+        console.log('📊 Summary:');
+        console.log(`  • Primary Architecture: ${summary.primaryArchitecture}`);
+        console.log(`  • Confidence: ${summary.confidence.toFixed(1)}%`);
+        console.log(`  • Layers Identified: ${summary.layers}`);
+        console.log(`  • Components Mapped: ${summary.components}`);
+        console.log(`  • Entry Points: ${summary.entryPoints}`);
+        console.log(`  • Patterns Detected: ${summary.patternsDetected}`);
+
+        if (summary.recommendations > 0) {
+          console.log(`  • Recommendations: ${summary.recommendations}`);
+        }
+
+        console.log('\n✅ Architecture analysis complete!');
+
+      } catch (error) {
+        console.log(`❌ Failed to analyze architecture: ${error.message}`);
+        logger.error('Architecture analysis failed', { error: error.message });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4048,6 +4098,7 @@ async function handleCommand(
       console.log('  /framework conventions   - Analyze project coding standards');
       console.log('  /framework learn <cmd>   - Team learning and preferences');
       console.log('  /framework apply <tgt>   - Auto-apply project conventions');
+      console.log('  /framework architecture  - Analyze project architecture');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
