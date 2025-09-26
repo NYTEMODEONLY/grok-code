@@ -195,6 +195,15 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **Diff summary statistics** and side-by-side comparisons
 - **Interactive diff commands**: `/diff status/test/git/show`
 
+### ⏳ Progress Indicators & Status Displays
+
+- **Advanced spinner system** with multiple operation types and themes
+- **Real-time progress feedback** for all long-running operations
+- **Multi-step progress tracking** with sequential execution visualization
+- **Status indicators** with success/error/warning/info/pending states
+- **Performance timing** with formatted duration displays
+- **Interactive progress commands**: `/progress status/test/spinner/multistep`
+
 ### 🔄 Autonomous Workflows
 
 - **Execute shell commands via `<run command="...">` tags (npm install, tests, linting)**
