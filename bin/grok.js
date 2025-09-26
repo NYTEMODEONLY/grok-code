@@ -1097,7 +1097,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor;
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
@@ -1216,6 +1216,20 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
   } catch (error) {
     logger.error('Failed to initialize file placement advisor', { error: error.message });
+  }
+
+  try {
+    // Context template generator
+    const { ContextTemplateGenerator } = await import('../lib/generation/context-templates.js');
+    contextTemplateGenerator = new ContextTemplateGenerator({
+      projectRoot: process.cwd(),
+      frameworkDetector,
+      conventionAnalyzer,
+      architectureMapper,
+      filePlacementAdvisor
+    });
+  } catch (error) {
+    logger.error('Failed to initialize context template generator', { error: error.message });
   }
 
   // Append previous conversation history to maintain memory
@@ -1369,7 +1383,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         conventionAutoApplier,
         architectureMapper,
         flowAnalyzer,
-        filePlacementAdvisor
+        filePlacementAdvisor,
+        contextTemplateGenerator
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1615,7 +1630,8 @@ async function handleCommand(
   conventionAutoApplier,
   architectureMapper,
   flowAnalyzer,
-  filePlacementAdvisor
+  filePlacementAdvisor,
+  contextTemplateGenerator
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -4124,6 +4140,57 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'template') {
+      const templateType = args[0];
+      const name = args[1];
+
+      if (!templateType || !name) {
+        console.log('❌ Please specify template type and name.');
+        console.log('Usage: /framework template <type> <name> [options]');
+        console.log('Types: component, service, controller, model, route, utility, config, test');
+        console.log('Example: /framework template service UserService');
+        console.log('Example: /framework template component LoginForm');
+        return true;
+      }
+
+      console.log(`🎨 Generating ${templateType} template: ${name}\n`);
+
+      if (!contextTemplateGenerator) {
+        console.log('❌ Context template generator not available.');
+        return true;
+      }
+
+      try {
+        const result = await contextTemplateGenerator.generateTemplate(templateType, name);
+
+        console.log(`📄 Generated ${templateType}: ${name}`);
+        console.log('═'.repeat(50));
+        console.log(result.code);
+        console.log('═'.repeat(50));
+
+        // Show metadata
+        console.log('\n📊 Template Metadata:');
+        console.log(`  Framework: ${result.metadata.framework}`);
+        console.log(`  Placement: ${result.metadata.placement.path || 'Not suggested'}`);
+        console.log(`  Dependencies: ${result.metadata.dependencies.length}`);
+        console.log(`  Imports: ${result.metadata.imports.length}`);
+
+        if (result.metadata.placement.path) {
+          console.log(`\n💡 Suggested location: ${result.metadata.placement.path}`);
+          if (result.metadata.placement.confidence) {
+            console.log(`   Confidence: ${Math.round(result.metadata.placement.confidence * 100)}%`);
+          }
+        }
+
+        console.log('\n✅ Template generated successfully!');
+        console.log('💡 Tip: Use /framework placement to optimize file locations');
+
+      } catch (error) {
+        console.log(`❌ Failed to generate template: ${error.message}`);
+        logger.error('Template generation failed', { error: error.message, templateType, name });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4216,6 +4283,7 @@ async function handleCommand(
       console.log('  /framework architecture  - Analyze project architecture');
       console.log('  /framework flows         - Analyze application flows & entry points');
       console.log('  /framework placement <f> - Suggest optimal file placement');
+      console.log('  /framework template <t> <n> - Generate context-aware code templates');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
