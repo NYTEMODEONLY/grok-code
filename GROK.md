@@ -110,6 +110,8 @@ lib/
 │   ├── analyzer.js         # Learns project-specific coding conventions
 │   ├── team-patterns.js    # Learns team-specific patterns from interactions
 │   └── auto-applier.js     # Auto-applies learned conventions to code
+├── structure/      # Project architecture analysis
+│   └── architecture-mapper.js  # Maps projects to architectural patterns
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```

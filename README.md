@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.13.0 - Auto-Apply Project Conventions (Phase 4.2)
+### v1.14.0 - Project Architecture Mapping (Phase 4.3)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -84,7 +84,12 @@
 - **🔧 Auto-Apply Conventions**: Automatically format code to match learned standards
 - **💾 Safe Application**: Automatic backups with rollback capability and dry-run mode
 - **🎛️ Smart Fixes**: Quote normalization, indentation fixes, semicolon consistency
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply` for intelligent project analysis
+- **🏗️ Architecture Analysis**: Maps project to architectural patterns (MVC, Layered, Clean, Hexagonal, etc.)
+- **📚 Layer Mapping**: Identifies Presentation, Business, Data, and Infrastructure layers
+- **🔗 Component Relationships**: Analyzes dependencies between architectural components
+- **🚪 Entry Point Detection**: Identifies application entry points and main flows
+- **💡 Architectural Recommendations**: Suggests improvements and best practices
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture` for complete project intelligence
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
