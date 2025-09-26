@@ -43,6 +43,14 @@
 - **🛡️ Safe Fix Application**: Automatic backups, rollback capability, risk assessment, and validation
 - **📊 Learning & Intelligence**: Cross-session error pattern analysis, personalized recommendations, and proactive prevention
 
+## 📋 Changelog
+
+### v1.1.1 - CLI User Experience Improvements
+- **✨ Enhanced CLI Experience**: Suppressed verbose internal logging from appearing in user console output
+- **🔇 Clean Startup**: Removed detailed context loading and budget status messages during initialization
+- **📝 Improved Logging**: INFO/WARN/DEBUG messages now only write to log files, keeping console clean for users
+- **🐛 Bug Fixes**: Better error handling and user feedback for CLI operations
+
 ## 🏗️ RPG Repository Planning
 
 **Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2509.16198), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
