@@ -222,7 +222,7 @@ grok
 "/test"                        # Run tests (if defined)
 ```
 
-Exit anytime with `/exit`. Clear session with `/clear`.
+Exit anytime with `exit` or `/exit`. Clear session with `/clear`.
 
 ### 📋 Example Sessions
 

@@ -207,13 +207,13 @@ Always plan actions, confirm before assuming applied, and suggest next steps lik
   });
   console.log('Auto-scanned essential files for initial context.');
 
-  console.log("Welcome to Grok Code! Type your message or use /help for commands. Type '/exit' to quit.\n");
+  console.log("Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n");
 
   while (true) {
     const answers = await inquirer.prompt([{ type: 'input', name: 'input', message: 'You:', prefix: '' }]);
     let userInput = answers.input.trim();
 
-    if (userInput.toLowerCase() === '/exit') {
+    if (userInput.toLowerCase() === '/exit' || userInput.toLowerCase() === 'exit') {
       console.log("Exiting Grok Code. Happy coding!");
       break;
     }
@@ -358,7 +358,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
 - /push: Push to remote
 - /pr <title>: Create a pull request (requires gh CLI)
 - /clear: Clear conversation history
-- /exit: Quit
+- exit or /exit: Quit
 - Custom: /<custom_name> for user-defined in .grok/commands/
 `);
     return true;
@@ -428,7 +428,7 @@ async function handleCommand(input, messages, fileContext, client, model) {
     messages = [{ role: 'system', content: systemPrompt }];
     fileContext = {};
     console.clear();
-    console.log("Welcome to Grok Code! Type your message or use /help for commands. Type '/exit' to quit.\n");
+    console.log("Welcome to Grok Code! Type your message or use /help for commands. Type 'exit' or '/exit' to quit.\n");
     return true;
   } else if (input.startsWith('/')) {
     const cmdName = input.slice(1).split(' ')[0];
