@@ -33,6 +33,7 @@ import { ContextualSuggestions } from '../lib/commands/suggestions.js';
 import { WorkflowDiagram } from '../lib/visualization/workflow-diagram.js';
 import { ProgressTracker } from '../lib/visualization/progress-tracker.js';
 import { ConfirmDialog } from '../lib/interactive/confirm-dialog.js';
+import { FrameworkDetector } from '../lib/frameworks/detector.js';
 
 /**
  * Error Logging System
@@ -993,6 +994,13 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     enableSafetyMode: true,
   });
 
+  // Initialize framework detection system
+  const frameworkDetector = new FrameworkDetector({
+    projectRoot: process.cwd(),
+    confidenceThreshold: 0.7,
+    maxFileSize: 1024 * 1024,
+  });
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1774,6 +1782,7 @@ async function handleCommand(
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
+- /framework <detect|report|list>: Framework and technology detection system
 - /logs: View recent error logs
 - /clear: Clear conversation history
 - /undo: Undo the last file operation
@@ -3252,6 +3261,157 @@ async function handleCommand(
       console.log('• Confirmation history and analytics');
     } else {
       console.log('Unknown confirm subcommand. Use /confirm help for available commands.');
+    }
+
+    return true;
+  } else if (input.startsWith('/framework')) {
+    const parts = input.split(' ');
+    const subcommand = parts[1];
+    const args = parts.slice(2);
+
+    if (!subcommand || subcommand === 'detect' || subcommand === 'scan') {
+      console.log('🔍 Detecting frameworks and technologies...\n');
+
+      try {
+        const results = await frameworkDetector.detectFrameworks();
+
+        if (results.error) {
+          console.log(`❌ Detection failed: ${results.error}`);
+          return true;
+        }
+
+        // Display results
+        console.log('📊 Framework Detection Results:\n');
+
+        if (results.frameworks.length > 0) {
+          console.log('🎯 Detected Frameworks:');
+          results.frameworks.forEach(fw => {
+            const confidence = Math.round(fw.confidence * 100);
+            const confidenceIcon = confidence >= 90 ? '🟢' : confidence >= 70 ? '🟡' : '🟠';
+            console.log(`  ${confidenceIcon} ${fw.name} (${fw.category}) - ${confidence}% confidence`);
+          });
+          console.log('');
+        } else {
+          console.log('🤔 No frameworks detected with high confidence.\n');
+        }
+
+        if (results.languages.length > 0) {
+          console.log('💻 Detected Languages:');
+          results.languages.forEach(lang => {
+            console.log(`  • ${lang.charAt(0).toUpperCase() + lang.slice(1)}`);
+          });
+          console.log('');
+        }
+
+        // Project info
+        console.log('📁 Project Info:');
+        console.log(`  Files: ${results.projectInfo.fileCount}`);
+        console.log(`  Package.json: ${results.projectInfo.hasPackageJson ? '✅' : '❌'}`);
+        console.log(`  Overall Confidence: ${Math.round(results.confidence * 100)}%`);
+
+      } catch (error) {
+        console.log(`❌ Framework detection failed: ${error.message}`);
+      }
+    } else if (subcommand === 'report') {
+      console.log('📋 Generating detailed framework report...\n');
+
+      try {
+        const report = frameworkDetector.getDetailedReport();
+
+        console.log('🔬 Detailed Analysis:\n');
+
+        console.log(`Frameworks Analyzed: ${report.summary.totalFrameworks}`);
+        console.log(`Frameworks Detected: ${report.summary.detectedFrameworks}`);
+        console.log(`Languages Detected: ${report.summary.languages.join(', ') || 'None'}`);
+        console.log(`Overall Confidence: ${Math.round(report.summary.confidence * 100)}%\n`);
+
+        if (report.detected.length > 0) {
+          console.log('🎯 Framework Details:');
+          report.detected.forEach(fw => {
+            console.log(`\n📦 ${fw.name} (${fw.category})`);
+            console.log(`   Confidence: ${Math.round(fw.confidence * 100)}%`);
+          });
+          console.log('');
+        }
+
+        if (report.recommendations.length > 0) {
+          console.log('💡 Recommendations:');
+          report.recommendations.forEach(rec => {
+            const fw = frameworkDetector.frameworks[rec.framework];
+            console.log(`  • ${fw?.name || rec.framework}: ${rec.reason}`);
+          });
+          console.log('');
+        }
+
+        console.log('🏗️  Project Structure:');
+        console.log(`  Package: ${report.projectInfo.packageName || 'N/A'}`);
+        console.log(`  Version: ${report.projectInfo.packageVersion || 'N/A'}`);
+        console.log(`  Total Files: ${report.projectInfo.fileCount}`);
+        console.log(`  Total Directories: ${report.projectInfo.directoryCount}`);
+
+      } catch (error) {
+        console.log(`❌ Report generation failed: ${error.message}`);
+      }
+    } else if (subcommand === 'export') {
+      const format = args[0] || 'json';
+      console.log(`📄 Exporting framework analysis (${format.toUpperCase()})...\n`);
+
+      try {
+        const exportData = frameworkDetector.exportResults(format);
+        console.log(exportData);
+
+        console.log(`\n💡 Tip: Save this output to a file for external analysis`);
+      } catch (error) {
+        console.log(`❌ Export failed: ${error.message}`);
+      }
+    } else if (subcommand === 'list') {
+      const category = args[0];
+      const frameworks = Object.values(frameworkDetector.frameworks);
+
+      console.log('📚 Available Frameworks:');
+
+      let filteredFrameworks = frameworks;
+      if (category) {
+        filteredFrameworks = frameworks.filter(fw => fw.category === category);
+        console.log(`\nFiltered by category: ${category}\n`);
+      } else {
+        console.log('\nAll supported frameworks:\n');
+      }
+
+      const categories = {};
+      filteredFrameworks.forEach(fw => {
+        if (!categories[fw.category]) {
+          categories[fw.category] = [];
+        }
+        categories[fw.category].push(fw.name);
+      });
+
+      Object.entries(categories).forEach(([cat, names]) => {
+        console.log(`${cat.charAt(0).toUpperCase() + cat.slice(1)}:`);
+        names.forEach(name => console.log(`  • ${name}`));
+        console.log('');
+      });
+    } else if (subcommand === 'help') {
+      console.log('🔍 Framework Detection Help');
+      console.log('═'.repeat(27));
+      console.log('Analyze project structure and dependencies to detect frameworks.\n');
+      console.log('Commands:');
+      console.log('  /framework detect     - Scan project and detect frameworks');
+      console.log('  /framework report     - Generate detailed analysis report');
+      console.log('  /framework export [f] - Export results (json/markdown)');
+      console.log('  /framework list [cat] - List supported frameworks');
+      console.log('  /framework help       - Show this help');
+      console.log('\nSupported Categories:');
+      console.log('  • frontend, backend, fullstack');
+      console.log('  • database, state-management, styling');
+      console.log('  • build-tool, testing');
+      console.log('\nSupported Frameworks:');
+      console.log('  React, Vue, Angular, Svelte, Express, Fastify,');
+      console.log('  NestJS, Django, Flask, FastAPI, Next.js, Nuxt.js,');
+      console.log('  Vite, Webpack, Jest, Cypress, Mongoose, Sequelize,');
+      console.log('  Prisma, Redux, MobX, Tailwind, Bootstrap, and more!');
+    } else {
+      console.log('Unknown framework subcommand. Use /framework help for available commands.');
     }
 
     return true;

@@ -102,6 +102,8 @@ lib/
 │   └── history-search.js    # Advanced command history search and analytics
 ├── visualization/   # ASCII art diagram generators
 │   └── workflow-diagram.js  # RPG plan visualization with multiple styles
+├── frameworks/      # Framework detection and analysis
+│   └── detector.js         # Intelligent framework and language detection
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
