@@ -45,13 +45,22 @@
 
 ## 📋 Changelog
 
+### v1.3.0 - Interactive Code Display (Phase 3.2)
+- **🗂️ Interactive File Browser**: Terminal navigation with arrow keys and file selection
+- **📄 Enhanced Code Preview**: Line numbers, gutter, and IDE-style formatting
+- **🎯 Line Navigation**: Jump to specific lines with contextual display
+- **🔍 Search Highlighting**: Visual highlighting of search terms within code
+- **💬 Code Annotations**: Inline comments and explanations for code sections
+- **📊 File Intelligence**: Type icons, metadata, and syntax-highlighted previews
+- **🎮 Interactive Commands**: `/browse`, `/preview` commands for advanced file operations
+
 ### v1.2.0 - IDE-like Terminal Experience (Phase 3.1)
 - **🎨 Syntax Highlighting**: Multi-language code highlighting (JavaScript, TypeScript, Python, JSON, Shell, SQL)
 - **🌈 Multiple Color Themes**: Default, dark, and minimal themes with ANSI terminal compatibility
 - **📊 Color-Coded Diff Display**: Unified diff parsing with green/red/gray color coding for additions/deletions
 - **🔍 Git Integration**: `/diff git` command for seamless git diff workflows with syntax highlighting
 - **🎯 Interactive Controls**: `/highlight` and `/diff` commands for runtime theme switching and configuration
-- **⚡ Performance Optimized**: Real-time highlighting and diff display without performance impact
+- **⏳ Progress Indicators**: Advanced spinners and status displays for operations
 
 ### v1.1.1 - CLI User Experience Improvements
 - **✨ Enhanced CLI Experience**: Suppressed verbose internal logging from appearing in user console output
