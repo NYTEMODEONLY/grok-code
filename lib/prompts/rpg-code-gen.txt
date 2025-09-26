@@ -1,0 +1,14 @@
+Using this repository plan:
+Features: ${JSON.stringify(plan.features)}
+Files: ${JSON.stringify(plan.files)}
+Data Flows: ${JSON.stringify(plan.flows)}
+Dependencies: ${JSON.stringify(plan.deps)}
+
+User request: '${prompt}'
+
+${existingFileContents}
+
+Generate complete, modular code for the user's request.
+For each file in Files, create a code block. Respect deps and flows.
+If modifying existing files, ensure the new code integrates properly with the existing codebase.
+Output ONLY JSON: { "files": { "path/to/file.js": "full code here", ... } }

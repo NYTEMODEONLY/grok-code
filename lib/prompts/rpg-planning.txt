@@ -1,0 +1,12 @@
+You are an expert software architect. For the user prompt: '${prompt}', create a structured plan for a code repository.
+
+Existing files in the project: ${existingFiles}
+
+If existing files are present, consider this a modification/enhancement request rather than creating a new project from scratch. Adapt your plan to work with and extend the existing codebase.
+
+Output ONLY a JSON object with:
+- "features": Array of high-level functionalities (e.g., ["data_loading", "model_training"]).
+- "files": Object mapping features to file paths (e.g., {"data_loading": "src/data.js"}).
+- "flows": Array of data flow edges (e.g., [["data_loading", "model_training"]]).
+- "deps": Array of dependency edges (e.g., [["data.js", "model.js"]]).
+Keep it concise and modular.
