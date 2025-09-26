@@ -1163,6 +1163,20 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     logger.error('Failed to initialize team patterns learner', { error: error.message });
   }
 
+  try {
+    // Convention auto-applier
+    const { ConventionAutoApplier } = await import('../lib/conventions/auto-applier.js');
+    conventionAutoApplier = new ConventionAutoApplier({
+      conventionAnalyzer,
+      teamPatternsLearner,
+      safeMode: true,
+      backupOriginals: true,
+      maxFixesPerFile: 50
+    });
+  } catch (error) {
+    logger.error('Failed to initialize convention auto-applier', { error: error.message });
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1310,7 +1324,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         frameworkPatterns,
         frameworkPromptLoader,
         conventionAnalyzer,
-        teamPatternsLearner
+        teamPatternsLearner,
+        conventionAutoApplier
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1552,7 +1567,8 @@ async function handleCommand(
   frameworkPatterns,
   frameworkPromptLoader,
   conventionAnalyzer,
-  teamPatternsLearner
+  teamPatternsLearner,
+  conventionAutoApplier
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -3831,6 +3847,119 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'apply') {
+      const target = args[0];
+      if (!target) {
+        console.log('❌ Please specify what to apply conventions to.');
+        console.log('Usage: /framework apply <file|project> [options]');
+        console.log('Options: --dry-run (preview only), --no-backup (skip backups)');
+        return true;
+      }
+
+      if (!conventionAutoApplier) {
+        console.log('❌ Convention auto-applier not available.');
+        return true;
+      }
+
+      const options = {};
+      args.forEach(arg => {
+        if (arg === '--dry-run') options.dryRun = true;
+        if (arg === '--no-backup') options.noBackup = true;
+      });
+
+      try {
+        if (target === 'file') {
+          const filePath = args[1];
+          if (!filePath) {
+            console.log('❌ Please specify a file path.');
+            return true;
+          }
+
+          if (!fs.existsSync(filePath)) {
+            console.log(`❌ File not found: ${filePath}`);
+            return true;
+          }
+
+          console.log(`🔧 Applying conventions to ${filePath}...\n`);
+
+          const result = await conventionAutoApplier.applyToFile(filePath, options);
+
+          if (result.modified) {
+            console.log('✅ File modified successfully!');
+            console.log(`   Fixes applied: ${result.fixesApplied}`);
+            if (result.backupCreated) {
+              console.log('   💾 Backup created');
+            }
+          } else {
+            console.log('ℹ️  No changes needed - file already follows conventions');
+          }
+
+          if (result.suggestions && result.suggestions.length > 0) {
+            console.log('\n💡 Suggestions:');
+            result.suggestions.forEach(suggestion => {
+              console.log(`   • ${suggestion.message}`);
+            });
+          }
+
+        } else if (target === 'project') {
+          console.log('🔧 Applying conventions to entire project...\n');
+
+          // Find all source files
+          const sourceFiles = await conventionAutoApplier.conventionAnalyzer.findSourceFiles();
+          console.log(`Found ${sourceFiles.length} source files to process\n`);
+
+          if (sourceFiles.length === 0) {
+            console.log('❌ No source files found in project.');
+            return true;
+          }
+
+          // Apply to all files
+          const results = await conventionAutoApplier.applyToFiles(sourceFiles, options);
+
+          console.log('📋 Project Convention Application Complete\n');
+
+          console.log(`📊 Summary:`);
+          console.log(`  • Files processed: ${results.totalFiles}`);
+          console.log(`  • Files modified: ${results.modifiedFiles}`);
+          console.log(`  • Total fixes applied: ${results.totalFixesApplied}`);
+
+          if (results.errors && results.errors.length > 0) {
+            console.log(`\n⚠️  Errors (${results.errors.length}):`);
+            results.errors.slice(0, 5).forEach(error => {
+              console.log(`  • ${error.file}: ${error.error}`);
+            });
+            if (results.errors.length > 5) {
+              console.log(`  ... and ${results.errors.length - 5} more`);
+            }
+          }
+
+          if (results.suggestions && results.suggestions.length > 0) {
+            const suggestionCounts = {};
+            results.suggestions.forEach(s => {
+              suggestionCounts[s.type] = (suggestionCounts[s.type] || 0) + 1;
+            });
+
+            console.log(`\n💡 Suggestions (${results.suggestions.length}):`);
+            Object.entries(suggestionCounts).forEach(([type, count]) => {
+              console.log(`  • ${type}: ${count} instances`);
+            });
+          }
+
+          if (!options.dryRun && results.modifiedFiles > 0) {
+            console.log('\n💾 All modified files have been backed up');
+          }
+
+        } else {
+          console.log(`❌ Unknown target "${target}". Use "file" or "project".`);
+        }
+
+      } catch (error) {
+        console.log(`❌ Failed to apply conventions: ${error.message}`);
+        logger.error('Convention application failed', { error: error.message });
+      }
+
+      return true;
+    } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
       if (!filePath) {
@@ -3918,6 +4047,7 @@ async function handleCommand(
       console.log('  /framework detect        - Scan project and detect frameworks');
       console.log('  /framework conventions   - Analyze project coding standards');
       console.log('  /framework learn <cmd>   - Team learning and preferences');
+      console.log('  /framework apply <tgt>   - Auto-apply project conventions');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
