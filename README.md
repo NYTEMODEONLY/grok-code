@@ -213,6 +213,16 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **Search and filtering** across directory trees
 - **Interactive browser commands**: `/browse start/find/preview/stats`
 
+### 📄 Enhanced Code Preview
+
+- **Line numbers and gutter** with IDE-style formatting and navigation
+- **Syntax highlighting** integrated with multi-language support
+- **Line highlighting and navigation** with context-aware display
+- **Search and highlight** functionality within code files
+- **Code annotations** with inline comments and explanations
+- **File metadata display** with size, type, and modification info
+- **Interactive preview commands**: `/preview file/line/search/code/config`
+
 ### 🔄 Autonomous Workflows
 
 - **Execute shell commands via `<run command="...">` tags (npm install, tests, linting)**
