@@ -104,7 +104,8 @@ lib/
 │   └── workflow-diagram.js  # RPG plan visualization with multiple styles
 ├── frameworks/      # Framework detection and analysis
 │   ├── detector.js         # Intelligent framework and language detection
-│   └── patterns.js         # Framework-specific patterns and conventions
+│   ├── patterns.js         # Framework-specific patterns and conventions
+│   └── prompt-loader.js    # Framework-specific AI prompts and behavioral rules
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
