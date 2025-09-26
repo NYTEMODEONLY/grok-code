@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.9.0 - Framework Pattern Recognition (Phase 4.1)
+### v1.10.0 - Framework-Specific AI Prompts (Phase 4.1)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -72,7 +72,10 @@
 - **🔬 Code Pattern Analysis**: Analyze specific files for framework-specific patterns and anti-patterns
 - **⚙️ CLI Tool Detection**: Recognizes Commander.js, Inquirer.js, Ora, and other development tools
 - **📋 Detailed Reporting**: Comprehensive analysis reports with export capabilities
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze` for intelligent project analysis
+- **🎭 Framework-Specific AI Prompts**: Context-aware prompts that adapt Grok's behavior to detected frameworks
+- **📝 Intelligent Code Generation**: Framework-appropriate code generation with proper patterns and conventions
+- **🔍 Smart Code Review**: Framework-aware code review focusing on relevant best practices
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts` for intelligent project analysis
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
