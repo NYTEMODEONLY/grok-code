@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.11.0 - Project Coding Standards Analysis (Phase 4.2)
+### v1.12.0 - Team-Specific Learning System (Phase 4.2)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -78,7 +78,10 @@
 - **📏 Coding Standards Analysis**: Learns project-specific coding conventions and preferences
 - **🔢 Code Style Intelligence**: Analyzes indentation, quotes, semicolons, naming patterns
 - **📊 Project Statistics**: Line length, comment density, function length analysis
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions` for intelligent project analysis
+- **🧠 Team Learning System**: Learns from user interactions and corrections over time
+- **🎯 Personalized Recommendations**: Builds confidence-based preferences from team behavior
+- **📈 Adaptive Intelligence**: Evolves suggestions based on accepted vs rejected patterns
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn` for intelligent project analysis
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions

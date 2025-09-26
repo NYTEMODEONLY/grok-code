@@ -107,7 +107,8 @@ lib/
 │   ├── patterns.js         # Framework-specific patterns and conventions
 │   └── prompt-loader.js    # Framework-specific AI prompts and behavioral rules
 ├── conventions/    # Project coding standards analysis
-│   └── analyzer.js         # Learns project-specific coding conventions
+│   ├── analyzer.js         # Learns project-specific coding conventions
+│   └── team-patterns.js    # Learns team-specific patterns from interactions
 └── utils/           # Infrastructure
     └── logger.js            # Structured logging system
 ```
