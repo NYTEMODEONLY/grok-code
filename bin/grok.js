@@ -182,20 +182,6 @@ function setupExitHandlers() {
     process.exit(0);
   });
 
-  process.on('exit', async (code) => {
-    logger.info('Process exiting', { exitCode: code });
-
-    // Save team patterns on exit
-    if (teamPatternsLearner) {
-      try {
-        await teamPatternsLearner.endSession();
-        logger.info('Team patterns session saved');
-      } catch (error) {
-        logger.error('Failed to save team patterns on exit', { error: error.message });
-      }
-    }
-  });
-
   process.on('uncaughtException', (err) => {
     logger.error('Uncaught exception occurred', err);
     if (!isShuttingDown) {
@@ -1111,7 +1097,22 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner;
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer;
+
+  // Set up exit handler to save team patterns (now that variables are in scope)
+  process.on('exit', async (code) => {
+    logger.info('Process exiting', { exitCode: code });
+
+    // Save team patterns on exit
+    if (typeof teamPatternsLearner !== 'undefined' && teamPatternsLearner) {
+      try {
+        await teamPatternsLearner.endSession();
+        logger.info('Team patterns session saved');
+      } catch (error) {
+        logger.error('Failed to save team patterns on exit', { error: error.message });
+      }
+    }
+  });
 
   try {
     // Framework detection
@@ -1173,8 +1174,10 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       backupOriginals: true,
       maxFixesPerFile: 50
     });
+    logger.debug('Convention auto-applier initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize convention auto-applier', { error: error.message });
+    conventionAutoApplier = null; // Ensure it's explicitly null on failure
   }
 
   try {
@@ -1187,6 +1190,18 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
   } catch (error) {
     logger.error('Failed to initialize architecture mapper', { error: error.message });
+  }
+
+  try {
+    // Flow analyzer
+    const { FlowAnalyzer } = await import('../lib/structure/flow-analyzer.js');
+    flowAnalyzer = new FlowAnalyzer({
+      projectRoot: process.cwd(),
+      maxDepth: 3,
+      architectureMapper
+    });
+  } catch (error) {
+    logger.error('Failed to initialize flow analyzer', { error: error.message });
   }
 
   // Append previous conversation history to maintain memory
@@ -1338,7 +1353,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         conventionAnalyzer,
         teamPatternsLearner,
         conventionAutoApplier,
-        architectureMapper
+        architectureMapper,
+        flowAnalyzer
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1582,7 +1598,8 @@ async function handleCommand(
   conventionAnalyzer,
   teamPatternsLearner,
   conventionAutoApplier,
-  architectureMapper
+  architectureMapper,
+  flowAnalyzer
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -4009,6 +4026,41 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'flows') {
+      console.log('🌊 Analyzing application flows...\n');
+
+      if (!flowAnalyzer) {
+        console.log('❌ Flow analyzer not available.');
+        return true;
+      }
+
+      try {
+        const result = await flowAnalyzer.analyzeFlows();
+        const report = flowAnalyzer.generateReport();
+
+        console.log(report);
+
+        // Show summary
+        const summary = result.summary;
+        console.log('📊 Flow Analysis Summary:');
+        console.log(`  • Entry Points: ${summary.entryPoints}`);
+        console.log(`  • User Journeys: ${summary.userJourneys}`);
+        console.log(`  • API Endpoints: ${summary.apiEndpoints}`);
+        console.log(`  • Command Flows: ${summary.commandFlows}`);
+        console.log(`  • Data Flows: ${summary.dataFlows}`);
+
+        if (summary.primaryEntryPoint) {
+          console.log(`  • Primary Entry: ${summary.primaryEntryPoint}`);
+        }
+
+        console.log('\n✅ Flow analysis complete!');
+
+      } catch (error) {
+        console.log(`❌ Failed to analyze flows: ${error.message}`);
+        logger.error('Flow analysis failed', { error: error.message });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4099,6 +4151,7 @@ async function handleCommand(
       console.log('  /framework learn <cmd>   - Team learning and preferences');
       console.log('  /framework apply <tgt>   - Auto-apply project conventions');
       console.log('  /framework architecture  - Analyze project architecture');
+      console.log('  /framework flows         - Analyze application flows & entry points');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
