@@ -27,6 +27,22 @@
 - **⚡ Full-Stack Ready**: From simple scripts to deploy-ready Next.js apps
 - **🎨 Terminal-Native**: Designed for developers who live in the command line
 
+### 🧠 **Revolutionary Intelligence Features**
+
+**Phase 1: Enhanced Multi-File Intelligence**
+- **🗂️ Semantic Code Parser**: AST-based analysis for JavaScript, TypeScript, and Python
+- **🔗 Dependency Graph Engine**: Maps import/export relationships, detects circular dependencies, visualizes code architecture
+- **🎯 Context Inference System**: Intelligent file relevance scoring, context window optimization, smart file suggestions
+- **🔍 Intelligent File Linking**: Semantic search across codebases, auto-context building, token-efficient conversation management
+- **💰 Context Budgeting**: Reserves capacity for different context types (essentials vs conversation) to prevent capacity exhaustion
+
+**Phase 2: Advanced Error Recovery System** *(Latest Addition)*
+- **🔍 Intelligent Error Detection**: Parses ESLint, TypeScript, Prettier output with context-aware analysis
+- **🔧 Automated Fix Generation**: 20+ fix templates for common errors (semicolons, unused vars, imports, etc.)
+- **🤖 AI-Powered Fixes**: Grok integration for complex error resolution with full codebase context
+- **🛡️ Safe Fix Application**: Automatic backups, rollback capability, risk assessment, and validation
+- **📊 Learning System**: Tracks fix success rates and learns from error patterns
+
 ## 🏗️ RPG Repository Planning
 
 **Repository Planning Graph (RPG)** is a cutting-edge approach to software architecture that structures code generation around modular planning. Inspired by the paper ["RPG: A Repository Planning Graph"](https://arxiv.org/abs/2509.16198), this feature ensures your generated codebases are well-organized, maintainable, and scalable.
@@ -76,59 +92,141 @@ Grok Code combines AI assistance with structured planning for unparalleled codin
 - **RPG Planning Integration**: Structured repository planning for complex projects
 - **Step-by-Step Reasoning**: Grok thinks ahead, plans, and iterates on solutions
 - **Multi-Paradigm Support**: Scripts, libraries, web apps, APIs, and more
-- **🗂️ Multi-File Management**:
-  - Create, edit, or delete multiple files simultaneously using XML tags
-  - Automatic directory creation for complex project structures
-  - File context management: Add files to AI knowledge with `/add <file>`, scan with `/scan`
 
-- **🔄 Autonomous Workflows**:
-  - Execute shell commands via `<run command="...">` tags (npm install, tests, linting)
-  - Iterative error handling with AI-suggested fixes
-  - End-to-end project generation with deployment commands
+### 🧠 Enhanced Multi-File Intelligence *(Phase 1)*
 
-- **🌐 Git Integration**:
-  - Built-in commands: `/git <command>`, `/init-git`, `/commit <message>`, `/push`
-  - Automated git workflows and PR creation (requires `gh` CLI)
-  - Conflict resolution and commit message generation
+- **🗂️ Semantic Code Parser**:
+  - AST-based analysis for JavaScript, TypeScript, and Python
+  - Extracts functions, classes, imports, exports, and dependencies
+  - Language-agnostic symbol extraction across multiple files
 
-- **⚙️ Custom Commands**:
-  - Define reusable prompts in `.grok/commands/<cmd_name>.txt`
-  - Team-shared commands for project consistency
-  - Example: `/lint` → "Run ESLint on all JS files"
+- **🔗 Dependency Graph Engine**:
+  - Maps import/export relationships across entire codebases
+  - Detects circular dependencies with detailed cycle analysis
+  - ASCII visualization of code architecture and relationships
+  - Interactive graph exploration and statistics
 
-- **🧠 Memory & History System**:
-  - Conversation persistence across CLI sessions
-  - Action history with undo/redo functionality (`/undo`)
-  - Context window management for long conversations
-  - Automatic conversation compression and summarization
+- **🎯 Context Inference System**:
+  - Intelligent file relevance scoring based on semantic matching
+  - Context window optimization for AI model token limits
+  - Smart file suggestions based on coding task analysis
+  - Task type detection (bugfix, feature, refactor, test, etc.)
 
-- **🖥️ Environment Awareness**:
-  - Cross-platform support (Windows, macOS, Linux)
-  - OS-adapted commands and paths
-  - Stateful conversation with full context retention
+- **🔍 Intelligent File Linking**:
+  - Semantic search across codebases with meaning-based queries
+  - Auto-context building from user queries and file relevance
+  - Token-efficient conversation management with pruning strategies
+  - Session-aware context that learns from interaction patterns
 
-- **🎨 Terminal-First UX**:
-  - Thinking animations during API calls
-  - Interactive confirmation for all actions
-  - Comprehensive help system with `/help`
-  - Session management with `/clear`
+- **💰 Context Budgeting System** *(Latest Addition)*:
+  - Reserves 15% for essential project files (package.json, README, etc.)
+  - Allocates 70% for conversation and work context
+  - Maintains 15% buffer for system overhead
+  - Prevents capacity exhaustion while ensuring project awareness
 
-- **🔧 Configuration & Extensibility**:
-  - `GROK.md`: Project-specific guidelines and commands
-  - Secure API key management with local storage
-  - **Model Selection**: Choose from multiple Grok models via `/model` command:
-    - `grok-code-fast-1`: **Default** - Optimized for coding, fast & cost-effective
-    - `grok-4-fast-reasoning`: Best for complex reasoning (RPG planning), 2M context
-    - `grok-4-fast-non-reasoning`: Fast for simple tasks, 2M context, low cost
-    - `grok-3-beta`: Legacy - Most capable, balanced performance
-    - `grok-3-mini-beta`: Legacy - Faster, lower cost
-    - `grok-beta`: Legacy - Original model
-  - Environment variables: Set `GROK_MODEL` to override default
+### 🔧 Advanced Error Recovery System *(Phase 2)*
 
-- **🛡️ Security & Best Practices**:
-  - User confirmation required for all destructive actions
-  - Token-efficient context management
-  - No automatic execution without approval
+- **🔍 Intelligent Error Detection**:
+  - Parses output from ESLint, TypeScript compiler, Prettier, and more
+  - Classifies errors by type, severity, and fix complexity
+  - Context-aware error analysis with codebase understanding
+  - Impact assessment and prioritization
+
+- **🔧 Automated Fix Generation**:
+  - 20+ fix templates for common errors (missing semicolons, unused variables, imports)
+  - Confidence-based auto-application (80%+ confidence = auto-fix)
+  - Template → AI → Hybrid fallback strategy for maximum coverage
+  - Intelligent method selection based on error characteristics
+
+- **🤖 AI-Powered Fixes**:
+  - Grok integration for complex error resolution
+  - Full codebase context provided to AI for accurate fixes
+  - Handles type mismatches, architectural issues, and complex logic errors
+  - Structured fix output with explanations and warnings
+
+- **🛡️ Safe Fix Application**:
+  - Automatic file backups before any changes
+  - Pre-flight checks (permissions, syntax validation, space)
+  - Risk assessment with user confirmation for high-risk fixes
+  - Instant rollback capability on any failure
+  - Post-fix validation to ensure correctness
+
+- **📊 Learning & Analytics**:
+  - Tracks fix success rates by error type and method
+  - Learns from successful and failed fix patterns
+  - Performance analytics and improvement suggestions
+  - Confidence scoring and threshold optimization
+
+### 🗂️ Multi-File Management
+
+- **Create, edit, or delete multiple files simultaneously using XML tags**
+- **Automatic directory creation for complex project structures**
+- **File context management**: Add files to AI knowledge with `/add <file>`, scan with `/scan`
+- **Context capacity dashboard**: `/budget` command shows usage breakdown
+- **Selective file addition** with capacity-aware warnings
+
+### 🔄 Autonomous Workflows
+
+- **Execute shell commands via `<run command="...">` tags (npm install, tests, linting)**
+- **Iterative error handling with AI-suggested fixes**
+- **End-to-end project generation with deployment commands**
+- **Error recovery workflows** with automatic fix suggestions
+
+### 🌐 Git Integration
+
+- **Built-in commands**: `/git <command>`, `/init-git`, `/commit <message>`, `/push`
+- **Automated git workflows and PR creation (requires `gh` CLI)**
+- **Conflict resolution and commit message generation**
+
+### ⚙️ Custom Commands & Configuration
+
+- **Define reusable prompts in `.grok/commands/<cmd_name>.txt`**
+- **Team-shared commands for project consistency**
+- **GROK.md**: Project-specific guidelines and commands**
+- **Context budgeting configuration** for custom capacity allocation
+
+### 🧠 Memory & History System
+
+- **Conversation persistence across CLI sessions**
+- **Action history with undo/redo functionality (`/undo`)**
+- **Context window management** with intelligent budgeting
+- **Automatic conversation compression and summarization**
+
+### 🖥️ Environment Awareness
+
+- **Cross-platform support (Windows, macOS, Linux)**
+- **OS-adapted commands and paths**
+- **Stateful conversation with full context retention**
+- **Model selection with platform-optimized defaults**
+
+### 🎨 Terminal-First UX
+
+- **Thinking animations during API calls**
+- **Interactive confirmation for high-risk actions**
+- **Comprehensive help system with `/help`**
+- **Context capacity dashboard with `/budget`**
+- **Session management with `/clear`**
+
+### 🔧 Configuration & Extensibility
+
+- **`GROK.md`**: Project-specific guidelines and commands**
+- **Secure API key management with local storage**
+- **Model Selection**: Choose from multiple Grok models via `/model` command:
+  - `grok-code-fast-1`: **Default** - Optimized for coding, fast & cost-effective
+  - `grok-4-fast-reasoning`: Best for complex reasoning (RPG planning), 2M context
+  - `grok-4-fast-non-reasoning`: Fast for simple tasks, 2M context, low cost
+  - `grok-3-beta`: Legacy - Most capable, balanced performance
+  - `grok-3-mini-beta`: Legacy - Faster, lower cost
+  - `grok-beta`: Legacy - Original model
+- **Environment variables**: Set `GROK_MODEL` to override default
+
+### 🛡️ Security & Best Practices
+
+- **User confirmation required for high-risk fixes**
+- **Automatic backups and rollback for all changes**
+- **Token-efficient context management with budgeting**
+- **Pre-flight validation for all fix applications**
+- **No automatic execution without approval**
 
 ## Installation
 
@@ -221,14 +319,18 @@ grok
 # Model selection
 "/model"                       # Change AI model (interactive menu)
 
+# Context management
+"/budget"                      # Show context capacity and usage breakdown
+"/add src/app.js"              # Add file to conversation context (capacity-aware)
+/scan                          # Scan all files (with capacity warnings)
+/remove src/app.js             # Remove file from context and free capacity
+
 # Git operations
 "/init-git"                    # Initialize repository
 "/commit Add new feature"      # Stage and commit
 "/push"                        # Push to remote
 
 # File management
-"/add src/app.js"              # Add file to context
-"/scan"                        # Scan all files
 "/ls"                          # List directory
 
 # Memory & history
@@ -237,6 +339,10 @@ grok
 
 # Custom commands
 "/test"                        # Run tests (if defined)
+
+# Error recovery (Phase 2)
+# Just paste error output - Grok Code will analyze and suggest fixes
+# Example: Paste ESLint/TypeScript errors for automatic analysis
 ```
 
 Exit anytime with `exit` or `/exit`. Conversations are automatically saved and restored between sessions.
@@ -290,6 +396,57 @@ You: /run node -e "console.log(reverseString('hello'))"
 Output: olleh
 ```
 
+#### 🛡️ Error Recovery System Example
+
+```bash
+# User encounters a linting error
+You: [pastes ESLint output]
+src/auth.js:15:25: Missing semicolon (semi)
+src/auth.js:20:7: 'unusedVar' is defined but never used (no-unused-vars)
+
+Grok: 🔍 Analyzing 2 errors across your codebase...
+
+Error Analysis:
+• SYNTAX: Missing semicolon (High confidence auto-fix available)
+• UNUSED: Unused variable (High confidence auto-fix available)
+
+🤖 Applying fixes...
+✅ Fixed: Missing semicolon in src/auth.js:15
+✅ Fixed: Removed unused variable 'unusedVar' in src/auth.js:20
+
+All errors resolved! Your code is now clean.
+```
+
+#### 💰 Context Budgeting Example
+
+```bash
+# Check context capacity
+You: /budget
+
+💰 Context Budget Status:
+════════════════════════════════════════════════════════
+Total Usage: 15% (1200/8000 tokens)
+Available: 6800 tokens
+
+Budget Categories:
+  essentials ████████░░░░ 15% (1200/8000)
+  conversation ░░░░░░░░░░ 0% (0/5600)
+  buffer ████████░░░░ 15% (1200/8000)
+
+💡 Tips:
+   • You have 5600 tokens available for conversation
+   • Essentials usage is optimal (README.md, package.json loaded)
+
+# Add a file to conversation context
+You: /add src/utils/helpers.js
+✅ Added src/utils/helpers.js to context (450 tokens).
+💰 Conversation capacity: 5150 tokens remaining
+
+# View updated budget
+You: /budget
+[Shows updated usage with conversation category now active]
+```
+
 ## 💡 Best Practices & Tips
 
 ### 🏗️ RPG Planning Tips
@@ -319,6 +476,22 @@ Output: olleh
   Deploy the current Next.js app to Vercel and output the URL.
   ```
 
+### 💰 Context Budgeting Best Practices
+
+- **Monitor Capacity**: Use `/budget` regularly to understand your context usage
+- **Essential Files**: Only README.md and package.json are auto-loaded - add others manually
+- **Conversation Priority**: Reserve most capacity (70%) for actual work discussions
+- **Capacity Warnings**: Pay attention to capacity warnings when adding files
+- **Selective Addition**: Use `/add <file>` instead of `/scan` for better capacity control
+
+### 🔧 Error Recovery Tips
+
+- **Paste Raw Errors**: Just paste ESLint/TypeScript errors directly - Grok Code analyzes automatically
+- **Trust Auto-Fixes**: High-confidence fixes (>80%) are applied automatically and safely
+- **Review AI Fixes**: Lower-confidence fixes show suggestions instead of auto-applying
+- **Rollback Ready**: All fixes can be rolled back instantly if something goes wrong
+- **Context Matters**: Add relevant files before fixing complex errors for better results
+
 ### ⚡ Performance Optimization
 
 - **Model Selection**: Use `/model` command to choose the right model for your task:
@@ -327,8 +500,9 @@ Output: olleh
   - **Simple/fast tasks**: `grok-4-fast-non-reasoning` (2M context, low cost)
   - **High quality**: `grok-3-beta` (legacy - most capable)
   - **Speed/cost**: `grok-3-mini-beta` (legacy - fastest)
-- **Context Management**: Clear context with `/clear` for fresh sessions
-- **Selective Scanning**: Use `/add` instead of `/scan` for large codebases
+- **Context Management**: Use `/budget` to monitor capacity instead of clearing sessions
+- **Selective Scanning**: Use `/add` with capacity awareness for large codebases
+- **Fix Learning**: The system learns from your fix patterns for better suggestions
 
 ## 🤝 Contributing
 
