@@ -387,10 +387,10 @@ Create a system that deeply understands project structure, frameworks, conventio
   - Files to modify: `lib/generation/context-templates.js`
   - Testing: Generate code that matches project patterns ✅ COMPLETED
 
-- [ ] **Task 4.4.2**: Framework-specific code generation
+- [x] **Task 4.4.2**: Framework-specific code generation
   - Dependencies: Context templates
   - Files to modify: `lib/generation/framework-codegen.js`
-  - Testing: Generate React components, Express routes, etc.
+  - Testing: Generate React components, Express routes, etc. ✅ COMPLETED
 
 - [ ] **Task 4.4.3**: Integration with RPG planning
   - Dependencies: RPG system + intelligent generation

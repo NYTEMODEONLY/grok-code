@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.17.0 - Context-Aware Code Templates (Phase 4.4)
+### v1.18.0 - Framework-Specific Code Generation (Phase 4.4)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -109,7 +109,13 @@
 - **🔗 Integrated File Placement**: Suggests optimal locations for generated code
 - **⚡ Instant Code Scaffolding**: Generate complete components, services, controllers, models, routes
 - **🎯 Template Customization**: Adapts to team preferences and project-specific patterns
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows|placement|template` for complete project intelligence
+- **🚀 Framework-Specific Code Generation**: Advanced generators for React hooks, Express middleware, custom logic
+- **🎨 Complete React Components**: Hooks, props, state, effects, CSS, PropTypes, default props
+- **🔌 Production-Ready Express Controllers**: CRUD operations, validation, error handling, logging
+- **⚡ Instant Component Generation**: Generate entire working components with one command
+- **🧪 Code Validation**: Syntax checking, best practice validation, error detection
+- **📋 Generation Metadata**: Framework info, architecture context, convention compliance
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows|placement|template|generate` for complete project intelligence
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions
