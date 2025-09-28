@@ -1097,7 +1097,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator, frameworkCodeGenerator;
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator, frameworkCodeGenerator, smartRPG;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
@@ -1243,6 +1243,22 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
   } catch (error) {
     logger.error('Failed to initialize framework code generator', { error: error.message });
+  }
+
+  try {
+    // Smart RPG system
+    const { SmartRPG } = await import('../lib/generation/smart-rpg.js');
+    smartRPG = new SmartRPG({
+      projectRoot: process.cwd(),
+      contextTemplateGenerator,
+      frameworkCodeGenerator,
+      frameworkDetector,
+      conventionAnalyzer,
+      architectureMapper,
+      filePlacementAdvisor
+    });
+  } catch (error) {
+    logger.error('Failed to initialize smart RPG system', { error: error.message });
   }
 
   // Append previous conversation history to maintain memory
@@ -1398,7 +1414,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         flowAnalyzer,
         filePlacementAdvisor,
         contextTemplateGenerator,
-        frameworkCodeGenerator
+        frameworkCodeGenerator,
+        smartRPG
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1646,7 +1663,8 @@ async function handleCommand(
   flowAnalyzer,
   filePlacementAdvisor,
   contextTemplateGenerator,
-  frameworkCodeGenerator
+  frameworkCodeGenerator,
+  smartRPG
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -4281,6 +4299,97 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'smart-rpg') {
+      const rpgFile = args[0];
+
+      if (!rpgFile) {
+        console.log('❌ Please specify an RPG plan file to enhance.');
+        console.log('Usage: /framework smart-rpg <plan-file>');
+        console.log('Example: /framework smart-rpg my-plan.json');
+        return true;
+      }
+
+      console.log(`🧠 Enhancing RPG plan with intelligent generation: ${rpgFile}\n`);
+
+      if (!smartRPG) {
+        console.log('❌ Smart RPG system not available.');
+        return true;
+      }
+
+      try {
+        // Read RPG plan from file
+        let rpgPlan;
+        if (fs.existsSync(rpgFile)) {
+          const planContent = fs.readFileSync(rpgFile, 'utf8');
+          rpgPlan = JSON.parse(planContent);
+        } else {
+          console.log(`❌ RPG plan file not found: ${rpgFile}`);
+          return true;
+        }
+
+        // Enhance the plan
+        const enhancedPlan = await smartRPG.enhanceRPGPlan(rpgPlan);
+
+        console.log('🎯 RPG Plan Enhanced Successfully!');
+        console.log('═'.repeat(50));
+
+        // Show enhancement summary
+        console.log('\n📊 Enhancement Summary:');
+        console.log(`  Features: ${enhancedPlan.features?.length || 0}`);
+        console.log(`  Files: ${Object.keys(enhancedPlan.files || {}).length}`);
+        console.log(`  Generated Code: ${Object.keys(enhancedPlan.generatedCode || {}).length}`);
+        console.log(`  Suggestions: ${enhancedPlan.suggestions?.length || 0}`);
+        console.log(`  Validations: ${enhancedPlan.validations?.length || 0}`);
+
+        // Show generated files
+        if (enhancedPlan.generatedCode && Object.keys(enhancedPlan.generatedCode).length > 0) {
+          console.log('\n📄 Generated Files:');
+          Object.keys(enhancedPlan.generatedCode).forEach(filePath => {
+            const generated = enhancedPlan.generatedCode[filePath];
+            const status = generated.validation?.valid ? '✅' : '⚠️';
+            console.log(`  ${status} ${filePath} (${generated.generationType})`);
+          });
+        }
+
+        // Show suggestions
+        if (enhancedPlan.suggestions && enhancedPlan.suggestions.length > 0) {
+          console.log('\n💡 Intelligent Suggestions:');
+          enhancedPlan.suggestions.slice(0, 5).forEach((suggestion, index) => {
+            console.log(`  ${index + 1}. ${suggestion.reasoning || suggestion.type}`);
+          });
+
+          if (enhancedPlan.suggestions.length > 5) {
+            console.log(`  ... and ${enhancedPlan.suggestions.length - 5} more suggestions`);
+          }
+        }
+
+        // Show validations
+        const errors = enhancedPlan.validations?.filter(v => v.severity === 'high') || [];
+        const warnings = enhancedPlan.validations?.filter(v => v.severity === 'medium' || v.severity === 'low') || [];
+
+        if (errors.length > 0 || warnings.length > 0) {
+          console.log('\n⚠️  Validation Results:');
+          if (errors.length > 0) {
+            console.log(`  ❌ ${errors.length} errors`);
+          }
+          if (warnings.length > 0) {
+            console.log(`  ⚠️  ${warnings.length} warnings`);
+          }
+        }
+
+        // Save enhanced plan
+        const enhancedFileName = rpgFile.replace(/\.json$/, '-enhanced.json');
+        fs.writeFileSync(enhancedFileName, JSON.stringify(enhancedPlan, null, 2));
+        console.log(`\n💾 Enhanced plan saved to: ${enhancedFileName}`);
+
+        console.log('\n✅ RPG plan enhancement complete!');
+
+      } catch (error) {
+        console.log(`❌ Failed to enhance RPG plan: ${error.message}`);
+        logger.error('Smart RPG enhancement failed', { error: error.message, rpgFile });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4375,6 +4484,7 @@ async function handleCommand(
       console.log('  /framework placement <f> - Suggest optimal file placement');
       console.log('  /framework template <t> <n> - Generate context-aware code templates');
       console.log('  /framework generate <fw> <t> <n> - Generate complete framework-specific code');
+      console.log('  /framework smart-rpg <plan>     - Enhance RPG plans with intelligent generation');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
