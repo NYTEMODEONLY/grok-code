@@ -61,7 +61,7 @@
 
 ## 📋 Changelog
 
-### v1.19.0 - Smart RPG Planning System (Phase 4.4)
+### v1.20.0 - Unified RPG System (Phase 4.4)
 - **🔍 Intelligent Framework Detection**: Advanced analysis of project structure and dependencies
 - **🎯 Comprehensive Framework Support**: React, Vue, Angular, Express, Django, Flask, FastAPI, and 30+ more
 - **💻 Multi-Language Detection**: JavaScript, TypeScript, Python, Java, Go, Rust, PHP, Ruby support
@@ -123,7 +123,14 @@
 - **⚡ Automated Code Scaffolding**: Generates entire applications from planning descriptions
 - **📊 Plan Analytics**: Comprehensive statistics and validation reports
 - **🔄 Plan Enhancement Pipeline**: Framework analysis → Convention application → Code generation → Validation
-- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows|placement|template|generate|smart-rpg` for complete project intelligence
+- **🎭 Unified RPG Orchestrator**: Complete end-to-end RPG planning and generation workflow
+- **🏗️ Multi-Phase RPG Pipeline**: Planning → Enhancement → Validation → Implementation → Visualization
+- **📈 Quality Assurance**: Automated plan validation, optimization, and quality assessment
+- **🔗 Integrated Intelligence**: All AI systems work together for cohesive development experience
+- **💾 Comprehensive Persistence**: Saves complete RPG results with all artifacts and metadata
+- **🎨 Visual Planning**: ASCII art diagrams for plan visualization and communication
+- **📋 Executive Summaries**: Quality metrics, recommendations, and next steps for stakeholders
+- **⚙️ Enhanced CLI Commands**: `/framework detect|patterns|analyze|prompts|conventions|learn|apply|architecture|flows|placement|template|generate|smart-rpg|plan` for complete project intelligence
 
 ### v1.5.0 - IDE-like Terminal Experience (Phase 3.3)
 - **⚡ Smart Command Interface**: Auto-complete system for commands and file paths with intelligent suggestions

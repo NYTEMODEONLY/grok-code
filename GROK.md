@@ -114,6 +114,8 @@ lib/
 │   ├── context-templates.js   # Context-aware code template generation
 │   ├── framework-codegen.js   # Framework-specific code generation
 │   └── smart-rpg.js          # Smart RPG planning system
+├── rpg/            # Unified RPG system
+│   └── orchestrator.js       # Complete RPG planning and generation workflow
 ├── structure/      # Project architecture analysis
 │   ├── architecture-mapper.js  # Maps projects to architectural patterns
 │   ├── flow-analyzer.js        # Analyzes application flows and entry points

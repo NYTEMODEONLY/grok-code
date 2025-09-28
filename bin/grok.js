@@ -1097,7 +1097,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator, frameworkCodeGenerator, smartRPG;
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator, frameworkCodeGenerator, smartRPG, rpgOrchestrator;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
@@ -1261,6 +1261,19 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     logger.error('Failed to initialize smart RPG system', { error: error.message });
   }
 
+  try {
+    // Unified RPG orchestrator
+    const { RPGOrchestrator } = await import('../lib/rpg/orchestrator.js');
+    rpgOrchestrator = new RPGOrchestrator({
+      projectRoot: process.cwd(),
+      client,
+      model,
+      smartRPG
+    });
+  } catch (error) {
+    logger.error('Failed to initialize RPG orchestrator', { error: error.message });
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1415,7 +1428,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         filePlacementAdvisor,
         contextTemplateGenerator,
         frameworkCodeGenerator,
-        smartRPG
+        smartRPG,
+        rpgOrchestrator
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1664,7 +1678,8 @@ async function handleCommand(
   filePlacementAdvisor,
   contextTemplateGenerator,
   frameworkCodeGenerator,
-  smartRPG
+  smartRPG,
+  rpgOrchestrator
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -4390,6 +4405,110 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'plan') {
+      const prompt = args.join(' ');
+
+      if (!prompt) {
+        console.log('❌ Please provide a planning prompt.');
+        console.log('Usage: /framework plan <description>');
+        console.log('Example: /framework plan "Create a user authentication system with React frontend and Express backend"');
+        return true;
+      }
+
+      console.log(`🎯 Starting unified RPG planning workflow...\n`);
+      console.log(`Prompt: "${prompt}"\n`);
+
+      if (!rpgOrchestrator) {
+        console.log('❌ RPG orchestrator not available.');
+        return true;
+      }
+
+      try {
+        // Execute full RPG workflow
+        const result = await rpgOrchestrator.executeFullRPGWorkflow(prompt, {
+          existingFiles: fileContext
+        });
+
+        console.log('🎉 RPG Planning Complete!');
+        console.log('═'.repeat(60));
+
+        // Show plan overview
+        console.log('\n📋 Plan Overview:');
+        console.log(`  Features: ${result.plan.features?.length || 0}`);
+        console.log(`  Files: ${Object.keys(result.plan.files || {}).length}`);
+        console.log(`  Frameworks: ${result.plan.frameworks?.join(', ') || 'None detected'}`);
+        console.log(`  Architecture: ${result.plan.architecture?.pattern || 'Not specified'}`);
+
+        // Show enhanced plan info
+        if (result.enhancedPlan) {
+          console.log(`\n🧠 Intelligence Enhancements:`);
+          console.log(`  Generated Code: ${Object.keys(result.enhancedPlan.generatedCode || {}).length} files`);
+          console.log(`  Suggestions: ${result.enhancedPlan.suggestions?.length || 0}`);
+          console.log(`  Validations: ${result.enhancedPlan.validations?.filter(v => v.severity === 'high').length || 0} issues`);
+        }
+
+        // Show implementation status
+        if (result.implementation) {
+          console.log(`\n⚙️ Implementation:`);
+          console.log(`  Status: ${result.implementation.status}`);
+          console.log(`  Files Generated: ${Object.keys(result.implementation.files || {}).length}`);
+
+          if (result.implementation.summary) {
+            const summary = result.implementation.summary;
+            console.log(`  Architecture: ${summary.architecture}`);
+            console.log(`  Frameworks: ${summary.frameworks.join(', ')}`);
+          }
+        }
+
+        // Show visualizations
+        if (result.visualizations && result.visualizations.length > 0) {
+          console.log(`\n🎨 Visualizations: ${result.visualizations.length} diagrams`);
+          result.visualizations.forEach((viz, index) => {
+            console.log(`  ${index + 1}. ${viz.title} (${viz.type})`);
+          });
+        }
+
+        // Show summary and recommendations
+        if (result.summary) {
+          console.log(`\n📊 Quality Metrics:`);
+          console.log(`  Complexity: ${result.summary.metrics.complexity}/100`);
+          console.log(`  Completeness: ${result.summary.metrics.completeness}%`);
+          console.log(`  Quality: ${result.summary.metrics.quality}%`);
+
+          if (result.summary.recommendations && result.summary.recommendations.length > 0) {
+            console.log(`\n💡 Recommendations:`);
+            result.summary.recommendations.slice(0, 3).forEach((rec, index) => {
+              const icon = rec.priority === 'high' ? '🔴' : rec.priority === 'medium' ? '🟡' : '🟢';
+              console.log(`  ${icon} ${rec.message}`);
+            });
+          }
+        }
+
+        // Save the complete result
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const resultPath = await rpgOrchestrator.saveRPGResult(result, `rpg-plan-${timestamp}.json`);
+        console.log(`\n💾 Complete plan saved to: ${resultPath}`);
+
+        // Show next steps
+        if (result.summary?.nextSteps) {
+          console.log(`\n🚀 Next Steps:`);
+          result.summary.nextSteps.forEach((step, index) => {
+            console.log(`  ${index + 1}. ${step.step}`);
+            console.log(`     ${step.description}`);
+            console.log('');
+          });
+        }
+
+        console.log('\n✅ Unified RPG planning workflow complete!');
+        console.log('💡 Use /framework smart-rpg to enhance existing plans');
+        console.log('💡 Use /diagram to visualize the generated plan');
+
+      } catch (error) {
+        console.log(`❌ Failed to execute RPG planning workflow: ${error.message}`);
+        logger.error('RPG planning workflow failed', { error: error.message, prompt });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4485,6 +4604,7 @@ async function handleCommand(
       console.log('  /framework template <t> <n> - Generate context-aware code templates');
       console.log('  /framework generate <fw> <t> <n> - Generate complete framework-specific code');
       console.log('  /framework smart-rpg <plan>     - Enhance RPG plans with intelligent generation');
+      console.log('  /framework plan <desc>         - Execute unified RPG planning workflow');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
