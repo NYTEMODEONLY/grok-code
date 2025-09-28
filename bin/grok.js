@@ -15,7 +15,7 @@ import os from 'os';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
+// import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
 
 // Resolve absolute paths for imports (works when run from any directory)
 // Use import.meta.resolve to find the lib directory
@@ -929,24 +929,22 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   let messages = [{ role: 'system', content: systemPrompt }];
   let fileContext = {};
 
-  // Initialize syntax highlighter for code display
-  try {
-    syntaxHighlighterInstance = new SyntaxHighlighter();
-    logger.info('Syntax highlighter initialized successfully');
-  } catch (error) {
-    syntaxHighlighterInstance = null;
-    logger.error('Failed to initialize syntax highlighter', { error: error.message });
-    console.log('⚠️  Warning: Syntax highlighting may not work properly');
-  }
-
-  // Initialize diff viewer for color-coded diffs
-  try {
-    diffViewer = new DiffViewer({ syntaxHighlighter: syntaxHighlighterInstance });
-    logger.info('Diff viewer initialized successfully');
-  } catch (error) {
-    logger.error('Failed to initialize diff viewer', { error: error.message });
-    console.log('⚠️  Warning: Diff viewing may not work properly');
-  }
+  // Declare all variables with var to avoid TDZ issues
+  var syntaxHighlighterInstance = null;
+  var diffViewer = null;
+  var progressIndicator = null;
+  var fileBrowser = null;
+  var codePreview = null;
+  var codeSearch = null;
+  var errorRecoveryWorkflow = null;
+  var debugCommand = null;
+  var errorStats = null;
+  var autoComplete = null;
+  var historySearch = null;
+  var contextualSuggestions = null;
+  var workflowDiagram = null;
+  var progressTracker = null;
+  var confirmDialog = null;
 
   // Initialize progress indicator for operation feedback
   try {
@@ -1122,21 +1120,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     contextTemplateGenerator,
     frameworkCodeGenerator,
     smartRPG,
-    rpgOrchestrator,
-    // Additional display and interactive systems
-    syntaxHighlighterInstance,
-    diffViewer,
-    progressIndicator,
-    fileBrowser,
-    codePreview,
-    codeSearch,
-    historySearch,
-    autoComplete,
-    debugCommand,
-    contextualSuggestions,
-    workflowDiagram,
-    progressTracker,
-    confirmDialog;
+    rpgOrchestrator;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
