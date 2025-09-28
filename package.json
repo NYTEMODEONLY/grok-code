@@ -1,6 +1,6 @@
 {
   "name": "grok-code-cli",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "type": "module",
   "description": "🚀 Grok Code: Personal AI-powered CLI coding assistant with interactive code display. File browser, enhanced previews, line navigation, search highlighting, and intelligent terminal experience transform your workflow into a modern IDE.",
   "main": "bin/grok.js",

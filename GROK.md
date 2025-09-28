@@ -112,7 +112,8 @@ lib/
 │   └── auto-applier.js     # Auto-applies learned conventions to code
 ├── generation/     # Intelligent code generation
 │   ├── context-templates.js   # Context-aware code template generation
-│   └── framework-codegen.js   # Framework-specific code generation
+│   ├── framework-codegen.js   # Framework-specific code generation
+│   └── smart-rpg.js          # Smart RPG planning system
 ├── structure/      # Project architecture analysis
 │   ├── architecture-mapper.js  # Maps projects to architectural patterns
 │   ├── flow-analyzer.js        # Analyzes application flows and entry points
