@@ -923,17 +923,17 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   let fileContext = {};
 
   // Initialize syntax highlighter for code display
-  let syntaxHighlighter;
   try {
     syntaxHighlighter = new SyntaxHighlighter();
     logger.info('Syntax highlighter initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize syntax highlighter', { error: error.message });
+    logger.error('Failed to initialize syntax highlighter', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Syntax highlighting may not work properly');
   }
 
   // Initialize diff viewer for color-coded diffs
-  let diffViewer;
   try {
     diffViewer = new DiffViewer({ syntaxHighlighter });
     logger.info('Diff viewer initialized successfully');
@@ -943,17 +943,17 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize progress indicator for operation feedback
-  let progressIndicator;
   try {
     progressIndicator = new ProgressIndicator();
     logger.info('Progress indicator initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize progress indicator', { error: error.message });
+    logger.error('Failed to initialize progress indicator', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Progress indicators may not work properly');
   }
 
   // Initialize file browser for interactive navigation
-  let fileBrowser;
   try {
     fileBrowser = new FileBrowser({ syntaxHighlighter });
     logger.info('File browser initialized successfully');
@@ -963,7 +963,6 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize code preview for enhanced code display
-  let codePreview;
   try {
     codePreview = new CodePreview({ syntaxHighlighter });
     logger.info('Code preview initialized successfully');
@@ -973,7 +972,6 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize code search for interactive codebase search
-  let codeSearch;
   try {
     codeSearch = new CodeSearch({ syntaxHighlighter, codePreview });
     logger.info('Code search initialized successfully');
@@ -983,39 +981,41 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize error recovery workflow system
-  let errorRecoveryWorkflow;
   try {
     errorRecoveryWorkflow = new ErrorRecoveryWorkflow({
       progress: progressIndicator,
     });
     logger.info('Error recovery workflow initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize error recovery workflow', { error: error.message });
+    logger.error('Failed to initialize error recovery workflow', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Error recovery may not work properly');
   }
 
   // Initialize debug command for interactive error analysis
-  let debugCommand;
   try {
     debugCommand = new DebugCommand();
     logger.info('Debug command initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize debug command', { error: error.message });
+    logger.error('Failed to initialize debug command', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Debug commands may not work properly');
   }
 
   // Initialize error analytics for recovery statistics
-  let errorStats;
   try {
     errorStats = new ErrorStats();
     logger.info('Error analytics initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize error analytics', { error: error.message });
+    logger.error('Failed to initialize error analytics', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Error analytics may not work properly');
   }
 
   // Initialize auto-complete system for intelligent command completion
-  let autoComplete;
   try {
     autoComplete = new AutoComplete({
       currentDir: currentDir,
@@ -1023,24 +1023,26 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
     logger.info('Auto-complete system initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize auto-complete system', { error: error.message });
+    logger.error('Failed to initialize auto-complete system', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Auto-complete may not work properly');
   }
 
   // Initialize command history search system
-  let historySearch;
   try {
     historySearch = new HistorySearch({
       maxHistorySize: 500,
     });
     logger.info('Command history search initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize command history search', { error: error.message });
+    logger.error('Failed to initialize command history search', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Command history may not work properly');
   }
 
   // Initialize contextual suggestions system
-  let contextualSuggestions;
   try {
     contextualSuggestions = new ContextualSuggestions({
       maxSuggestions: 5,
@@ -1048,12 +1050,13 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
     logger.info('Contextual suggestions initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize contextual suggestions', { error: error.message });
+    logger.error('Failed to initialize contextual suggestions', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Contextual suggestions may not work properly');
   }
 
   // Initialize workflow diagram generator
-  let workflowDiagram;
   try {
     workflowDiagram = new WorkflowDiagram({
       maxWidth: 100,
@@ -1062,12 +1065,13 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
     logger.info('Workflow diagram generator initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize workflow diagram generator', { error: error.message });
+    logger.error('Failed to initialize workflow diagram generator', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Workflow diagrams may not work properly');
   }
 
   // Initialize progress tracking system
-  let progressTracker;
   try {
     progressTracker = new ProgressTracker({
       maxConcurrent: 5,
@@ -1077,12 +1081,13 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
     logger.info('Progress tracking system initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize progress tracking system', { error: error.message });
+    logger.error('Failed to initialize progress tracking system', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Progress tracking may not work properly');
   }
 
   // Initialize confirmation dialog system
-  let confirmDialog;
   try {
     confirmDialog = new ConfirmDialog({
       maxPreviewLines: 15,
@@ -1092,12 +1097,40 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
     logger.info('Confirmation dialog system initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize confirmation dialog system', { error: error.message });
+    logger.error('Failed to initialize confirmation dialog system', {
+      error: error.message,
+    });
     console.log('⚠️  Warning: Confirmation dialogs may not work properly');
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator, frameworkCodeGenerator, smartRPG, rpgOrchestrator;
+  let frameworkDetector,
+    frameworkPatterns,
+    frameworkPromptLoader,
+    conventionAnalyzer,
+    teamPatternsLearner,
+    conventionAutoApplier,
+    architectureMapper,
+    flowAnalyzer,
+    filePlacementAdvisor,
+    contextTemplateGenerator,
+    frameworkCodeGenerator,
+    smartRPG,
+    rpgOrchestrator,
+    // Additional display and interactive systems
+    syntaxHighlighter,
+    diffViewer,
+    progressIndicator,
+    fileBrowser,
+    codePreview,
+    codeSearch,
+    historySearch,
+    autoComplete,
+    debugCommand,
+    contextualSuggestions,
+    workflowDiagram,
+    progressTracker,
+    confirmDialog;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
@@ -1109,7 +1142,9 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         await teamPatternsLearner.endSession();
         logger.info('Team patterns session saved');
       } catch (error) {
-        logger.error('Failed to save team patterns on exit', { error: error.message });
+        logger.error('Failed to save team patterns on exit', {
+          error: error.message,
+        });
       }
     }
   });
@@ -1122,74 +1157,98 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       maxFileSize: 1024 * 1024,
     });
   } catch (error) {
-    logger.error('Failed to initialize framework detection system', { error: error.message });
+    logger.error('Failed to initialize framework detection system', {
+      error: error.message,
+    });
   }
 
   try {
     // Framework patterns
     frameworkPatterns = new FrameworkPatterns();
   } catch (error) {
-    logger.error('Failed to initialize framework patterns system', { error: error.message });
+    logger.error('Failed to initialize framework patterns system', {
+      error: error.message,
+    });
   }
 
   try {
     // Framework prompts
-    const { FrameworkPromptLoader } = await import('../lib/frameworks/prompt-loader.js');
+    const { FrameworkPromptLoader } = await import(
+      '../lib/frameworks/prompt-loader.js'
+    );
     frameworkPromptLoader = new FrameworkPromptLoader();
   } catch (error) {
-    logger.error('Failed to initialize framework prompt loader', { error: error.message });
+    logger.error('Failed to initialize framework prompt loader', {
+      error: error.message,
+    });
   }
 
   try {
     // Convention analyzer
-    const { ConventionAnalyzer } = await import('../lib/conventions/analyzer.js');
+    const { ConventionAnalyzer } = await import(
+      '../lib/conventions/analyzer.js'
+    );
     conventionAnalyzer = new ConventionAnalyzer({
       projectRoot: process.cwd(),
       maxFiles: 50,
-      maxFileSize: 1024 * 1024
+      maxFileSize: 1024 * 1024,
     });
   } catch (error) {
-    logger.error('Failed to initialize convention analyzer', { error: error.message });
+    logger.error('Failed to initialize convention analyzer', {
+      error: error.message,
+    });
   }
 
   try {
     // Team patterns learner
-    const { TeamPatternsLearner } = await import('../lib/conventions/team-patterns.js');
+    const { TeamPatternsLearner } = await import(
+      '../lib/conventions/team-patterns.js'
+    );
     teamPatternsLearner = new TeamPatternsLearner({
       projectRoot: process.cwd(),
       maxHistorySize: 1000,
-      confidenceThreshold: 0.7
+      confidenceThreshold: 0.7,
     });
   } catch (error) {
-    logger.error('Failed to initialize team patterns learner', { error: error.message });
+    logger.error('Failed to initialize team patterns learner', {
+      error: error.message,
+    });
   }
 
   try {
     // Convention auto-applier
-    const { ConventionAutoApplier } = await import('../lib/conventions/auto-applier.js');
+    const { ConventionAutoApplier } = await import(
+      '../lib/conventions/auto-applier.js'
+    );
     conventionAutoApplier = new ConventionAutoApplier({
       conventionAnalyzer,
       teamPatternsLearner,
       safeMode: true,
       backupOriginals: true,
-      maxFixesPerFile: 50
+      maxFixesPerFile: 50,
     });
     logger.debug('Convention auto-applier initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize convention auto-applier', { error: error.message });
+    logger.error('Failed to initialize convention auto-applier', {
+      error: error.message,
+    });
     conventionAutoApplier = null; // Ensure it's explicitly null on failure
   }
 
   try {
     // Architecture mapper
-    const { ArchitectureMapper } = await import('../lib/structure/architecture-mapper.js');
+    const { ArchitectureMapper } = await import(
+      '../lib/structure/architecture-mapper.js'
+    );
     architectureMapper = new ArchitectureMapper({
       projectRoot: process.cwd(),
       maxDepth: 5,
-      includeNodeModules: false
+      includeNodeModules: false,
     });
   } catch (error) {
-    logger.error('Failed to initialize architecture mapper', { error: error.message });
+    logger.error('Failed to initialize architecture mapper', {
+      error: error.message,
+    });
   }
 
   try {
@@ -1198,51 +1257,65 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     flowAnalyzer = new FlowAnalyzer({
       projectRoot: process.cwd(),
       maxDepth: 3,
-      architectureMapper
+      architectureMapper,
     });
   } catch (error) {
-    logger.error('Failed to initialize flow analyzer', { error: error.message });
+    logger.error('Failed to initialize flow analyzer', {
+      error: error.message,
+    });
   }
 
   try {
     // File placement advisor
-    const { FilePlacementAdvisor } = await import('../lib/structure/file-placement.js');
+    const { FilePlacementAdvisor } = await import(
+      '../lib/structure/file-placement.js'
+    );
     filePlacementAdvisor = new FilePlacementAdvisor({
       projectRoot: process.cwd(),
       architectureMapper,
       flowAnalyzer,
       frameworkDetector,
-      conventionAnalyzer
+      conventionAnalyzer,
     });
   } catch (error) {
-    logger.error('Failed to initialize file placement advisor', { error: error.message });
+    logger.error('Failed to initialize file placement advisor', {
+      error: error.message,
+    });
   }
 
   try {
     // Context template generator
-    const { ContextTemplateGenerator } = await import('../lib/generation/context-templates.js');
+    const { ContextTemplateGenerator } = await import(
+      '../lib/generation/context-templates.js'
+    );
     contextTemplateGenerator = new ContextTemplateGenerator({
       projectRoot: process.cwd(),
       frameworkDetector,
       conventionAnalyzer,
       architectureMapper,
-      filePlacementAdvisor
+      filePlacementAdvisor,
     });
   } catch (error) {
-    logger.error('Failed to initialize context template generator', { error: error.message });
+    logger.error('Failed to initialize context template generator', {
+      error: error.message,
+    });
   }
 
   try {
     // Framework code generator
-    const { FrameworkCodeGenerator } = await import('../lib/generation/framework-codegen.js');
+    const { FrameworkCodeGenerator } = await import(
+      '../lib/generation/framework-codegen.js'
+    );
     frameworkCodeGenerator = new FrameworkCodeGenerator({
       projectRoot: process.cwd(),
       contextTemplateGenerator,
       frameworkDetector,
-      conventionAnalyzer
+      conventionAnalyzer,
     });
   } catch (error) {
-    logger.error('Failed to initialize framework code generator', { error: error.message });
+    logger.error('Failed to initialize framework code generator', {
+      error: error.message,
+    });
   }
 
   try {
@@ -1255,10 +1328,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       frameworkDetector,
       conventionAnalyzer,
       architectureMapper,
-      filePlacementAdvisor
+      filePlacementAdvisor,
     });
   } catch (error) {
-    logger.error('Failed to initialize smart RPG system', { error: error.message });
+    logger.error('Failed to initialize smart RPG system', {
+      error: error.message,
+    });
   }
 
   try {
@@ -1268,10 +1343,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       projectRoot: process.cwd(),
       client,
       model,
-      smartRPG
+      smartRPG,
     });
   } catch (error) {
-    logger.error('Failed to initialize RPG orchestrator', { error: error.message });
+    logger.error('Failed to initialize RPG orchestrator', {
+      error: error.message,
+    });
   }
 
   // Append previous conversation history to maintain memory
@@ -1302,11 +1379,11 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       );
 
       if (budgetCheck.canAdd) {
-      fileContext[f] = content;
-      messages.push({
-        role: 'system',
-        content: `Auto-added essential file ${f}:\n${content}`,
-      });
+        fileContext[f] = content;
+        messages.push({
+          role: 'system',
+          content: `Auto-added essential file ${f}:\n${content}`,
+        });
 
         // Track the token usage in the essentials budget
         tokenManager.addToBudget('essentials', estimatedTokens);
@@ -1340,16 +1417,22 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Version status
   if (updateCheck.hasUpdate) {
-    statusLines.push(`🔄 Update available: v${updateCheck.currentVersion} → v${updateCheck.latestVersion}`);
+    statusLines.push(
+      `🔄 Update available: v${updateCheck.currentVersion} → v${updateCheck.latestVersion}`
+    );
   } else if (updateCheck.isAhead) {
-    statusLines.push(`🚀 Development version (ahead of v${updateCheck.latestVersion})`);
+    statusLines.push(
+      `🚀 Development version (ahead of v${updateCheck.latestVersion})`
+    );
   } else if (!updateCheck.error) {
     statusLines.push('✅ Up to date');
   }
 
   // Conversation status
   if (conversationHistory.length > 0) {
-    statusLines.push(`💬 ${conversationHistory.length} conversation messages loaded`);
+    statusLines.push(
+      `💬 ${conversationHistory.length} conversation messages loaded`
+    );
   }
 
   // System status
@@ -1358,14 +1441,14 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     frameworkPatterns ? '📋' : '❌',
     frameworkPromptLoader ? '🎭' : '❌',
     conventionAnalyzer ? '📏' : '❌',
-    teamPatternsLearner ? '🧠' : '❌'
-  ].filter(s => s !== '❌').length;
+    teamPatternsLearner ? '🧠' : '❌',
+  ].filter((s) => s !== '❌').length;
 
   statusLines.push(`⚙️  ${systemsLoaded}/5 systems ready`);
 
   // Display status lines
   if (statusLines.length > 0) {
-    statusLines.forEach(line => console.log(line));
+    statusLines.forEach((line) => console.log(line));
     console.log('');
   }
 
@@ -1695,11 +1778,11 @@ async function handleCommand(
       );
 
       if (budgetCheck.canAdd) {
-      fileContext[filename] = content;
-      messages.push({
-        role: 'system',
-        content: `File ${filename} added to context:\n${content}`,
-      });
+        fileContext[filename] = content;
+        messages.push({
+          role: 'system',
+          content: `File ${filename} added to context:\n${content}`,
+        });
 
         // Track the token usage in the conversation budget
         tokenManager.addToBudget('conversation', estimatedTokens);
@@ -1711,7 +1794,7 @@ async function handleCommand(
         console.log(
           `💰 Conversation capacity: ${budgetStatus.categories.conversation.available} tokens remaining`
         );
-    } else {
+      } else {
         console.log(
           `❌ Cannot add ${filename} (${estimatedTokens} tokens) - would exceed conversation budget.`
         );
@@ -3062,12 +3145,14 @@ async function handleCommand(
       // Gather current context
       const context = {
         currentDir: currentDir,
-        recentCommands: commandHistory.slice(-5).map(cmd => typeof cmd === 'string' ? cmd : ''),
+        recentCommands: commandHistory
+          .slice(-5)
+          .map((cmd) => (typeof cmd === 'string' ? cmd : '')),
         openFiles: Object.keys(fileContext),
         conversationHistory: messages.slice(-10),
         projectInfo: {},
         timeOfDay: new Date().getHours(),
-        userPreferences: {}
+        userPreferences: {},
       };
 
       // Generate suggestions
@@ -3075,7 +3160,9 @@ async function handleCommand(
 
       if (suggestions.length === 0) {
         console.log('🤔 No contextual suggestions available at this time.');
-        console.log('Try using more commands or working with files to get personalized suggestions.');
+        console.log(
+          'Try using more commands or working with files to get personalized suggestions.'
+        );
       } else {
         console.log(contextualSuggestions.formatSuggestions(suggestions));
       }
@@ -3087,10 +3174,18 @@ async function handleCommand(
       console.log(`Confidence Threshold: ${stats.confidenceThreshold}`);
       console.log(`Learning Enabled: ${stats.learningEnabled ? '✅' : '❌'}`);
       console.log('\nLearning Data:');
-      console.log(`  User Preferences: ${stats.learningDataSize.userPreferences}`);
-      console.log(`  Command Sequences: ${stats.learningDataSize.commandSequences}`);
-      console.log(`  Context Patterns: ${stats.learningDataSize.contextPatterns}`);
-      console.log(`  Temporal Patterns: ${stats.learningDataSize.temporalPatterns}`);
+      console.log(
+        `  User Preferences: ${stats.learningDataSize.userPreferences}`
+      );
+      console.log(
+        `  Command Sequences: ${stats.learningDataSize.commandSequences}`
+      );
+      console.log(
+        `  Context Patterns: ${stats.learningDataSize.contextPatterns}`
+      );
+      console.log(
+        `  Temporal Patterns: ${stats.learningDataSize.temporalPatterns}`
+      );
     } else if (subcommand === 'reset') {
       const { inquirer } = await import('inquirer');
       const { confirm } = await inquirer.prompt([
@@ -3098,8 +3193,8 @@ async function handleCommand(
           type: 'confirm',
           name: 'confirm',
           message: 'Reset all learning data for contextual suggestions?',
-          default: false
-        }
+          default: false,
+        },
       ]);
 
       if (confirm) {
@@ -3111,7 +3206,9 @@ async function handleCommand(
     } else if (subcommand === 'help') {
       console.log('🧠 Contextual Suggestions Help');
       console.log('═'.repeat(30));
-      console.log('Get intelligent command suggestions based on your current context.\n');
+      console.log(
+        'Get intelligent command suggestions based on your current context.\n'
+      );
       console.log('Commands:');
       console.log('  /suggest show     - Show contextual suggestions');
       console.log('  /suggest stats    - Show suggestion statistics');
@@ -3124,7 +3221,9 @@ async function handleCommand(
       console.log('• Time of day and work patterns');
       console.log('• Conversation context and topics');
     } else {
-      console.log('Unknown suggest subcommand. Use /suggest help for available commands.');
+      console.log(
+        'Unknown suggest subcommand. Use /suggest help for available commands.'
+      );
     }
 
     return true;
@@ -3140,12 +3239,18 @@ async function handleCommand(
       let rpgPlan = null;
 
       // Look for RPG plan in recent messages
-      for (let i = messages.length - 1; i >= Math.max(0, messages.length - 10); i--) {
+      for (
+        let i = messages.length - 1;
+        i >= Math.max(0, messages.length - 10);
+        i--
+      ) {
         const message = messages[i];
         if (message.role === 'assistant' && message.content) {
           try {
             // Try to extract JSON from the message
-            const jsonMatch = message.content.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+            const jsonMatch = message.content.match(
+              /```json\s*(\{[\s\S]*?\})\s*```/
+            );
             if (jsonMatch) {
               const parsed = JSON.parse(jsonMatch[1]);
               if (parsed.features && parsed.files) {
@@ -3162,7 +3267,12 @@ async function handleCommand(
       if (!rpgPlan) {
         // Create a demo plan for testing
         rpgPlan = {
-          features: ['user_auth', 'data_processing', 'api_endpoints', 'frontend_ui'],
+          features: [
+            'user_auth',
+            'data_processing',
+            'api_endpoints',
+            'frontend_ui',
+          ],
           files: {
             'src/auth.js': 'user_auth',
             'src/middleware.js': 'user_auth',
@@ -3171,20 +3281,20 @@ async function handleCommand(
             'src/api.js': 'api_endpoints',
             'src/routes.js': 'api_endpoints',
             'src/app.js': 'frontend_ui',
-            'src/components.js': 'frontend_ui'
+            'src/components.js': 'frontend_ui',
           },
           flows: [
             ['user_auth', 'data_processing'],
             ['data_processing', 'api_endpoints'],
-            ['api_endpoints', 'frontend_ui']
+            ['api_endpoints', 'frontend_ui'],
           ],
           deps: [
             ['src/auth.js', 'src/middleware.js'],
             ['src/data.js', 'src/processor.js'],
             ['src/api.js', 'src/routes.js'],
             ['src/app.js', 'src/components.js'],
-            ['src/middleware.js', 'src/api.js']
-          ]
+            ['src/middleware.js', 'src/api.js'],
+          ],
         };
 
         console.log('📝 Using demo RPG plan (no recent plan found)\n');
@@ -3197,7 +3307,9 @@ async function handleCommand(
 
       if (args.length > 0) {
         const typeArg = args[0].toLowerCase();
-        if (['flowchart', 'mindmap', 'dependency', 'overview'].includes(typeArg)) {
+        if (
+          ['flowchart', 'mindmap', 'dependency', 'overview'].includes(typeArg)
+        ) {
           diagramType = typeArg;
         }
 
@@ -3206,7 +3318,7 @@ async function handleCommand(
         }
 
         // Check for title
-        const titleIndex = args.findIndex(arg => arg === '--title');
+        const titleIndex = args.findIndex((arg) => arg === '--title');
         if (titleIndex !== -1 && args[titleIndex + 1]) {
           diagramTitle = args[titleIndex + 1];
         }
@@ -3217,7 +3329,7 @@ async function handleCommand(
           type: diagramType,
           title: diagramTitle,
           compact,
-          showStats: true
+          showStats: true,
         });
 
         console.log(diagram);
@@ -3231,12 +3343,14 @@ async function handleCommand(
         workflowDiagram.setStyle(style);
         console.log(`🎨 Diagram style changed to: ${style}`);
       } else {
-        console.log(`❌ Invalid style. Available styles: ${workflowDiagram.getAvailableStyles().join(', ')}`);
+        console.log(
+          `❌ Invalid style. Available styles: ${workflowDiagram.getAvailableStyles().join(', ')}`
+        );
       }
     } else if (subcommand === 'styles') {
       const styles = workflowDiagram.getAvailableStyles();
       console.log('🎨 Available diagram styles:');
-      styles.forEach(style => {
+      styles.forEach((style) => {
         console.log(`  • ${style}`);
       });
     } else if (subcommand === 'types') {
@@ -3250,10 +3364,14 @@ async function handleCommand(
       console.log('═'.repeat(25));
       console.log('Generate beautiful ASCII art diagrams from RPG plans.\n');
       console.log('Commands:');
-      console.log('  /diagram show [type] [options]  - Generate diagram from recent RPG plan');
+      console.log(
+        '  /diagram show [type] [options]  - Generate diagram from recent RPG plan'
+      );
       console.log('  /diagram style <style>          - Change diagram style');
       console.log('  /diagram styles                 - List available styles');
-      console.log('  /diagram types                  - List available diagram types');
+      console.log(
+        '  /diagram types                  - List available diagram types'
+      );
       console.log('  /diagram help                   - Show this help');
       console.log('\nDiagram Types:');
       console.log('  flowchart  - Feature and file flow diagram');
@@ -3265,7 +3383,9 @@ async function handleCommand(
       console.log('  --title "T"  - Custom diagram title');
       console.log('\nStyles: default, minimal, fancy');
     } else {
-      console.log('Unknown diagram subcommand. Use /diagram help for available commands.');
+      console.log(
+        'Unknown diagram subcommand. Use /diagram help for available commands.'
+      );
     }
 
     return true;
@@ -3284,13 +3404,21 @@ async function handleCommand(
         console.log('✅ No active operations currently running.\n');
       } else {
         console.log('🔄 Active Operations:');
-        activeOps.forEach(op => {
+        activeOps.forEach((op) => {
           const duration = Math.round((Date.now() - op.startTime) / 1000);
-          const eta = op.estimatedDuration ? Math.round((op.estimatedDuration - (Date.now() - op.startTime)) / 1000) : null;
+          const eta = op.estimatedDuration
+            ? Math.round(
+                (op.estimatedDuration - (Date.now() - op.startTime)) / 1000
+              )
+            : null;
 
           console.log(`  📋 ${op.name} (${op.id})`);
-          console.log(`     Progress: ${op.progress.toFixed(1)}% (${op.currentStep}/${op.totalSteps} steps)`);
-          console.log(`     Duration: ${duration}s${eta ? ` | ETA: ${eta}s` : ''}`);
+          console.log(
+            `     Progress: ${op.progress.toFixed(1)}% (${op.currentStep}/${op.totalSteps} steps)`
+          );
+          console.log(
+            `     Duration: ${duration}s${eta ? ` | ETA: ${eta}s` : ''}`
+          );
           console.log(`     Status: ${op.status}`);
           if (op.errors.length > 0) {
             console.log(`     ⚠️  Errors: ${op.errors.length}`);
@@ -3305,7 +3433,9 @@ async function handleCommand(
       console.log(`  Completed: ${stats.completedOperations}`);
       console.log(`  Failed: ${stats.failedOperations}`);
       console.log(`  Success Rate: ${stats.successRate.toFixed(1)}%`);
-      console.log(`  Average Duration: ${Math.round(stats.averageDuration / 1000)}s`);
+      console.log(
+        `  Average Duration: ${Math.round(stats.averageDuration / 1000)}s`
+      );
       console.log(`  Active Now: ${stats.activeOperations}`);
     } else if (subcommand === 'history') {
       const limit = args[0] ? parseInt(args[0]) : 10;
@@ -3318,13 +3448,15 @@ async function handleCommand(
 
       console.log(`📜 Operation History (Last ${limit} operations):\n`);
 
-      history.forEach(op => {
+      history.forEach((op) => {
         const duration = Math.round(op.duration / 1000);
         const statusIcon = op.status === 'completed' ? '✅' : '❌';
         const timeAgo = Math.round((Date.now() - op.endTime) / 1000 / 60); // minutes ago
 
         console.log(`${statusIcon} ${op.name}`);
-        console.log(`   Duration: ${duration}s | ${timeAgo}min ago | ${op.status}`);
+        console.log(
+          `   Duration: ${duration}s | ${timeAgo}min ago | ${op.status}`
+        );
         if (op.errors && op.errors.length > 0) {
           console.log(`   ⚠️  Errors: ${op.errors.length}`);
         }
@@ -3338,19 +3470,25 @@ async function handleCommand(
       console.log('Overall Statistics:');
       console.log(`  Total Operations: ${report.stats.totalOperations}`);
       console.log(`  Success Rate: ${report.stats.successRate.toFixed(1)}%`);
-      console.log(`  Average Duration: ${Math.round(report.stats.averageDuration / 1000)}s`);
+      console.log(
+        `  Average Duration: ${Math.round(report.stats.averageDuration / 1000)}s`
+      );
       console.log(`  Currently Active: ${report.activeOperations}\n`);
 
       console.log('Category Breakdown:');
       Object.entries(report.categoryBreakdown).forEach(([category, stats]) => {
         console.log(`  ${category}:`);
-        console.log(`    Total: ${stats.total} | Success: ${stats.completed} | Failed: ${stats.failed}`);
-        console.log(`    Avg Duration: ${Math.round(stats.averageDuration / 1000)}s`);
+        console.log(
+          `    Total: ${stats.total} | Success: ${stats.completed} | Failed: ${stats.failed}`
+        );
+        console.log(
+          `    Avg Duration: ${Math.round(stats.averageDuration / 1000)}s`
+        );
       });
 
       if (report.recentHistory.length > 0) {
         console.log('\nRecent Operations:');
-        report.recentHistory.slice(-5).forEach(op => {
+        report.recentHistory.slice(-5).forEach((op) => {
           const duration = Math.round(op.duration / 1000);
           const statusIcon = op.status === 'completed' ? '✅' : '❌';
           console.log(`  ${statusIcon} ${op.name} (${duration}s)`);
@@ -3370,8 +3508,8 @@ async function handleCommand(
           type: 'confirm',
           name: 'confirm',
           message: 'Reset all progress tracking data? This cannot be undone.',
-          default: false
-        }
+          default: false,
+        },
       ]);
 
       if (confirm) {
@@ -3388,45 +3526,78 @@ async function handleCommand(
         totalSteps: 5,
         category: 'demo',
         showProgress: true,
-        showETA: true
+        showETA: true,
       });
 
       // Simulate a multi-step operation
       setTimeout(() => {
-        progressTracker.updateProgress(demoOpId, 20, { step: 1, stepName: 'Initializing' });
+        progressTracker.updateProgress(demoOpId, 20, {
+          step: 1,
+          stepName: 'Initializing',
+        });
       }, 500);
 
       setTimeout(() => {
-        progressTracker.updateProgress(demoOpId, 40, { step: 2, stepName: 'Processing Data' });
+        progressTracker.updateProgress(demoOpId, 40, {
+          step: 2,
+          stepName: 'Processing Data',
+        });
       }, 1500);
 
       setTimeout(() => {
-        progressTracker.updateProgress(demoOpId, 60, { step: 3, stepName: 'Analyzing Results' });
+        progressTracker.updateProgress(demoOpId, 60, {
+          step: 3,
+          stepName: 'Analyzing Results',
+        });
       }, 2500);
 
       setTimeout(() => {
-        progressTracker.updateProgress(demoOpId, 80, { step: 4, stepName: 'Generating Output' });
+        progressTracker.updateProgress(demoOpId, 80, {
+          step: 4,
+          stepName: 'Generating Output',
+        });
       }, 3500);
 
       setTimeout(() => {
-        progressTracker.updateProgress(demoOpId, 100, { step: 5, stepName: 'Finalizing' });
+        progressTracker.updateProgress(demoOpId, 100, {
+          step: 5,
+          stepName: 'Finalizing',
+        });
         progressTracker.completeOperation(demoOpId, { success: true });
-        console.log('\n✅ Demo completed! Use /progress status to see the results.');
+        console.log(
+          '\n✅ Demo completed! Use /progress status to see the results.'
+        );
       }, 4500);
 
-      console.log('🎬 Demo operation started! Watch the progress indicators above.');
-      console.log('💡 Use /progress status during the demo to see live updates.\n');
+      console.log(
+        '🎬 Demo operation started! Watch the progress indicators above.'
+      );
+      console.log(
+        '💡 Use /progress status during the demo to see live updates.\n'
+      );
     } else if (subcommand === 'help') {
       console.log('📊 Progress Tracking Help');
       console.log('═'.repeat(25));
-      console.log('Track and monitor long-running operations with visual feedback.\n');
+      console.log(
+        'Track and monitor long-running operations with visual feedback.\n'
+      );
       console.log('Commands:');
-      console.log('  /progress status       - Show current operation status and statistics');
-      console.log('  /progress history [N]  - Show last N operations (default: 10)');
-      console.log('  /progress report       - Generate detailed performance report');
-      console.log('  /progress export [fmt] - Export operation data (json/csv)');
+      console.log(
+        '  /progress status       - Show current operation status and statistics'
+      );
+      console.log(
+        '  /progress history [N]  - Show last N operations (default: 10)'
+      );
+      console.log(
+        '  /progress report       - Generate detailed performance report'
+      );
+      console.log(
+        '  /progress export [fmt] - Export operation data (json/csv)'
+      );
       console.log('  /progress reset        - Reset all tracking data');
-      console.log('  /progress demo         - Run a demonstration of progress tracking');
+      console.log(
+        '  /progress demo         - Run a demonstration of progress tracking'
+      );
       console.log('  /progress help         - Show this help');
       console.log('\nFeatures:');
       console.log('• Real-time progress bars for multi-step operations');
@@ -3436,7 +3607,9 @@ async function handleCommand(
       console.log('• Success rate and error tracking');
       console.log('• Category-based operation organization');
     } else {
-      console.log('Unknown progress subcommand. Use /progress help for available commands.');
+      console.log(
+        'Unknown progress subcommand. Use /progress help for available commands.'
+      );
     }
 
     return true;
@@ -3452,14 +3625,11 @@ async function handleCommand(
       console.log('Demo 1: File Operation Confirmation');
       const confirmed1 = await confirmDialog.confirmFileOperation({
         operation: 'modify_source_files',
-        files: [
-          'src/main.js',
-          'src/utils.js',
-          'package.json'
-        ],
+        files: ['src/main.js', 'src/utils.js', 'package.json'],
         action: 'modify',
-        description: 'This will refactor the main application files to use async/await patterns.',
-        warnings: ['May break existing functionality if not tested thoroughly']
+        description:
+          'This will refactor the main application files to use async/await patterns.',
+        warnings: ['May break existing functionality if not tested thoroughly'],
       });
 
       console.log(`Result: ${confirmed1 ? '✅ Confirmed' : '❌ Cancelled'}\n`);
@@ -3467,17 +3637,20 @@ async function handleCommand(
       if (!confirmed1) return true;
 
       // Demo 2: Destructive operation with typing confirmation
-      console.log('Demo 2: Destructive Operation (requires typing confirmation)');
+      console.log(
+        'Demo 2: Destructive Operation (requires typing confirmation)'
+      );
       const confirmed2 = await confirmDialog.confirmDestructiveOperation({
         operation: 'delete_database',
-        description: 'This will permanently delete the development database and all associated data.',
+        description:
+          'This will permanently delete the development database and all associated data.',
         impact: {
           affectedFiles: 1,
           affectedLines: 0,
-          dependencies: ['application data', 'user sessions']
+          dependencies: ['application data', 'user sessions'],
         },
         requiresTyping: true,
-        confirmationPhrase: 'DELETE DATABASE'
+        confirmationPhrase: 'DELETE DATABASE',
       });
 
       console.log(`Result: ${confirmed2 ? '✅ Confirmed' : '❌ Cancelled'}\n`);
@@ -3492,17 +3665,18 @@ async function handleCommand(
           { label: 'Overwrite local config with remote', value: 'overwrite' },
           { label: 'Keep local config and ignore remote', value: 'keep_local' },
           { label: 'Merge configurations manually', value: 'merge' },
-          { label: 'Cancel operation', value: 'cancel' }
+          { label: 'Cancel operation', value: 'cancel' },
         ],
         impact: {
           riskLevel: 'medium',
           affectedFiles: 2,
-          breakingChanges: false
-        }
+          breakingChanges: false,
+        },
       });
 
-      console.log(`Result: ${confirmed3 ? '✅ Option selected' : '❌ Cancelled'}\n`);
-
+      console.log(
+        `Result: ${confirmed3 ? '✅ Option selected' : '❌ Cancelled'}\n`
+      );
     } else if (subcommand === 'stats') {
       const stats = confirmDialog.getStatistics();
       console.log('\n📊 Confirmation Dialog Statistics:\n');
@@ -3512,8 +3686,12 @@ async function handleCommand(
       console.log(`Confirmation Rate: ${stats.confirmationRate}%`);
 
       if (stats.lastConfirmation) {
-        const lastTime = new Date(stats.lastConfirmation.timestamp).toLocaleString();
-        console.log(`Last Confirmation: ${lastTime} (${stats.lastConfirmation.operation})`);
+        const lastTime = new Date(
+          stats.lastConfirmation.timestamp
+        ).toLocaleString();
+        console.log(
+          `Last Confirmation: ${lastTime} (${stats.lastConfirmation.operation})`
+        );
       }
     } else if (subcommand === 'history') {
       const limit = args[0] ? parseInt(args[0]) : 5;
@@ -3526,11 +3704,13 @@ async function handleCommand(
 
       console.log(`📜 Confirmation History (Last ${limit} entries):\n`);
 
-      history.forEach(entry => {
+      history.forEach((entry) => {
         const time = new Date(entry.timestamp).toLocaleString();
         const status = entry.confirmed ? '✅' : '❌';
         console.log(`${status} ${entry.operation} - ${time}`);
-        console.log(`   Files: ${entry.files} | Changes: ${entry.changes} | Warnings: ${entry.warnings}\n`);
+        console.log(
+          `   Files: ${entry.files} | Changes: ${entry.changes} | Warnings: ${entry.warnings}\n`
+        );
       });
     } else if (subcommand === 'reset') {
       const { inquirer } = await import('inquirer');
@@ -3539,8 +3719,8 @@ async function handleCommand(
           type: 'confirm',
           name: 'confirm',
           message: 'Reset confirmation history?',
-          default: false
-        }
+          default: false,
+        },
       ]);
 
       if (confirm) {
@@ -3552,7 +3732,9 @@ async function handleCommand(
     } else if (subcommand === 'help') {
       console.log('✅ Confirmation Dialog Help');
       console.log('═'.repeat(27));
-      console.log('Rich confirmation dialogs with previews, warnings, and impact assessment.\n');
+      console.log(
+        'Rich confirmation dialogs with previews, warnings, and impact assessment.\n'
+      );
       console.log('Commands:');
       console.log('  /confirm demo     - Run interactive confirmation demos');
       console.log('  /confirm stats    - Show confirmation statistics');
@@ -3568,7 +3750,9 @@ async function handleCommand(
       console.log('• Multiple choice options');
       console.log('• Confirmation history and analytics');
     } else {
-      console.log('Unknown confirm subcommand. Use /confirm help for available commands.');
+      console.log(
+        'Unknown confirm subcommand. Use /confirm help for available commands.'
+      );
     }
 
     return true;
@@ -3581,13 +3765,20 @@ async function handleCommand(
       console.log('🔍 Detecting frameworks and technologies...\n');
 
       // Check if frameworkDetector is available
-      if (typeof frameworkDetector === 'undefined' || frameworkDetector === null) {
+      if (
+        typeof frameworkDetector === 'undefined' ||
+        frameworkDetector === null
+      ) {
         console.log('❌ Framework detector failed to initialize.');
-        console.log('   This may be due to a missing dependency or configuration error.');
-        console.log('   Check .grok/error.log for details and try restarting the application.');
+        console.log(
+          '   This may be due to a missing dependency or configuration error.'
+        );
+        console.log(
+          '   Check .grok/error.log for details and try restarting the application.'
+        );
         logger.error('Framework detector is not available in command handler', {
           frameworkDetector: typeof frameworkDetector,
-          initialized: frameworkDetector ? 'available' : 'null/undefined'
+          initialized: frameworkDetector ? 'available' : 'null/undefined',
         });
         return true;
       }
@@ -3597,7 +3788,9 @@ async function handleCommand(
 
         if (results.error) {
           console.log(`❌ Detection failed: ${results.error}`);
-          logger.error('Framework detection returned error', { error: results.error });
+          logger.error('Framework detection returned error', {
+            error: results.error,
+          });
           return true;
         }
 
@@ -3606,10 +3799,13 @@ async function handleCommand(
 
         if (results.frameworks.length > 0) {
           console.log('🎯 Detected Frameworks:');
-          results.frameworks.forEach(fw => {
+          results.frameworks.forEach((fw) => {
             const confidence = Math.round(fw.confidence * 100);
-            const confidenceIcon = confidence >= 90 ? '🟢' : confidence >= 70 ? '🟡' : '🟠';
-            console.log(`  ${confidenceIcon} ${fw.name} (${fw.category}) - ${confidence}% confidence`);
+            const confidenceIcon =
+              confidence >= 90 ? '🟢' : confidence >= 70 ? '🟡' : '🟠';
+            console.log(
+              `  ${confidenceIcon} ${fw.name} (${fw.category}) - ${confidence}% confidence`
+            );
           });
           console.log('');
         } else {
@@ -3618,7 +3814,7 @@ async function handleCommand(
 
         if (results.languages.length > 0) {
           console.log('💻 Detected Languages:');
-          results.languages.forEach(lang => {
+          results.languages.forEach((lang) => {
             console.log(`  • ${lang.charAt(0).toUpperCase() + lang.slice(1)}`);
           });
           console.log('');
@@ -3627,14 +3823,17 @@ async function handleCommand(
         // Project info
         console.log('📁 Project Info:');
         console.log(`  Files: ${results.projectInfo.fileCount}`);
-        console.log(`  Package.json: ${results.projectInfo.hasPackageJson ? '✅' : '❌'}`);
-        console.log(`  Overall Confidence: ${Math.round(results.confidence * 100)}%`);
-
+        console.log(
+          `  Package.json: ${results.projectInfo.hasPackageJson ? '✅' : '❌'}`
+        );
+        console.log(
+          `  Overall Confidence: ${Math.round(results.confidence * 100)}%`
+        );
       } catch (error) {
         console.log(`❌ Framework detection failed: ${error.message}`);
         logger.error('Framework detection threw exception', {
           error: error.message,
-          stack: error.stack
+          stack: error.stack,
         });
       }
     } else if (subcommand === 'report') {
@@ -3646,13 +3845,19 @@ async function handleCommand(
         console.log('🔬 Detailed Analysis:\n');
 
         console.log(`Frameworks Analyzed: ${report.summary.totalFrameworks}`);
-        console.log(`Frameworks Detected: ${report.summary.detectedFrameworks}`);
-        console.log(`Languages Detected: ${report.summary.languages.join(', ') || 'None'}`);
-        console.log(`Overall Confidence: ${Math.round(report.summary.confidence * 100)}%\n`);
+        console.log(
+          `Frameworks Detected: ${report.summary.detectedFrameworks}`
+        );
+        console.log(
+          `Languages Detected: ${report.summary.languages.join(', ') || 'None'}`
+        );
+        console.log(
+          `Overall Confidence: ${Math.round(report.summary.confidence * 100)}%\n`
+        );
 
         if (report.detected.length > 0) {
           console.log('🎯 Framework Details:');
-          report.detected.forEach(fw => {
+          report.detected.forEach((fw) => {
             console.log(`\n📦 ${fw.name} (${fw.category})`);
             console.log(`   Confidence: ${Math.round(fw.confidence * 100)}%`);
           });
@@ -3661,7 +3866,7 @@ async function handleCommand(
 
         if (report.recommendations.length > 0) {
           console.log('💡 Recommendations:');
-          report.recommendations.forEach(rec => {
+          report.recommendations.forEach((rec) => {
             const fw = frameworkDetector.frameworks[rec.framework];
             console.log(`  • ${fw?.name || rec.framework}: ${rec.reason}`);
           });
@@ -3672,20 +3877,25 @@ async function handleCommand(
         console.log(`  Package: ${report.projectInfo.packageName || 'N/A'}`);
         console.log(`  Version: ${report.projectInfo.packageVersion || 'N/A'}`);
         console.log(`  Total Files: ${report.projectInfo.fileCount}`);
-        console.log(`  Total Directories: ${report.projectInfo.directoryCount}`);
-
+        console.log(
+          `  Total Directories: ${report.projectInfo.directoryCount}`
+        );
       } catch (error) {
         console.log(`❌ Report generation failed: ${error.message}`);
       }
     } else if (subcommand === 'export') {
       const format = args[0] || 'json';
-      console.log(`📄 Exporting framework analysis (${format.toUpperCase()})...\n`);
+      console.log(
+        `📄 Exporting framework analysis (${format.toUpperCase()})...\n`
+      );
 
       try {
         const exportData = frameworkDetector.exportResults(format);
         console.log(exportData);
 
-        console.log(`\n💡 Tip: Save this output to a file for external analysis`);
+        console.log(
+          `\n💡 Tip: Save this output to a file for external analysis`
+        );
       } catch (error) {
         console.log(`❌ Export failed: ${error.message}`);
       }
@@ -3697,14 +3907,16 @@ async function handleCommand(
 
       let filteredFrameworks = frameworks;
       if (category) {
-        filteredFrameworks = frameworks.filter(fw => fw.category === category);
+        filteredFrameworks = frameworks.filter(
+          (fw) => fw.category === category
+        );
         console.log(`\nFiltered by category: ${category}\n`);
       } else {
         console.log('\nAll supported frameworks:\n');
       }
 
       const categories = {};
-      filteredFrameworks.forEach(fw => {
+      filteredFrameworks.forEach((fw) => {
         if (!categories[fw.category]) {
           categories[fw.category] = [];
         }
@@ -3713,13 +3925,15 @@ async function handleCommand(
 
       Object.entries(categories).forEach(([cat, names]) => {
         console.log(`${cat.charAt(0).toUpperCase() + cat.slice(1)}:`);
-        names.forEach(name => console.log(`  • ${name}`));
+        names.forEach((name) => console.log(`  • ${name}`));
         console.log('');
       });
     } else if (subcommand === 'patterns') {
       const frameworkArg = args[0];
       if (!frameworkArg) {
-        console.log('❌ Please specify a framework. Use /framework list to see available frameworks.');
+        console.log(
+          '❌ Please specify a framework. Use /framework list to see available frameworks.'
+        );
         return true;
       }
 
@@ -3730,15 +3944,21 @@ async function handleCommand(
 
       const patterns = frameworkPatterns.getFrameworkPatterns(frameworkArg);
       if (!patterns) {
-        console.log(`❌ Framework '${frameworkArg}' not found. Use /framework list to see available frameworks.`);
+        console.log(
+          `❌ Framework '${frameworkArg}' not found. Use /framework list to see available frameworks.`
+        );
         return true;
       }
 
       console.log(`📋 Patterns and Conventions for ${patterns.name}\n`);
 
       // Show patterns by category
-      for (const [categoryName, category] of Object.entries(patterns.patterns)) {
-        console.log(`${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Patterns:`);
+      for (const [categoryName, category] of Object.entries(
+        patterns.patterns
+      )) {
+        console.log(
+          `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Patterns:`
+        );
         for (const [patternName, pattern] of Object.entries(category)) {
           console.log(`  • ${patternName}: ${pattern.description}`);
         }
@@ -3748,9 +3968,13 @@ async function handleCommand(
       // Show conventions
       if (patterns.conventions) {
         console.log('General Conventions:');
-        for (const [conventionType, conventionList] of Object.entries(patterns.conventions)) {
-          console.log(`  ${conventionType.charAt(0).toUpperCase() + conventionType.slice(1)}:`);
-          conventionList.forEach(convention => {
+        for (const [conventionType, conventionList] of Object.entries(
+          patterns.conventions
+        )) {
+          console.log(
+            `  ${conventionType.charAt(0).toUpperCase() + conventionType.slice(1)}:`
+          );
+          conventionList.forEach((convention) => {
             console.log(`    • ${convention}`);
           });
         }
@@ -3760,7 +3984,7 @@ async function handleCommand(
       // Show anti-patterns
       if (patterns.antiPatterns && patterns.antiPatterns.length > 0) {
         console.log('Anti-patterns to Avoid:');
-        patterns.antiPatterns.forEach(antiPattern => {
+        patterns.antiPatterns.forEach((antiPattern) => {
           console.log(`  • ${antiPattern}`);
         });
         console.log('');
@@ -3768,7 +3992,9 @@ async function handleCommand(
     } else if (subcommand === 'prompts') {
       const frameworkArg = args[0];
       if (!frameworkArg) {
-        console.log('❌ Please specify a framework. Use /framework list to see available frameworks.');
+        console.log(
+          '❌ Please specify a framework. Use /framework list to see available frameworks.'
+        );
         return true;
       }
 
@@ -3778,7 +4004,9 @@ async function handleCommand(
       }
 
       if (!frameworkPromptLoader.hasPrompts(frameworkArg)) {
-        console.log(`❌ Framework '${frameworkArg}' does not have specific prompts. Use /framework list to see supported frameworks.`);
+        console.log(
+          `❌ Framework '${frameworkArg}' does not have specific prompts. Use /framework list to see supported frameworks.`
+        );
         return true;
       }
 
@@ -3788,11 +4016,16 @@ async function handleCommand(
         const detectionResults = await frameworkDetector.detectFrameworks();
         detectedFrameworks = detectionResults.frameworks || [];
       } catch (error) {
-        console.log('⚠️  Could not detect current project frameworks, showing general prompts.');
+        console.log(
+          '⚠️  Could not detect current project frameworks, showing general prompts.'
+        );
       }
 
       const prompts = frameworkPromptLoader.loadPrompts(detectedFrameworks);
-      const contextualPrompt = frameworkPromptLoader.getContextualPrompt(detectedFrameworks, 'general');
+      const contextualPrompt = frameworkPromptLoader.getContextualPrompt(
+        detectedFrameworks,
+        'general'
+      );
 
       console.log(`🎭 Framework-Specific Prompts for ${frameworkArg}\n`);
 
@@ -3804,13 +4037,17 @@ async function handleCommand(
 
       console.log('Code Generation Guidelines:');
       console.log('```');
-      console.log(prompts.codeGenerationPrompt || 'Use general coding best practices');
+      console.log(
+        prompts.codeGenerationPrompt || 'Use general coding best practices'
+      );
       console.log('```');
       console.log('');
 
       console.log('Code Review Focus Areas:');
       console.log('```');
-      console.log(prompts.reviewPrompt || 'Follow general code quality standards');
+      console.log(
+        prompts.reviewPrompt || 'Follow general code quality standards'
+      );
       console.log('```');
       console.log('');
 
@@ -3844,7 +4081,9 @@ async function handleCommand(
         if (conv.preferences) {
           console.log('🎯 Project Preferences:');
           Object.entries(conv.preferences).forEach(([key, value]) => {
-            console.log(`  • ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`);
+            console.log(
+              `  • ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`
+            );
           });
           console.log('');
         }
@@ -3853,13 +4092,16 @@ async function handleCommand(
           console.log('📈 Statistics:');
           Object.entries(conv.statistics).forEach(([key, value]) => {
             const label = key.replace(/([A-Z])/g, ' $1').toLowerCase();
-            console.log(`  • ${label.charAt(0).toUpperCase() + label.slice(1)}: ${value}`);
+            console.log(
+              `  • ${label.charAt(0).toUpperCase() + label.slice(1)}: ${value}`
+            );
           });
           console.log('');
         }
 
-        console.log(`✅ Analysis complete! Based on ${results.stats.filesAnalyzed} files.`);
-
+        console.log(
+          `✅ Analysis complete! Based on ${results.stats.filesAnalyzed} files.`
+        );
       } catch (error) {
         console.log(`❌ Failed to analyze conventions: ${error.message}`);
         logger.error('Convention analysis failed', { error: error.message });
@@ -3869,7 +4111,9 @@ async function handleCommand(
     } else if (subcommand === 'learn') {
       const action = args[0];
       if (!action) {
-        console.log('❌ Please specify an action. Use /framework learn help for options.');
+        console.log(
+          '❌ Please specify an action. Use /framework learn help for options.'
+        );
         return true;
       }
 
@@ -3883,7 +4127,6 @@ async function handleCommand(
 
         const report = teamPatternsLearner.generateInsightsReport();
         console.log(report);
-
       } else if (action === 'stats') {
         const stats = teamPatternsLearner.getStatistics();
         console.log('📊 Team Learning Statistics:');
@@ -3892,29 +4135,37 @@ async function handleCommand(
         console.log(`  • Patterns Learned: ${stats.patternsLearned}`);
 
         for (const [category, catStats] of Object.entries(stats.categories)) {
-          console.log(`\n🎯 ${category.charAt(0).toUpperCase() + category.slice(1)}:`);
+          console.log(
+            `\n🎯 ${category.charAt(0).toUpperCase() + category.slice(1)}:`
+          );
           console.log(`  • Patterns: ${catStats.accepted + catStats.rejected}`);
           console.log(`  • High Confidence: ${catStats.confident}`);
         }
-
       } else if (action === 'preferences') {
-        const categories = args[1] ? [args[1]] : ['naming', 'style', 'structure'];
+        const categories = args[1]
+          ? [args[1]]
+          : ['naming', 'style', 'structure'];
 
         console.log('⭐ Team Preferences:\n');
 
         for (const category of categories) {
           const prefs = teamPatternsLearner.getTeamPreferences(category);
           if (Object.keys(prefs.preferences).length > 0) {
-            console.log(`${category.charAt(0).toUpperCase() + category.slice(1)} Preferences:`);
-            Object.entries(prefs.preferences).slice(0, 3).forEach(([pattern, data]) => {
-              console.log(`  • "${pattern}" (${(data.confidence * 100).toFixed(1)}% confidence, ${data.totalInteractions} interactions)`);
-            });
+            console.log(
+              `${category.charAt(0).toUpperCase() + category.slice(1)} Preferences:`
+            );
+            Object.entries(prefs.preferences)
+              .slice(0, 3)
+              .forEach(([pattern, data]) => {
+                console.log(
+                  `  • "${pattern}" (${(data.confidence * 100).toFixed(1)}% confidence, ${data.totalInteractions} interactions)`
+                );
+              });
             console.log('');
           } else {
             console.log(`No learned preferences for ${category} yet.\n`);
           }
         }
-
       } else if (action === 'simulate') {
         // Simulate some learning for testing
         console.log('🎭 Simulating team learning patterns...\n');
@@ -3925,36 +4176,54 @@ async function handleCommand(
           { type: 'accepted', category: 'style', pattern: 'single' }, // quotes
           { type: 'accepted', category: 'style', pattern: 'spaces' }, // indentation
           { type: 'accepted', category: 'structure', pattern: 'arrow' }, // functions
-          { type: 'corrected', category: 'naming', pattern: 'snake_case', correction: 'camelCase' },
+          {
+            type: 'corrected',
+            category: 'naming',
+            pattern: 'snake_case',
+            correction: 'camelCase',
+          },
           { type: 'rejected', category: 'style', pattern: 'double' }, // quotes
         ];
 
-        simulations.forEach(sim => {
+        simulations.forEach((sim) => {
           teamPatternsLearner.recordInteraction(sim);
         });
 
         await teamPatternsLearner.savePatterns();
         console.log(`✅ Simulated ${simulations.length} team interactions`);
-        console.log('Run "/framework learn preferences" to see learned patterns');
-
+        console.log(
+          'Run "/framework learn preferences" to see learned patterns'
+        );
       } else if (action === 'reset') {
-        console.log('⚠️  This will reset all learned team patterns. Continue? (y/N): ');
+        console.log(
+          '⚠️  This will reset all learned team patterns. Continue? (y/N): '
+        );
         // For safety, we'll just show a warning for now
         console.log('To reset, manually delete .grok/team-patterns.json');
         console.log('This action cannot be undone!');
-
       } else if (action === 'help') {
         console.log('🧠 Team Learning Commands:');
-        console.log('  /framework learn insights    - Show comprehensive learning report');
-        console.log('  /framework learn stats       - Show learning statistics');
-        console.log('  /framework learn preferences [category] - Show team preferences');
-        console.log('  /framework learn simulate    - Simulate team interactions (testing)');
-        console.log('  /framework learn reset       - Reset all learned patterns (dangerous!)');
+        console.log(
+          '  /framework learn insights    - Show comprehensive learning report'
+        );
+        console.log(
+          '  /framework learn stats       - Show learning statistics'
+        );
+        console.log(
+          '  /framework learn preferences [category] - Show team preferences'
+        );
+        console.log(
+          '  /framework learn simulate    - Simulate team interactions (testing)'
+        );
+        console.log(
+          '  /framework learn reset       - Reset all learned patterns (dangerous!)'
+        );
         console.log('  /framework learn help        - Show this help');
         console.log('\nCategories: naming, style, structure');
-
       } else {
-        console.log(`❌ Unknown action "${action}". Use /framework learn help for options.`);
+        console.log(
+          `❌ Unknown action "${action}". Use /framework learn help for options.`
+        );
       }
 
       return true;
@@ -3963,7 +4232,9 @@ async function handleCommand(
       if (!target) {
         console.log('❌ Please specify what to apply conventions to.');
         console.log('Usage: /framework apply <file|project> [options]');
-        console.log('Options: --dry-run (preview only), --no-backup (skip backups)');
+        console.log(
+          'Options: --dry-run (preview only), --no-backup (skip backups)'
+        );
         return true;
       }
 
@@ -3973,7 +4244,7 @@ async function handleCommand(
       }
 
       const options = {};
-      args.forEach(arg => {
+      args.forEach((arg) => {
         if (arg === '--dry-run') options.dryRun = true;
         if (arg === '--no-backup') options.noBackup = true;
       });
@@ -3993,7 +4264,10 @@ async function handleCommand(
 
           console.log(`🔧 Applying conventions to ${filePath}...\n`);
 
-          const result = await conventionAutoApplier.applyToFile(filePath, options);
+          const result = await conventionAutoApplier.applyToFile(
+            filePath,
+            options
+          );
 
           if (result.modified) {
             console.log('✅ File modified successfully!');
@@ -4002,21 +4276,23 @@ async function handleCommand(
               console.log('   💾 Backup created');
             }
           } else {
-            console.log('ℹ️  No changes needed - file already follows conventions');
+            console.log(
+              'ℹ️  No changes needed - file already follows conventions'
+            );
           }
 
           if (result.suggestions && result.suggestions.length > 0) {
             console.log('\n💡 Suggestions:');
-            result.suggestions.forEach(suggestion => {
+            result.suggestions.forEach((suggestion) => {
               console.log(`   • ${suggestion.message}`);
             });
           }
-
         } else if (target === 'project') {
           console.log('🔧 Applying conventions to entire project...\n');
 
           // Find all source files
-          const sourceFiles = await conventionAutoApplier.conventionAnalyzer.findSourceFiles();
+          const sourceFiles =
+            await conventionAutoApplier.conventionAnalyzer.findSourceFiles();
           console.log(`Found ${sourceFiles.length} source files to process\n`);
 
           if (sourceFiles.length === 0) {
@@ -4025,7 +4301,10 @@ async function handleCommand(
           }
 
           // Apply to all files
-          const results = await conventionAutoApplier.applyToFiles(sourceFiles, options);
+          const results = await conventionAutoApplier.applyToFiles(
+            sourceFiles,
+            options
+          );
 
           console.log('📋 Project Convention Application Complete\n');
 
@@ -4036,7 +4315,7 @@ async function handleCommand(
 
           if (results.errors && results.errors.length > 0) {
             console.log(`\n⚠️  Errors (${results.errors.length}):`);
-            results.errors.slice(0, 5).forEach(error => {
+            results.errors.slice(0, 5).forEach((error) => {
               console.log(`  • ${error.file}: ${error.error}`);
             });
             if (results.errors.length > 5) {
@@ -4046,7 +4325,7 @@ async function handleCommand(
 
           if (results.suggestions && results.suggestions.length > 0) {
             const suggestionCounts = {};
-            results.suggestions.forEach(s => {
+            results.suggestions.forEach((s) => {
               suggestionCounts[s.type] = (suggestionCounts[s.type] || 0) + 1;
             });
 
@@ -4059,11 +4338,11 @@ async function handleCommand(
           if (!options.dryRun && results.modifiedFiles > 0) {
             console.log('\n💾 All modified files have been backed up');
           }
-
         } else {
-          console.log(`❌ Unknown target "${target}". Use "file" or "project".`);
+          console.log(
+            `❌ Unknown target "${target}". Use "file" or "project".`
+          );
         }
-
       } catch (error) {
         console.log(`❌ Failed to apply conventions: ${error.message}`);
         logger.error('Convention application failed', { error: error.message });
@@ -4099,7 +4378,6 @@ async function handleCommand(
         }
 
         console.log('\n✅ Architecture analysis complete!');
-
       } catch (error) {
         console.log(`❌ Failed to analyze architecture: ${error.message}`);
         logger.error('Architecture analysis failed', { error: error.message });
@@ -4134,7 +4412,6 @@ async function handleCommand(
         }
 
         console.log('\n✅ Flow analysis complete!');
-
       } catch (error) {
         console.log(`❌ Failed to analyze flows: ${error.message}`);
         logger.error('Flow analysis failed', { error: error.message });
@@ -4144,7 +4421,9 @@ async function handleCommand(
     } else if (subcommand === 'placement') {
       const fileName = args[0];
       if (!fileName) {
-        console.log('❌ Please specify a file name to get placement suggestions.');
+        console.log(
+          '❌ Please specify a file name to get placement suggestions.'
+        );
         console.log('Usage: /framework placement <filename> [type]');
         console.log('Example: /framework placement UserService.js service');
         return true;
@@ -4159,9 +4438,14 @@ async function handleCommand(
 
       try {
         const fileType = args[1] || 'general';
-        const result = await filePlacementAdvisor.suggestPlacement(fileName, fileType);
+        const result = await filePlacementAdvisor.suggestPlacement(
+          fileName,
+          fileType
+        );
 
-        console.log(`📋 Placement Suggestions for "${fileName}" (${fileType})\n`);
+        console.log(
+          `📋 Placement Suggestions for "${fileName}" (${fileType})\n`
+        );
 
         if (result.suggestions.length === 0) {
           console.log('❌ No placement suggestions available.');
@@ -4172,7 +4456,9 @@ async function handleCommand(
         result.suggestions.forEach((suggestion, index) => {
           const marker = index === 0 ? '🎯' : `  ${index + 1}.`;
           const confidence = Math.round(suggestion.confidence * 100);
-          console.log(`${marker} ${suggestion.path} (${confidence}% confidence)`);
+          console.log(
+            `${marker} ${suggestion.path} (${confidence}% confidence)`
+          );
           console.log(`   ${suggestion.reasoning}`);
           console.log('');
         });
@@ -4181,10 +4467,12 @@ async function handleCommand(
         console.log(result.reasoning);
 
         console.log('\n✅ Placement analysis complete!');
-
       } catch (error) {
         console.log(`❌ Failed to analyze file placement: ${error.message}`);
-        logger.error('File placement analysis failed', { error: error.message, fileName });
+        logger.error('File placement analysis failed', {
+          error: error.message,
+          fileName,
+        });
       }
 
       return true;
@@ -4195,7 +4483,9 @@ async function handleCommand(
       if (!templateType || !name) {
         console.log('❌ Please specify template type and name.');
         console.log('Usage: /framework template <type> <name> [options]');
-        console.log('Types: component, service, controller, model, route, utility, config, test');
+        console.log(
+          'Types: component, service, controller, model, route, utility, config, test'
+        );
         console.log('Example: /framework template service UserService');
         console.log('Example: /framework template component LoginForm');
         return true;
@@ -4209,7 +4499,10 @@ async function handleCommand(
       }
 
       try {
-        const result = await contextTemplateGenerator.generateTemplate(templateType, name);
+        const result = await contextTemplateGenerator.generateTemplate(
+          templateType,
+          name
+        );
 
         console.log(`📄 Generated ${templateType}: ${name}`);
         console.log('═'.repeat(50));
@@ -4219,23 +4512,34 @@ async function handleCommand(
         // Show metadata
         console.log('\n📊 Template Metadata:');
         console.log(`  Framework: ${result.metadata.framework}`);
-        console.log(`  Placement: ${result.metadata.placement.path || 'Not suggested'}`);
+        console.log(
+          `  Placement: ${result.metadata.placement.path || 'Not suggested'}`
+        );
         console.log(`  Dependencies: ${result.metadata.dependencies.length}`);
         console.log(`  Imports: ${result.metadata.imports.length}`);
 
         if (result.metadata.placement.path) {
-          console.log(`\n💡 Suggested location: ${result.metadata.placement.path}`);
+          console.log(
+            `\n💡 Suggested location: ${result.metadata.placement.path}`
+          );
           if (result.metadata.placement.confidence) {
-            console.log(`   Confidence: ${Math.round(result.metadata.placement.confidence * 100)}%`);
+            console.log(
+              `   Confidence: ${Math.round(result.metadata.placement.confidence * 100)}%`
+            );
           }
         }
 
         console.log('\n✅ Template generated successfully!');
-        console.log('💡 Tip: Use /framework placement to optimize file locations');
-
+        console.log(
+          '💡 Tip: Use /framework placement to optimize file locations'
+        );
       } catch (error) {
         console.log(`❌ Failed to generate template: ${error.message}`);
-        logger.error('Template generation failed', { error: error.message, templateType, name });
+        logger.error('Template generation failed', {
+          error: error.message,
+          templateType,
+          name,
+        });
       }
 
       return true;
@@ -4246,9 +4550,13 @@ async function handleCommand(
 
       if (!framework || !componentType || !name) {
         console.log('❌ Please specify framework, component type, and name.');
-        console.log('Usage: /framework generate <framework> <type> <name> [specs]');
+        console.log(
+          'Usage: /framework generate <framework> <type> <name> [specs]'
+        );
         console.log('Example: /framework generate React component UserProfile');
-        console.log('Example: /framework generate Express controller AuthController');
+        console.log(
+          'Example: /framework generate Express controller AuthController'
+        );
         return true;
       }
 
@@ -4272,7 +4580,12 @@ async function handleCommand(
           }
         }
 
-        const result = await frameworkCodeGenerator.generateFrameworkCode(framework, componentType, name, specs);
+        const result = await frameworkCodeGenerator.generateFrameworkCode(
+          framework,
+          componentType,
+          name,
+          specs
+        );
 
         console.log(`📄 Generated ${framework} ${componentType}: ${name}`);
         console.log('═'.repeat(60));
@@ -4291,8 +4604,12 @@ async function handleCommand(
         console.log('\n📊 Generation Metadata:');
         console.log(`  Framework: ${result.metadata.framework}`);
         console.log(`  Component Type: ${result.metadata.componentType}`);
-        console.log(`  Architecture: ${result.metadata.projectContext.architecture || 'Not detected'}`);
-        console.log(`  Conventions: ${result.metadata.projectContext.conventions.join(', ') || 'None detected'}`);
+        console.log(
+          `  Architecture: ${result.metadata.projectContext.architecture || 'Not detected'}`
+        );
+        console.log(
+          `  Conventions: ${result.metadata.projectContext.conventions.join(', ') || 'None detected'}`
+        );
 
         // Show placement suggestion
         if (result.placement && result.placement.path) {
@@ -4302,15 +4619,23 @@ async function handleCommand(
         // Show validation results
         if (result.validation && !result.validation.valid) {
           console.log('\n⚠️  Validation Issues:');
-          result.validation.errors.forEach(error => console.log(`  ❌ ${error}`));
-          result.validation.warnings.forEach(warning => console.log(`  ⚠️  ${warning}`));
+          result.validation.errors.forEach((error) =>
+            console.log(`  ❌ ${error}`)
+          );
+          result.validation.warnings.forEach((warning) =>
+            console.log(`  ⚠️  ${warning}`)
+          );
         }
 
         console.log('\n✅ Framework code generated successfully!');
-
       } catch (error) {
         console.log(`❌ Failed to generate framework code: ${error.message}`);
-        logger.error('Framework code generation failed', { error: error.message, framework, componentType, name });
+        logger.error('Framework code generation failed', {
+          error: error.message,
+          framework,
+          componentType,
+          name,
+        });
       }
 
       return true;
@@ -4324,7 +4649,9 @@ async function handleCommand(
         return true;
       }
 
-      console.log(`🧠 Enhancing RPG plan with intelligent generation: ${rpgFile}\n`);
+      console.log(
+        `🧠 Enhancing RPG plan with intelligent generation: ${rpgFile}\n`
+      );
 
       if (!smartRPG) {
         console.log('❌ Smart RPG system not available.');
@@ -4352,17 +4679,24 @@ async function handleCommand(
         console.log('\n📊 Enhancement Summary:');
         console.log(`  Features: ${enhancedPlan.features?.length || 0}`);
         console.log(`  Files: ${Object.keys(enhancedPlan.files || {}).length}`);
-        console.log(`  Generated Code: ${Object.keys(enhancedPlan.generatedCode || {}).length}`);
+        console.log(
+          `  Generated Code: ${Object.keys(enhancedPlan.generatedCode || {}).length}`
+        );
         console.log(`  Suggestions: ${enhancedPlan.suggestions?.length || 0}`);
         console.log(`  Validations: ${enhancedPlan.validations?.length || 0}`);
 
         // Show generated files
-        if (enhancedPlan.generatedCode && Object.keys(enhancedPlan.generatedCode).length > 0) {
+        if (
+          enhancedPlan.generatedCode &&
+          Object.keys(enhancedPlan.generatedCode).length > 0
+        ) {
           console.log('\n📄 Generated Files:');
-          Object.keys(enhancedPlan.generatedCode).forEach(filePath => {
+          Object.keys(enhancedPlan.generatedCode).forEach((filePath) => {
             const generated = enhancedPlan.generatedCode[filePath];
             const status = generated.validation?.valid ? '✅' : '⚠️';
-            console.log(`  ${status} ${filePath} (${generated.generationType})`);
+            console.log(
+              `  ${status} ${filePath} (${generated.generationType})`
+            );
           });
         }
 
@@ -4370,17 +4704,25 @@ async function handleCommand(
         if (enhancedPlan.suggestions && enhancedPlan.suggestions.length > 0) {
           console.log('\n💡 Intelligent Suggestions:');
           enhancedPlan.suggestions.slice(0, 5).forEach((suggestion, index) => {
-            console.log(`  ${index + 1}. ${suggestion.reasoning || suggestion.type}`);
+            console.log(
+              `  ${index + 1}. ${suggestion.reasoning || suggestion.type}`
+            );
           });
 
           if (enhancedPlan.suggestions.length > 5) {
-            console.log(`  ... and ${enhancedPlan.suggestions.length - 5} more suggestions`);
+            console.log(
+              `  ... and ${enhancedPlan.suggestions.length - 5} more suggestions`
+            );
           }
         }
 
         // Show validations
-        const errors = enhancedPlan.validations?.filter(v => v.severity === 'high') || [];
-        const warnings = enhancedPlan.validations?.filter(v => v.severity === 'medium' || v.severity === 'low') || [];
+        const errors =
+          enhancedPlan.validations?.filter((v) => v.severity === 'high') || [];
+        const warnings =
+          enhancedPlan.validations?.filter(
+            (v) => v.severity === 'medium' || v.severity === 'low'
+          ) || [];
 
         if (errors.length > 0 || warnings.length > 0) {
           console.log('\n⚠️  Validation Results:');
@@ -4394,14 +4736,19 @@ async function handleCommand(
 
         // Save enhanced plan
         const enhancedFileName = rpgFile.replace(/\.json$/, '-enhanced.json');
-        fs.writeFileSync(enhancedFileName, JSON.stringify(enhancedPlan, null, 2));
+        fs.writeFileSync(
+          enhancedFileName,
+          JSON.stringify(enhancedPlan, null, 2)
+        );
         console.log(`\n💾 Enhanced plan saved to: ${enhancedFileName}`);
 
         console.log('\n✅ RPG plan enhancement complete!');
-
       } catch (error) {
         console.log(`❌ Failed to enhance RPG plan: ${error.message}`);
-        logger.error('Smart RPG enhancement failed', { error: error.message, rpgFile });
+        logger.error('Smart RPG enhancement failed', {
+          error: error.message,
+          rpgFile,
+        });
       }
 
       return true;
@@ -4411,7 +4758,9 @@ async function handleCommand(
       if (!prompt) {
         console.log('❌ Please provide a planning prompt.');
         console.log('Usage: /framework plan <description>');
-        console.log('Example: /framework plan "Create a user authentication system with React frontend and Express backend"');
+        console.log(
+          'Example: /framework plan "Create a user authentication system with React frontend and Express backend"'
+        );
         return true;
       }
 
@@ -4426,7 +4775,7 @@ async function handleCommand(
       try {
         // Execute full RPG workflow
         const result = await rpgOrchestrator.executeFullRPGWorkflow(prompt, {
-          existingFiles: fileContext
+          existingFiles: fileContext,
         });
 
         console.log('🎉 RPG Planning Complete!');
@@ -4436,22 +4785,34 @@ async function handleCommand(
         console.log('\n📋 Plan Overview:');
         console.log(`  Features: ${result.plan.features?.length || 0}`);
         console.log(`  Files: ${Object.keys(result.plan.files || {}).length}`);
-        console.log(`  Frameworks: ${result.plan.frameworks?.join(', ') || 'None detected'}`);
-        console.log(`  Architecture: ${result.plan.architecture?.pattern || 'Not specified'}`);
+        console.log(
+          `  Frameworks: ${result.plan.frameworks?.join(', ') || 'None detected'}`
+        );
+        console.log(
+          `  Architecture: ${result.plan.architecture?.pattern || 'Not specified'}`
+        );
 
         // Show enhanced plan info
         if (result.enhancedPlan) {
           console.log(`\n🧠 Intelligence Enhancements:`);
-          console.log(`  Generated Code: ${Object.keys(result.enhancedPlan.generatedCode || {}).length} files`);
-          console.log(`  Suggestions: ${result.enhancedPlan.suggestions?.length || 0}`);
-          console.log(`  Validations: ${result.enhancedPlan.validations?.filter(v => v.severity === 'high').length || 0} issues`);
+          console.log(
+            `  Generated Code: ${Object.keys(result.enhancedPlan.generatedCode || {}).length} files`
+          );
+          console.log(
+            `  Suggestions: ${result.enhancedPlan.suggestions?.length || 0}`
+          );
+          console.log(
+            `  Validations: ${result.enhancedPlan.validations?.filter((v) => v.severity === 'high').length || 0} issues`
+          );
         }
 
         // Show implementation status
         if (result.implementation) {
           console.log(`\n⚙️ Implementation:`);
           console.log(`  Status: ${result.implementation.status}`);
-          console.log(`  Files Generated: ${Object.keys(result.implementation.files || {}).length}`);
+          console.log(
+            `  Files Generated: ${Object.keys(result.implementation.files || {}).length}`
+          );
 
           if (result.implementation.summary) {
             const summary = result.implementation.summary;
@@ -4462,7 +4823,9 @@ async function handleCommand(
 
         // Show visualizations
         if (result.visualizations && result.visualizations.length > 0) {
-          console.log(`\n🎨 Visualizations: ${result.visualizations.length} diagrams`);
+          console.log(
+            `\n🎨 Visualizations: ${result.visualizations.length} diagrams`
+          );
           result.visualizations.forEach((viz, index) => {
             console.log(`  ${index + 1}. ${viz.title} (${viz.type})`);
           });
@@ -4472,13 +4835,23 @@ async function handleCommand(
         if (result.summary) {
           console.log(`\n📊 Quality Metrics:`);
           console.log(`  Complexity: ${result.summary.metrics.complexity}/100`);
-          console.log(`  Completeness: ${result.summary.metrics.completeness}%`);
+          console.log(
+            `  Completeness: ${result.summary.metrics.completeness}%`
+          );
           console.log(`  Quality: ${result.summary.metrics.quality}%`);
 
-          if (result.summary.recommendations && result.summary.recommendations.length > 0) {
+          if (
+            result.summary.recommendations &&
+            result.summary.recommendations.length > 0
+          ) {
             console.log(`\n💡 Recommendations:`);
             result.summary.recommendations.slice(0, 3).forEach((rec, index) => {
-              const icon = rec.priority === 'high' ? '🔴' : rec.priority === 'medium' ? '🟡' : '🟢';
+              const icon =
+                rec.priority === 'high'
+                  ? '🔴'
+                  : rec.priority === 'medium'
+                    ? '🟡'
+                    : '🟢';
               console.log(`  ${icon} ${rec.message}`);
             });
           }
@@ -4486,7 +4859,10 @@ async function handleCommand(
 
         // Save the complete result
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const resultPath = await rpgOrchestrator.saveRPGResult(result, `rpg-plan-${timestamp}.json`);
+        const resultPath = await rpgOrchestrator.saveRPGResult(
+          result,
+          `rpg-plan-${timestamp}.json`
+        );
         console.log(`\n💾 Complete plan saved to: ${resultPath}`);
 
         // Show next steps
@@ -4502,10 +4878,14 @@ async function handleCommand(
         console.log('\n✅ Unified RPG planning workflow complete!');
         console.log('💡 Use /framework smart-rpg to enhance existing plans');
         console.log('💡 Use /diagram to visualize the generated plan');
-
       } catch (error) {
-        console.log(`❌ Failed to execute RPG planning workflow: ${error.message}`);
-        logger.error('RPG planning workflow failed', { error: error.message, prompt });
+        console.log(
+          `❌ Failed to execute RPG planning workflow: ${error.message}`
+        );
+        logger.error('RPG planning workflow failed', {
+          error: error.message,
+          prompt,
+        });
       }
 
       return true;
@@ -4528,10 +4908,14 @@ async function handleCommand(
 
         // Detect frameworks first
         const detectionResults = await frameworkDetector.detectFrameworks();
-        const detectedFrameworks = detectionResults.frameworks.map(f => f.name.toLowerCase());
+        const detectedFrameworks = detectionResults.frameworks.map((f) =>
+          f.name.toLowerCase()
+        );
 
         if (detectedFrameworks.length === 0) {
-          console.log('🤔 No frameworks detected in project. Analyzing with general patterns...');
+          console.log(
+            '🤔 No frameworks detected in project. Analyzing with general patterns...'
+          );
         }
 
         console.log(`🔬 Analyzing patterns in ${filePath}\n`);
@@ -4540,32 +4924,42 @@ async function handleCommand(
         const matches = frameworkPatterns.findMatchingPatterns(content);
 
         if (matches.length === 0) {
-          console.log('📝 No specific framework patterns detected in this file.');
-          console.log('The file may contain general programming patterns or custom code.');
+          console.log(
+            '📝 No specific framework patterns detected in this file.'
+          );
+          console.log(
+            'The file may contain general programming patterns or custom code.'
+          );
         } else {
           console.log('🎯 Detected Patterns:');
-          matches.forEach(match => {
-            console.log(`  ${match.framework.toUpperCase()}: ${match.pattern} - ${match.description}`);
+          matches.forEach((match) => {
+            console.log(
+              `  ${match.framework.toUpperCase()}: ${match.pattern} - ${match.description}`
+            );
           });
           console.log('');
 
           // Get suggestions
-          const suggestions = frameworkPatterns.suggestImprovements(matches, detectedFrameworks[0]);
+          const suggestions = frameworkPatterns.suggestImprovements(
+            matches,
+            detectedFrameworks[0]
+          );
           if (suggestions.length > 0) {
             console.log('💡 Improvement Suggestions:');
-            suggestions.forEach(suggestion => {
+            suggestions.forEach((suggestion) => {
               console.log(`  • ${suggestion.message}`);
             });
           }
         }
-
       } catch (error) {
         console.log(`❌ Failed to analyze file: ${error.message}`);
       }
     } else if (subcommand === 'conventions') {
       const frameworkArg = args[0];
       if (!frameworkArg) {
-        console.log('❌ Please specify a framework. Use /framework list to see available frameworks.');
+        console.log(
+          '❌ Please specify a framework. Use /framework list to see available frameworks.'
+        );
         return true;
       }
 
@@ -4574,17 +4968,26 @@ async function handleCommand(
         return true;
       }
 
-      const conventions = frameworkPatterns.getFrameworkConventions(frameworkArg);
+      const conventions =
+        frameworkPatterns.getFrameworkConventions(frameworkArg);
       if (!conventions) {
-        console.log(`❌ Framework '${frameworkArg}' not found. Use /framework list to see available frameworks.`);
+        console.log(
+          `❌ Framework '${frameworkArg}' not found. Use /framework list to see available frameworks.`
+        );
         return true;
       }
 
-      console.log(`📏 Conventions for ${frameworkArg.charAt(0).toUpperCase() + frameworkArg.slice(1)}\n`);
+      console.log(
+        `📏 Conventions for ${frameworkArg.charAt(0).toUpperCase() + frameworkArg.slice(1)}\n`
+      );
 
-      for (const [conventionType, conventionList] of Object.entries(conventions)) {
-        console.log(`${conventionType.charAt(0).toUpperCase() + conventionType.slice(1)}:`);
-        conventionList.forEach(convention => {
+      for (const [conventionType, conventionList] of Object.entries(
+        conventions
+      )) {
+        console.log(
+          `${conventionType.charAt(0).toUpperCase() + conventionType.slice(1)}:`
+        );
+        conventionList.forEach((convention) => {
           console.log(`  • ${convention}`);
         });
         console.log('');
@@ -4592,23 +4995,51 @@ async function handleCommand(
     } else if (subcommand === 'help') {
       console.log('🔍 Framework Detection Help');
       console.log('═'.repeat(27));
-      console.log('Analyze project structure and dependencies to detect frameworks.\n');
+      console.log(
+        'Analyze project structure and dependencies to detect frameworks.\n'
+      );
       console.log('Commands:');
-      console.log('  /framework detect        - Scan project and detect frameworks');
-      console.log('  /framework conventions   - Analyze project coding standards');
+      console.log(
+        '  /framework detect        - Scan project and detect frameworks'
+      );
+      console.log(
+        '  /framework conventions   - Analyze project coding standards'
+      );
       console.log('  /framework learn <cmd>   - Team learning and preferences');
-      console.log('  /framework apply <tgt>   - Auto-apply project conventions');
+      console.log(
+        '  /framework apply <tgt>   - Auto-apply project conventions'
+      );
       console.log('  /framework architecture  - Analyze project architecture');
-      console.log('  /framework flows         - Analyze application flows & entry points');
-      console.log('  /framework placement <f> - Suggest optimal file placement');
-      console.log('  /framework template <t> <n> - Generate context-aware code templates');
-      console.log('  /framework generate <fw> <t> <n> - Generate complete framework-specific code');
-      console.log('  /framework smart-rpg <plan>     - Enhance RPG plans with intelligent generation');
-      console.log('  /framework plan <desc>         - Execute unified RPG planning workflow');
-      console.log('  /framework patterns <fw> - Show patterns for a specific framework');
-      console.log('  /framework analyze <file>- Analyze patterns in a specific file');
-      console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
-      console.log('  /framework export [f]    - Export results (json/markdown)');
+      console.log(
+        '  /framework flows         - Analyze application flows & entry points'
+      );
+      console.log(
+        '  /framework placement <f> - Suggest optimal file placement'
+      );
+      console.log(
+        '  /framework template <t> <n> - Generate context-aware code templates'
+      );
+      console.log(
+        '  /framework generate <fw> <t> <n> - Generate complete framework-specific code'
+      );
+      console.log(
+        '  /framework smart-rpg <plan>     - Enhance RPG plans with intelligent generation'
+      );
+      console.log(
+        '  /framework plan <desc>         - Execute unified RPG planning workflow'
+      );
+      console.log(
+        '  /framework patterns <fw> - Show patterns for a specific framework'
+      );
+      console.log(
+        '  /framework analyze <file>- Analyze patterns in a specific file'
+      );
+      console.log(
+        '  /framework prompts <fw>  - Show AI prompts for a framework'
+      );
+      console.log(
+        '  /framework export [f]    - Export results (json/markdown)'
+      );
       console.log('  /framework list [cat]    - List supported frameworks');
       console.log('  /framework help          - Show this help');
       console.log('\nSupported Categories:');
@@ -4621,7 +5052,9 @@ async function handleCommand(
       console.log('  Vite, Webpack, Jest, Cypress, Mongoose, Sequelize,');
       console.log('  Prisma, Redux, MobX, Tailwind, Bootstrap, and more!');
     } else {
-      console.log('Unknown framework subcommand. Use /framework help for available commands.');
+      console.log(
+        'Unknown framework subcommand. Use /framework help for available commands.'
+      );
     }
 
     return true;
