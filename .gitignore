@@ -9,6 +9,7 @@ yarn-error.log*
 # Environment variables and API keys
 .env
 .grok_code_key
+.grok/
 *.key
 
 # OS generated files
