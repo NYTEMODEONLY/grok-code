@@ -1097,7 +1097,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   }
 
   // Initialize all systems quietly (no console output during startup)
-  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator;
+  let frameworkDetector, frameworkPatterns, frameworkPromptLoader, conventionAnalyzer, teamPatternsLearner, conventionAutoApplier, architectureMapper, flowAnalyzer, filePlacementAdvisor, contextTemplateGenerator, frameworkCodeGenerator;
 
   // Set up exit handler to save team patterns (now that variables are in scope)
   process.on('exit', async (code) => {
@@ -1230,6 +1230,19 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
   } catch (error) {
     logger.error('Failed to initialize context template generator', { error: error.message });
+  }
+
+  try {
+    // Framework code generator
+    const { FrameworkCodeGenerator } = await import('../lib/generation/framework-codegen.js');
+    frameworkCodeGenerator = new FrameworkCodeGenerator({
+      projectRoot: process.cwd(),
+      contextTemplateGenerator,
+      frameworkDetector,
+      conventionAnalyzer
+    });
+  } catch (error) {
+    logger.error('Failed to initialize framework code generator', { error: error.message });
   }
 
   // Append previous conversation history to maintain memory
@@ -1384,7 +1397,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         architectureMapper,
         flowAnalyzer,
         filePlacementAdvisor,
-        contextTemplateGenerator
+        contextTemplateGenerator,
+        frameworkCodeGenerator
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1631,7 +1645,8 @@ async function handleCommand(
   architectureMapper,
   flowAnalyzer,
   filePlacementAdvisor,
-  contextTemplateGenerator
+  contextTemplateGenerator,
+  frameworkCodeGenerator
 ) {
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
@@ -4191,6 +4206,81 @@ async function handleCommand(
       }
 
       return true;
+    } else if (subcommand === 'generate') {
+      const framework = args[0];
+      const componentType = args[1];
+      const name = args[2];
+
+      if (!framework || !componentType || !name) {
+        console.log('❌ Please specify framework, component type, and name.');
+        console.log('Usage: /framework generate <framework> <type> <name> [specs]');
+        console.log('Example: /framework generate React component UserProfile');
+        console.log('Example: /framework generate Express controller AuthController');
+        return true;
+      }
+
+      console.log(`🚀 Generating ${framework} ${componentType}: ${name}\n`);
+
+      if (!frameworkCodeGenerator) {
+        console.log('❌ Framework code generator not available.');
+        return true;
+      }
+
+      try {
+        const specs = {};
+        // Parse additional specifications from remaining args
+        if (args.length > 3) {
+          // Simple key=value parsing for now
+          for (let i = 3; i < args.length; i++) {
+            const [key, value] = args[i].split('=');
+            if (key && value) {
+              specs[key] = value;
+            }
+          }
+        }
+
+        const result = await frameworkCodeGenerator.generateFrameworkCode(framework, componentType, name, specs);
+
+        console.log(`📄 Generated ${framework} ${componentType}: ${name}`);
+        console.log('═'.repeat(60));
+        console.log(result.code);
+        console.log('═'.repeat(60));
+
+        // Show additional files if any
+        if (result.additionalFiles && result.additionalFiles.length > 0) {
+          console.log('\n📁 Additional Files Generated:');
+          result.additionalFiles.forEach((file, index) => {
+            console.log(`  ${index + 1}. ${file.fileName} (${file.language})`);
+          });
+        }
+
+        // Show metadata
+        console.log('\n📊 Generation Metadata:');
+        console.log(`  Framework: ${result.metadata.framework}`);
+        console.log(`  Component Type: ${result.metadata.componentType}`);
+        console.log(`  Architecture: ${result.metadata.projectContext.architecture || 'Not detected'}`);
+        console.log(`  Conventions: ${result.metadata.projectContext.conventions.join(', ') || 'None detected'}`);
+
+        // Show placement suggestion
+        if (result.placement && result.placement.path) {
+          console.log(`\n💡 Suggested Location: ${result.placement.path}`);
+        }
+
+        // Show validation results
+        if (result.validation && !result.validation.valid) {
+          console.log('\n⚠️  Validation Issues:');
+          result.validation.errors.forEach(error => console.log(`  ❌ ${error}`));
+          result.validation.warnings.forEach(warning => console.log(`  ⚠️  ${warning}`));
+        }
+
+        console.log('\n✅ Framework code generated successfully!');
+
+      } catch (error) {
+        console.log(`❌ Failed to generate framework code: ${error.message}`);
+        logger.error('Framework code generation failed', { error: error.message, framework, componentType, name });
+      }
+
+      return true;
     } else if (subcommand === 'help') {
     } else if (subcommand === 'analyze') {
       const filePath = args[0];
@@ -4284,6 +4374,7 @@ async function handleCommand(
       console.log('  /framework flows         - Analyze application flows & entry points');
       console.log('  /framework placement <f> - Suggest optimal file placement');
       console.log('  /framework template <t> <n> - Generate context-aware code templates');
+      console.log('  /framework generate <fw> <t> <n> - Generate complete framework-specific code');
       console.log('  /framework patterns <fw> - Show patterns for a specific framework');
       console.log('  /framework analyze <file>- Analyze patterns in a specific file');
       console.log('  /framework prompts <fw>  - Show AI prompts for a framework');
