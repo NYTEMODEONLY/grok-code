@@ -14,27 +14,34 @@ import https from 'https';
 import os from 'os';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { fileSuggester } from '../lib/context/file-suggester.js';
-import { autoContextBuilder } from '../lib/context/auto-context.js';
-import { tokenManager } from '../lib/context/token-manager.js';
+import { dirname, join } from 'path';
 import { SyntaxHighlighter } from '../lib/display/syntax-highlighter.js';
-import { DiffViewer } from '../lib/display/diff-viewer.js';
-import { ProgressIndicator } from '../lib/display/progress-indicator.js';
-import { FileBrowser } from '../lib/interactive/file-browser.js';
-import { CodePreview } from '../lib/display/code-preview.js';
-import { CodeSearch } from '../lib/interactive/code-search.js';
-import { ErrorRecoveryWorkflow } from '../lib/workflows/error-recovery.js';
-import { DebugCommand } from './commands/debug.js';
-import { ErrorStats } from '../lib/analytics/error-stats.js';
-import { AutoComplete } from '../lib/commands/auto-complete.js';
-import { HistorySearch } from '../lib/commands/history-search.js';
-import { ContextualSuggestions } from '../lib/commands/suggestions.js';
-import { WorkflowDiagram } from '../lib/visualization/workflow-diagram.js';
-import { ProgressTracker } from '../lib/visualization/progress-tracker.js';
-import { ConfirmDialog } from '../lib/interactive/confirm-dialog.js';
-import { FrameworkDetector } from '../lib/frameworks/detector.js';
-import { FrameworkPatterns } from '../lib/frameworks/patterns.js';
+
+// Resolve absolute paths for imports (works when run from any directory)
+// Use import.meta.resolve to find the lib directory
+const libDir = join(dirname(fileURLToPath(import.meta.url)), '../lib');
+
+// Dynamic imports for all lib modules
+const { fileSuggester } = await import(join(libDir, 'context/file-suggester.js'));
+const { autoContextBuilder } = await import(join(libDir, 'context/auto-context.js'));
+const { tokenManager } = await import(join(libDir, 'context/token-manager.js'));
+// const { SyntaxHighlighter } = await import(join(libDir, 'display/syntax-highlighter.js'));
+const { DiffViewer } = await import(join(libDir, 'display/diff-viewer.js'));
+const { ProgressIndicator } = await import(join(libDir, 'display/progress-indicator.js'));
+const { FileBrowser } = await import(join(libDir, 'interactive/file-browser.js'));
+const { CodePreview } = await import(join(libDir, 'display/code-preview.js'));
+const { CodeSearch } = await import(join(libDir, 'interactive/code-search.js'));
+const { ErrorRecoveryWorkflow } = await import(join(libDir, 'workflows/error-recovery.js'));
+const { DebugCommand } = await import('./commands/debug.js');
+const { ErrorStats } = await import(join(libDir, 'analytics/error-stats.js'));
+const { AutoComplete } = await import(join(libDir, 'commands/auto-complete.js'));
+const { HistorySearch } = await import(join(libDir, 'commands/history-search.js'));
+const { ContextualSuggestions } = await import(join(libDir, 'commands/suggestions.js'));
+const { WorkflowDiagram } = await import(join(libDir, 'visualization/workflow-diagram.js'));
+const { ProgressTracker } = await import(join(libDir, 'visualization/progress-tracker.js'));
+const { ConfirmDialog } = await import(join(libDir, 'interactive/confirm-dialog.js'));
+const { FrameworkDetector } = await import(join(libDir, 'frameworks/detector.js'));
+const { FrameworkPatterns } = await import(join(libDir, 'frameworks/patterns.js'));
 
 /**
  * Error Logging System
@@ -924,18 +931,17 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Initialize syntax highlighter for code display
   try {
-    syntaxHighlighter = new SyntaxHighlighter();
+    syntaxHighlighterInstance = new SyntaxHighlighter();
     logger.info('Syntax highlighter initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize syntax highlighter', {
-      error: error.message,
-    });
+    syntaxHighlighterInstance = null;
+    logger.error('Failed to initialize syntax highlighter', { error: error.message });
     console.log('⚠️  Warning: Syntax highlighting may not work properly');
   }
 
   // Initialize diff viewer for color-coded diffs
   try {
-    diffViewer = new DiffViewer({ syntaxHighlighter });
+    diffViewer = new DiffViewer({ syntaxHighlighter: syntaxHighlighterInstance });
     logger.info('Diff viewer initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize diff viewer', { error: error.message });
@@ -955,7 +961,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Initialize file browser for interactive navigation
   try {
-    fileBrowser = new FileBrowser({ syntaxHighlighter });
+    fileBrowser = new FileBrowser({ syntaxHighlighter: syntaxHighlighterInstance });
     logger.info('File browser initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize file browser', { error: error.message });
@@ -964,7 +970,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Initialize code preview for enhanced code display
   try {
-    codePreview = new CodePreview({ syntaxHighlighter });
+    codePreview = new CodePreview({ syntaxHighlighter: syntaxHighlighterInstance });
     logger.info('Code preview initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize code preview', { error: error.message });
@@ -973,7 +979,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Initialize code search for interactive codebase search
   try {
-    codeSearch = new CodeSearch({ syntaxHighlighter, codePreview });
+    codeSearch = new CodeSearch({ syntaxHighlighter: syntaxHighlighterInstance, codePreview });
     logger.info('Code search initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize code search', { error: error.message });
@@ -1118,7 +1124,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     smartRPG,
     rpgOrchestrator,
     // Additional display and interactive systems
-    syntaxHighlighter,
+    syntaxHighlighterInstance,
     diffViewer,
     progressIndicator,
     fileBrowser,
@@ -1186,7 +1192,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   try {
     // Convention analyzer
     const { ConventionAnalyzer } = await import(
-      '../lib/conventions/analyzer.js'
+      join(libDir, 'conventions/analyzer.js')
     );
     conventionAnalyzer = new ConventionAnalyzer({
       projectRoot: process.cwd(),
@@ -1238,7 +1244,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   try {
     // Architecture mapper
     const { ArchitectureMapper } = await import(
-      '../lib/structure/architecture-mapper.js'
+      join(libDir, 'structure/architecture-mapper.js')
     );
     architectureMapper = new ArchitectureMapper({
       projectRoot: process.cwd(),
@@ -1286,7 +1292,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   try {
     // Context template generator
     const { ContextTemplateGenerator } = await import(
-      '../lib/generation/context-templates.js'
+      join(libDir, 'generation/context-templates.js')
     );
     contextTemplateGenerator = new ContextTemplateGenerator({
       projectRoot: process.cwd(),
@@ -1304,7 +1310,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   try {
     // Framework code generator
     const { FrameworkCodeGenerator } = await import(
-      '../lib/generation/framework-codegen.js'
+      join(libDir, 'generation/framework-codegen.js')
     );
     frameworkCodeGenerator = new FrameworkCodeGenerator({
       projectRoot: process.cwd(),
@@ -1320,7 +1326,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   try {
     // Smart RPG system
-    const { SmartRPG } = await import('../lib/generation/smart-rpg.js');
+    const { SmartRPG } = await import(join(libDir, 'generation/smart-rpg.js'));
     smartRPG = new SmartRPG({
       projectRoot: process.cwd(),
       contextTemplateGenerator,
@@ -1338,7 +1344,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   try {
     // Unified RPG orchestrator
-    const { RPGOrchestrator } = await import('../lib/rpg/orchestrator.js');
+    const { RPGOrchestrator } = await import(join(libDir, 'rpg/orchestrator.js'));
     rpgOrchestrator = new RPGOrchestrator({
       projectRoot: process.cwd(),
       client,
@@ -1698,7 +1704,7 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         let grokResponse = response.choices[0].message.content;
 
         // Apply syntax highlighting to code blocks
-        grokResponse = processCodeBlocks(grokResponse, syntaxHighlighter);
+        grokResponse = processCodeBlocks(grokResponse, syntaxHighlighterInstance);
 
         console.log(`\nGrok: ${grokResponse}\n`);
 
@@ -2346,7 +2352,7 @@ async function handleCommand(
     const subcommand = parts[1];
 
     if (!subcommand || subcommand === 'status') {
-      const stats = syntaxHighlighter.getStats();
+      const stats = syntaxHighlighterInstance.getStats();
       console.log('\n🎨 Syntax Highlighting Status:');
       console.log('═'.repeat(40));
       console.log(`Enabled: ${stats.enabled ? '✅' : '❌'}`);
@@ -2354,27 +2360,27 @@ async function handleCommand(
       console.log(`Languages: ${stats.supportedLanguages.join(', ')}`);
       console.log(`Themes: ${stats.availableThemes.join(', ')}`);
     } else if (subcommand === 'on') {
-      syntaxHighlighter.setEnabled(true);
+      syntaxHighlighterInstance.setEnabled(true);
       console.log('✅ Syntax highlighting enabled');
     } else if (subcommand === 'off') {
-      syntaxHighlighter.setEnabled(false);
+      syntaxHighlighterInstance.setEnabled(false);
       console.log('❌ Syntax highlighting disabled');
     } else if (subcommand === 'theme') {
       const theme = parts[2];
       if (theme) {
         try {
-          syntaxHighlighter.setTheme(theme);
+          syntaxHighlighterInstance.setTheme(theme);
           console.log(`🎨 Theme changed to: ${theme}`);
         } catch (error) {
           console.log(`❌ Invalid theme: ${theme}`);
           console.log(
-            `Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`
+            `Available themes: ${syntaxHighlighterInstance.getStats().availableThemes.join(', ')}`
           );
         }
       } else {
-        console.log(`Current theme: ${syntaxHighlighter.getStats().theme}`);
+        console.log(`Current theme: ${syntaxHighlighterInstance.getStats().theme}`);
         console.log(
-          `Available themes: ${syntaxHighlighter.getStats().availableThemes.join(', ')}`
+          `Available themes: ${syntaxHighlighterInstance.getStats().availableThemes.join(', ')}`
         );
       }
     } else {
@@ -2409,7 +2415,7 @@ async function handleCommand(
       console.log('\n📊 Diff Viewer Status:');
       console.log('═'.repeat(30));
       console.log(
-        `Syntax highlighting: ${stats.syntaxHighlighterEnabled ? '✅' : '❌'}`
+        `Syntax highlighting: ${stats.enabled ? '✅' : '❌'}`
       );
       console.log(`Theme: ${stats.theme}`);
       console.log(`Context lines: ${stats.contextLines}`);
@@ -5282,7 +5288,7 @@ async function handleCommand(
         let grokResponse = response.choices[0].message.content;
 
         // Apply syntax highlighting to code blocks
-        grokResponse = processCodeBlocks(grokResponse, syntaxHighlighter);
+        grokResponse = processCodeBlocks(grokResponse, syntaxHighlighterInstance);
 
         console.log(`\nGrok: ${grokResponse}\n`);
         await parseAndApplyActions(grokResponse, messages, fileContext);
