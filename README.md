@@ -119,6 +119,14 @@ Grok Code uses a Claude Code-compatible tool system for autonomous code operatio
 | **Grep** | Search file contents (ripgrep-style) | Read-only |
 | **Glob** | Find files by pattern | Read-only |
 | **TodoWrite** | Track tasks and progress | Auto |
+| **WebFetch** | Fetch and process web content | Read-only |
+| **WebSearch** | Search the web for information | Read-only |
+| **AskUserQuestion** | Interactive user prompts | Auto |
+| **NotebookEdit** | Edit Jupyter notebooks | Requires confirmation |
+| **KillShell** | Kill background processes | Requires confirmation |
+| **TaskOutput** | Get background task output | Read-only |
+| **EnterPlanMode** | Start planning workflow | Auto |
+| **ExitPlanMode** | Complete planning | Auto |
 
 ### RPG Planning System
 
@@ -476,6 +484,15 @@ export GROK_VERBOSE=true
 | `/mcp` | MCP server management |
 | `/backup` | File backup management |
 | `/skills` | User-defined skills |
+| `/memory` | Memory and context management |
+| `/config` | Configuration management |
+| `/tasks` | Background task management |
+| `/permissions` | Permission rule management |
+| `/compact` | Context compression |
+| `/context` | Context file management |
+| `/doctor` | System diagnostics |
+| `/init` | Project initialization |
+| `/instructions` | GROK.md management |
 
 ---
 
@@ -526,12 +543,46 @@ If you're coming from Claude Code, Grok Code uses compatible patterns:
 | `~/.claude/` | `~/.grok/` |
 | `CLAUDE.md` | `GROK.md` |
 | `claude` CLI | `grok` CLI |
+| Anthropic API | xAI Grok API |
 
-Most settings and configurations are compatible. Simply:
+### Migration Steps
 
-1. Rename `.claude/` to `.grok/`
-2. Rename `CLAUDE.md` to `GROK.md`
-3. Update API key references
+1. **Rename directories and files:**
+   ```bash
+   mv .claude .grok
+   mv CLAUDE.md GROK.md
+   ```
+
+2. **Update API key:**
+   - Get an xAI API key from [console.x.ai](https://console.x.ai)
+   - Run `grok` and enter your key when prompted
+   - Or export: `export XAI_API_KEY="your-key"`
+
+3. **Update settings.json:**
+   - Most settings work unchanged
+   - Update any Anthropic-specific model references
+
+4. **Custom agents/skills work as-is:**
+   - `.grok/agents/*.md` files are compatible
+   - `.grok/skills/*.md` files are compatible
+   - Hooks configuration is compatible
+
+### What's Different (Better!)
+
+| Feature | Claude Code | Grok Code |
+|---------|-------------|-----------|
+| Context Window | 200K tokens | Up to 2M tokens |
+| RPG Planning | ❌ | ✅ Full structured planning |
+| Framework Detection | Partial | ✅ 30+ frameworks |
+| Multi-file Intelligence | Basic | ✅ AST-based analysis |
+| Vision Support | Separate model | ✅ Integrated (grok-4-vision) |
+
+### Compatibility Notes
+
+- All Claude Code tools have Grok Code equivalents
+- Hook events are 100% compatible
+- Plugin structure is identical
+- Session format is compatible
 
 ---
 
