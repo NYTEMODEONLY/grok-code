@@ -1841,6 +1841,43 @@ async function handleCommand(
     if (input.startsWith('/skills')) {
       return await handleSkillsCommand(input, grokCore.skillsManager);
     }
+
+    // Handle built-in skill shortcuts: /commit, /review, /explain, /refactor, /test, /docs, /fix, /debug
+    const builtInSkills = ['commit', 'review', 'explain', 'refactor', 'test', 'docs', 'fix', 'debug'];
+    for (const skillName of builtInSkills) {
+      if (input === `/${skillName}` || input.startsWith(`/${skillName} `)) {
+        const args = input.slice(skillName.length + 2).trim().split(' ').filter(a => a);
+
+        try {
+          const result = await grokCore.executeSkill(skillName, {
+            args,
+            fileContext,
+            messages,
+            lastError: messages.filter(m => m.role === 'system' && m.content.includes('error')).pop()?.content,
+            lastOutput: messages.filter(m => m.role === 'system').pop()?.content
+          });
+
+          if (result.type === 'message') {
+            console.log(result.content);
+            return true;
+          } else if (result.type === 'error') {
+            console.log(`❌ ${result.content}`);
+            return true;
+          } else if (result.type === 'prompt') {
+            // Execute the skill's prompt through the AI
+            messages.push({
+              role: 'user',
+              content: result.prompt
+            });
+            // Return false to let the main loop process this as a normal message
+            return { skillPrompt: true, messages };
+          }
+        } catch (error) {
+          console.log(`❌ Skill error: ${error.message}`);
+          return true;
+        }
+      }
+    }
   }
 
   if (input.startsWith('/add ')) {
@@ -2249,6 +2286,16 @@ async function handleCommand(
 - /complete <test|status|config>: Auto-complete system for commands and file paths
 - /history <search|recent|stats|clear|delete|export>: Advanced command history search and management
 - /suggest <show|stats|reset>: Intelligent contextual command suggestions
+
+⚡ Built-in Skills (AI-powered workflows):
+- /commit [hint]: Smart git commit with AI-generated message
+- /review [file]: Code review for staged changes or file
+- /explain [file:line]: Explain code in context
+- /refactor [file]: Get refactoring suggestions
+- /test [file]: Generate tests for code
+- /docs [file]: Generate documentation
+- /fix [error or file]: Analyze and fix errors
+- /debug [description]: Debug assistance
 
 🔧 Claude Code-Compatible Features:
 - /agents <list|info|start|stop|running|create>: Manage sub-agents/specialists
