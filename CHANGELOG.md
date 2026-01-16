@@ -177,6 +177,9 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/vision <command>` - Image analysis and vision features
 - `/summarize` - AI-powered conversation and code summarization
 - `/web <fetch|search>` - Web operations (fetch pages, search web)
+- `/ask <yesno|choice|text>` - Interactive user questions
+- `/diff` - File comparison and git diff viewing
+- `/git` - Enhanced git operations (status, log, branch, stash, etc.)
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
