@@ -55,12 +55,14 @@ const {
   handleStatusCommand,
   handleMCPCommand,
   handleBackupCommand,
-  handleSkillsCommand
+  handleSkillsCommand,
+  handleInitCommand,
+  handleInstructionsCommand
 } = await import(join(libDir, 'core/commands.js'));
 
-// Import MCP Server and BackupManager
+// Import MCP Server, BackupManager, and ProjectInstructionsLoader
 const { MCPServer } = await import(join(libDir, 'mcp/index.js'));
-const { BackupManager } = await import(join(libDir, 'core/index.js'));
+const { BackupManager, getProjectInstructionsLoader } = await import(join(libDir, 'core/index.js'));
 
 /**
  * Error Logging System
@@ -1878,6 +1880,22 @@ async function handleCommand(
         }
       }
     }
+
+    // Handle /init command
+    if (input.startsWith('/init')) {
+      if (!grokCore.projectInstructionsLoader) {
+        grokCore.projectInstructionsLoader = getProjectInstructionsLoader();
+      }
+      return await handleInitCommand(input, grokCore.projectInstructionsLoader);
+    }
+
+    // Handle /instructions command
+    if (input.startsWith('/instructions')) {
+      if (!grokCore.projectInstructionsLoader) {
+        grokCore.projectInstructionsLoader = getProjectInstructionsLoader();
+      }
+      return await handleInstructionsCommand(input, grokCore.projectInstructionsLoader);
+    }
   }
 
   if (input.startsWith('/add ')) {
@@ -2308,6 +2326,8 @@ async function handleCommand(
 - /mcp <status|tools|resources|prompts|call|read|prompt>: MCP server management
 - /backup <list|restore|stats|cleanup>: File backup management
 - /skills <list|info|run|create|edit|delete>: User-defined skills/commands
+- /init <grok|config|full>: Initialize project with GROK.md and .grok/
+- /instructions <show|status|create|reload>: Manage GROK.md project instructions
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
