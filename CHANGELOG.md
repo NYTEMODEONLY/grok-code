@@ -151,6 +151,12 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/doctor [quick]` - System diagnostics
 - `/memory <status|clear|compress|search|save|load>` - Memory and context management
 - `/config <show|get|set|reset|path|edit>` - Configuration management
+- `/tasks <list|running|output|kill|cleanup>` - Background task management
+- `/undo [list|clear|n]` - Undo file operations with history
+- `/compact [status|aggressive]` - Context compression
+- `/permissions <list|allow|deny|clear|reset>` - Permission rule management
+- `/context <list|add|remove|clear|size>` - Context file management
+- `/model [list|set|info]` - Model selection and info
 
 #### Enhanced API Client (`lib/api/grok-client.js`)
 - Streaming response support with token-by-token callbacks
