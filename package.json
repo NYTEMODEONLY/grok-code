@@ -1,8 +1,8 @@
 {
   "name": "grok-code-cli",
-  "version": "1.20.0",
+  "version": "2.0.0",
   "type": "module",
-  "description": "🚀 Grok Code: Personal AI-powered CLI coding assistant with interactive code display. File browser, enhanced previews, line navigation, search highlighting, and intelligent terminal experience transform your workflow into a modern IDE.",
+  "description": "🚀 Grok Code: Claude Code-compatible AI-powered CLI coding assistant. Features agentic tools, sub-agents, hooks, plugins, session persistence, and checkpointing - all powered by xAI's Grok models.",
   "main": "bin/grok.js",
   "bin": {
     "grok": "./bin/grok.js"
@@ -36,7 +36,12 @@
     "ai",
     "coding",
     "grok",
-    "rpg-planning"
+    "rpg-planning",
+    "claude-code",
+    "agents",
+    "hooks",
+    "plugins",
+    "xai"
   ],
   "author": "nytemode",
   "license": "MIT",

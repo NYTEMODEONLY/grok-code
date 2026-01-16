@@ -43,6 +43,18 @@ const { ConfirmDialog } = await import(join(libDir, 'interactive/confirm-dialog.
 const { FrameworkDetector } = await import(join(libDir, 'frameworks/detector.js'));
 const { FrameworkPatterns } = await import(join(libDir, 'frameworks/patterns.js'));
 
+// Import GrokCore and commands for Claude Code-compatible features
+const { getGrokCore } = await import(join(libDir, 'core/index.js'));
+const {
+  handleAgentsCommand,
+  handleHooksCommand,
+  handlePluginsCommand,
+  handleSessionCommand,
+  handleCheckpointCommand,
+  handleToolsCommand,
+  handleStatusCommand
+} = await import(join(libDir, 'core/commands.js'));
+
 /**
  * Error Logging System
  * Manages logging to a file and console.
@@ -1341,6 +1353,17 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
     });
   }
 
+  // Initialize GrokCore (Claude Code-compatible systems)
+  let grokCore = null;
+  try {
+    grokCore = getGrokCore({ projectRoot: process.cwd() });
+    await grokCore.initialize();
+    logger.info('GrokCore initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize GrokCore', { error: error.message });
+    // Continue without GrokCore - fallback to existing functionality
+  }
+
   // Append previous conversation history to maintain memory
   if (conversationHistory.length > 0) {
     messages.push(...conversationHistory);
@@ -1398,8 +1421,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   // Display clean, professional welcome banner
   console.log('\n╭─────────────────────────────────────────────────────────╮');
-  console.log('│                    🚀 Grok Code v1.12.0                    │');
-  console.log('│            AI-Powered Coding Assistant                     │');
+  console.log('│                    🚀 Grok Code v2.0.0                     │');
+  console.log('│       AI-Powered Coding Assistant (Claude Code Compatible) │');
   console.log('╰─────────────────────────────────────────────────────────╯\n');
 
   // Show status information cleanly
@@ -1436,6 +1459,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
 
   statusLines.push(`⚙️  ${systemsLoaded}/5 systems ready`);
 
+  // GrokCore status (Claude Code-compatible features)
+  if (grokCore && grokCore.initialized) {
+    const coreStatus = grokCore.getStatus();
+    statusLines.push(`🔧 Core: ${coreStatus.tools.registered} tools, ${coreStatus.agents.registered} agents, ${coreStatus.plugins.enabled} plugins`);
+  }
+
   // Display status lines
   if (statusLines.length > 0) {
     statusLines.forEach((line) => console.log(line));
@@ -1464,6 +1493,12 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
       ) {
         // Save command history before exit
         historySearch.endSession();
+
+        // Shutdown GrokCore gracefully
+        if (grokCore && grokCore.initialized) {
+          await grokCore.shutdown();
+        }
+
         logger.info('User requested exit');
         console.log('Exiting Grok Code. Happy coding!');
         process.exit(0);
@@ -1502,7 +1537,8 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
         contextTemplateGenerator,
         frameworkCodeGenerator,
         smartRPG,
-        rpgOrchestrator
+        rpgOrchestrator,
+        grokCore
       );
       if (handled) {
         // For commands, add a brief assistant acknowledgment to maintain conversation flow
@@ -1752,8 +1788,35 @@ async function handleCommand(
   contextTemplateGenerator,
   frameworkCodeGenerator,
   smartRPG,
-  rpgOrchestrator
+  rpgOrchestrator,
+  grokCore
 ) {
+  // Handle GrokCore commands (Claude Code-compatible features)
+  if (grokCore && grokCore.initialized) {
+    if (input.startsWith('/agents')) {
+      return await handleAgentsCommand(input, grokCore);
+    }
+    if (input.startsWith('/hooks')) {
+      return await handleHooksCommand(input, grokCore);
+    }
+    if (input.startsWith('/plugins')) {
+      return await handlePluginsCommand(input, grokCore);
+    }
+    if (input.startsWith('/session')) {
+      return await handleSessionCommand(input, grokCore);
+    }
+    if (input.startsWith('/checkpoint')) {
+      const sessionData = { messages, fileContext };
+      return await handleCheckpointCommand(input, grokCore, sessionData);
+    }
+    if (input.startsWith('/tools')) {
+      return await handleToolsCommand(input, grokCore);
+    }
+    if (input === '/status') {
+      return await handleStatusCommand(grokCore);
+    }
+  }
+
   if (input.startsWith('/add ')) {
     const filename = input.split(' ').slice(1).join(' ');
     if (fs.existsSync(filename)) {
@@ -2160,6 +2223,15 @@ async function handleCommand(
 - /complete <test|status|config>: Auto-complete system for commands and file paths
 - /history <search|recent|stats|clear|delete|export>: Advanced command history search and management
 - /suggest <show|stats|reset>: Intelligent contextual command suggestions
+
+🔧 Claude Code-Compatible Features:
+- /agents <list|info|start|stop|running|create>: Manage sub-agents/specialists
+- /hooks <list|events|test>: View and test pre/post tool hooks
+- /plugins <list|info|enable|disable|create>: Manage plugins
+- /session <list|info|resume|save>: Session persistence management
+- /checkpoint <create|list|restore|delete>: Save and restore session checkpoints
+- /tools <list|info>: View available tools
+- /status: Show overall system status
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
