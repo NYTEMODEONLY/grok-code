@@ -158,6 +158,28 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/context <list|add|remove|clear|size>` - Context file management
 - `/model [list|set|info]` - Model selection and info
 
+#### Interactive Module (`lib/interactive/`)
+- **StreamingHandler** - Real-time streaming response display
+  - Token-by-token output with visual feedback
+  - Speed calculation (tokens/sec)
+  - Live token count display
+  - Configurable display options
+- **TokenCounter** - Token estimation and budget management
+  - Model-specific context limits (128K-2M tokens)
+  - Input/output/conversation tracking
+  - Budget warnings at configurable thresholds
+  - Formatted summaries for display
+- **ProgressIndicator** - Visual progress for long operations
+  - Animated spinner with custom frames
+  - Progress bar with percentage
+  - ETA calculation
+  - Completion animation
+- **DiffPreview** - File change visualization
+  - Unified diff format with line numbers
+  - Color-coded additions/deletions
+  - Context lines around changes
+  - Edit preview for string replacements
+
 #### Enhanced API Client (`lib/api/grok-client.js`)
 - Streaming response support with token-by-token callbacks
 - Tool calling integration (OpenAI-compatible function calling)
