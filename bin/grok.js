@@ -52,8 +52,15 @@ const {
   handleSessionCommand,
   handleCheckpointCommand,
   handleToolsCommand,
-  handleStatusCommand
+  handleStatusCommand,
+  handleMCPCommand,
+  handleBackupCommand,
+  handleSkillsCommand
 } = await import(join(libDir, 'core/commands.js'));
+
+// Import MCP Server and BackupManager
+const { MCPServer } = await import(join(libDir, 'mcp/index.js'));
+const { BackupManager } = await import(join(libDir, 'core/index.js'));
 
 /**
  * Error Logging System
@@ -1815,6 +1822,25 @@ async function handleCommand(
     if (input === '/status') {
       return await handleStatusCommand(grokCore);
     }
+    if (input.startsWith('/mcp')) {
+      // Initialize MCP server if not already done
+      if (!grokCore.mcpServer) {
+        grokCore.mcpServer = new MCPServer({ name: 'grok-code', version: '2.0.0' });
+        await grokCore.mcpServer.initialize();
+      }
+      return await handleMCPCommand(input, grokCore.mcpServer);
+    }
+    if (input.startsWith('/backup')) {
+      // Initialize BackupManager if not already done
+      if (!grokCore.backupManager) {
+        grokCore.backupManager = new BackupManager();
+        await grokCore.backupManager.initialize();
+      }
+      return await handleBackupCommand(input, grokCore.backupManager);
+    }
+    if (input.startsWith('/skills')) {
+      return await handleSkillsCommand(input, grokCore.skillsManager);
+    }
   }
 
   if (input.startsWith('/add ')) {
@@ -2232,6 +2258,9 @@ async function handleCommand(
 - /checkpoint <create|list|restore|delete>: Save and restore session checkpoints
 - /tools <list|info>: View available tools
 - /status: Show overall system status
+- /mcp <status|tools|resources|prompts|call|read|prompt>: MCP server management
+- /backup <list|restore|stats|cleanup>: File backup management
+- /skills <list|info|run|create|edit|delete>: User-defined skills/commands
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
