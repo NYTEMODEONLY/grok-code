@@ -20,6 +20,9 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - **GrepTool** - Ripgrep-style content search with regex, glob filtering, output modes
 - **GlobTool** - File pattern matching sorted by modification time
 - **TodoTool** - Task tracking with states (pending, in_progress, completed)
+- **WebFetchTool** - Fetch and process web content with HTML-to-markdown conversion, caching
+- **WebSearchTool** - Web search with DuckDuckGo integration, domain filtering, result caching
+- **AskUserQuestionTool** - Interactive user prompts with single/multi-select options
 - **ToolRegistry** - Central tool registration and discovery
 - **ToolExecutor** - Orchestration with hooks integration and undo support
 
@@ -89,9 +92,13 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 
 #### Agentic Handler (`lib/core/agentic-handler.js`)
 - **AgenticHandler** - Automatic tool selection and conversation loop
+  - Parallel tool execution for read-only operations
+  - Smart conflict detection for file operations
+  - Hook integration (PreToolUse, PostToolUse, etc.)
 - **PermissionManager** - Pattern-based permission control
   - Allow/deny patterns (e.g., `Bash(git:*)`, `Bash(npm test)`)
   - Wildcard support for flexible rules
+  - Session-level approval caching
 
 #### Backup System (`lib/core/backup-manager.js`)
 - **BackupManager** - File backup management with indexed storage
