@@ -40,6 +40,7 @@ const { ContextualSuggestions } = await import(join(libDir, 'commands/suggestion
 const { WorkflowDiagram } = await import(join(libDir, 'visualization/workflow-diagram.js'));
 const { ProgressTracker } = await import(join(libDir, 'visualization/progress-tracker.js'));
 const { ConfirmDialog } = await import(join(libDir, 'interactive/confirm-dialog.js'));
+const { TerminalUI, InteractivePrompt, ANSI, BOX } = await import(join(libDir, 'interactive/terminal-ui.js'));
 const { FrameworkDetector } = await import(join(libDir, 'frameworks/detector.js'));
 const { FrameworkPatterns } = await import(join(libDir, 'frameworks/patterns.js'));
 
@@ -230,6 +231,153 @@ function setupExitHandlers() {
       '\n💥 An unhandled promise rejection occurred. Check .grok/error.log for details.'
     );
   });
+}
+
+/**
+ * Register all slash commands for TerminalUI autocomplete
+ * @param {TerminalUI} terminalUI - Terminal UI instance
+ */
+function registerTerminalCommands(terminalUI) {
+  // Core commands
+  terminalUI.registerCommands({
+    help: { description: 'Show help information' },
+    add: { description: 'Add file to context', args: ['file'] },
+    remove: { description: 'Remove file from context', args: ['file'] },
+    scan: { description: 'Scan and add all files to context' },
+    ls: { description: 'List files in directory', args: ['directory'] },
+    model: {
+      description: 'Change AI model',
+      subcommands: ['grok-code-fast-1', 'grok-4-fast-reasoning', 'grok-4-fast-non-reasoning', 'grok-beta'],
+    },
+    clear: { description: 'Clear conversation history' },
+    exit: { description: 'Exit Grok Code' },
+    undo: { description: 'Undo the last file operation' },
+    update: { description: 'Check for and install updates' },
+
+    // Git commands
+    git: {
+      description: 'Run git command',
+      subcommands: ['status', 'add', 'commit', 'push', 'pull', 'log', 'diff', 'branch', 'checkout'],
+    },
+    commit: { description: 'Smart commit changes' },
+    push: { description: 'Push to remote' },
+    pr: { description: 'Create a pull request' },
+
+    // Context management
+    'auto-context': {
+      description: 'Control automatic context building',
+      subcommands: ['on', 'off', 'status', 'clear'],
+    },
+    'prune-context': {
+      description: 'Manage context size and token limits',
+      subcommands: ['status', 'prune', 'strategy', 'auto'],
+    },
+    budget: { description: 'Show token budget status' },
+
+    // Search and analysis
+    'semantic-search': { description: 'Find relevant files for coding tasks' },
+    analyze: { description: 'Deep analysis with automatic context building' },
+    search: {
+      description: 'Interactive code search',
+      subcommands: ['query', 'regex', 'word', 'fuzzy', 'interactive', 'history', 'stats'],
+    },
+    browse: {
+      description: 'Interactive file browser',
+      subcommands: ['start', 'find', 'preview', 'stats'],
+    },
+    preview: {
+      description: 'Enhanced code preview',
+      subcommands: ['file', 'code', 'line', 'search', 'config'],
+    },
+
+    // Display commands
+    highlight: {
+      description: 'Control syntax highlighting',
+      subcommands: ['on', 'off', 'theme', 'status'],
+    },
+    diff: {
+      description: 'Color-coded diff display',
+      subcommands: ['status', 'test', 'git', 'show'],
+    },
+    progress: {
+      description: 'Progress indicators',
+      subcommands: ['status', 'test', 'spinner', 'multistep'],
+    },
+
+    // Development commands
+    run: { description: 'Run shell command' },
+    debug: {
+      description: 'Interactive error analysis',
+      subcommands: ['interactive', 'file', 'errors', 'fix', 'history', 'stats'],
+    },
+    logs: { description: 'View recent error logs' },
+
+    // Claude Code-compatible commands
+    agents: {
+      description: 'Manage sub-agents',
+      subcommands: ['list', 'run', 'create', 'delete'],
+    },
+    hooks: {
+      description: 'Configure hooks',
+      subcommands: ['list', 'add', 'remove', 'enable', 'disable'],
+    },
+    plugins: {
+      description: 'Manage plugins',
+      subcommands: ['list', 'install', 'uninstall', 'enable', 'disable'],
+    },
+    session: {
+      description: 'Session management',
+      subcommands: ['list', 'load', 'save', 'delete', 'export'],
+    },
+    checkpoint: {
+      description: 'Create/restore checkpoints',
+      subcommands: ['create', 'list', 'restore', 'delete'],
+    },
+    tools: {
+      description: 'View available tools',
+      subcommands: ['list', 'info', 'test'],
+    },
+    mcp: {
+      description: 'Model Context Protocol',
+      subcommands: ['status', 'connect', 'disconnect', 'tools'],
+    },
+    backup: {
+      description: 'File backup management',
+      subcommands: ['list', 'restore', 'delete', 'history'],
+    },
+    skills: {
+      description: 'Manage skills',
+      subcommands: ['list', 'run', 'create', 'delete'],
+    },
+    config: {
+      description: 'Configuration management',
+      subcommands: ['list', 'get', 'set', 'reset'],
+    },
+    memory: {
+      description: 'Memory management',
+      subcommands: ['status', 'clear', 'export', 'import'],
+    },
+    status: { description: 'Show system status' },
+    init: { description: 'Initialize GROK.md file' },
+    instructions: { description: 'View project instructions' },
+    doctor: { description: 'Run diagnostics' },
+
+    // Framework commands
+    framework: {
+      description: 'Framework detection and patterns',
+      subcommands: ['detect', 'patterns', 'conventions', 'suggest'],
+    },
+
+    // Skill shortcuts
+    review: { description: 'Code review skill' },
+    explain: { description: 'Explain code skill' },
+    refactor: { description: 'Refactoring suggestions skill' },
+    test: { description: 'Generate tests skill' },
+    docs: { description: 'Generate documentation skill' },
+    fix: { description: 'Analyze and fix errors skill' },
+  });
+
+  logger.info('Registered terminal commands for autocomplete');
 }
 
 // GitHub Update Functions
@@ -1431,71 +1579,104 @@ BE PROACTIVE: If a user asks to modify, create, or work with code in ANY way, as
   // Load command history
   let commandHistory = loadCommandHistory();
 
-  // Display clean, professional welcome banner
-  console.log('\n╭─────────────────────────────────────────────────────────╮');
-  console.log('│                    🚀 Grok Code v2.0.0                     │');
-  console.log('│       AI-Powered Coding Assistant (Claude Code Compatible) │');
-  console.log('╰─────────────────────────────────────────────────────────╯\n');
+  // Initialize Terminal UI (Claude Code-style interface)
+  const terminalUI = new TerminalUI({
+    showStatusLine: true,
+    showTips: true,
+    colorEnabled: true,
+    promptSymbol: '>',
+  });
 
-  // Show status information cleanly
-  const statusLines = [];
+  // Register commands for autocomplete
+  registerTerminalCommands(terminalUI);
 
-  // Version status
+  // Get package version for welcome banner
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  let packageVersion = '2.0.0';
+  try {
+    const packageJson = JSON.parse(readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
+    packageVersion = packageJson.version;
+  } catch (e) {
+    // Use default version
+  }
+
+  // Display Claude Code-style welcome banner with tips panel
+  const tips = [
+    'Run /init to create a GROK.md',
+    '/help for available commands',
+    '/model to switch AI models',
+    '/session list - view sessions',
+    '/tools list - see available tools',
+  ];
+
+  // Build status info for banner
+  const statusInfo = [];
   if (updateCheck.hasUpdate) {
-    statusLines.push(
-      `🔄 Update available: v${updateCheck.currentVersion} → v${updateCheck.latestVersion}`
-    );
-  } else if (updateCheck.isAhead) {
-    statusLines.push(
-      `🚀 Development version (ahead of v${updateCheck.latestVersion})`
-    );
-  } else if (!updateCheck.error) {
-    statusLines.push('✅ Up to date');
+    statusInfo.push(`Update: v${updateCheck.currentVersion} → v${updateCheck.latestVersion}`);
   }
-
-  // Conversation status
-  if (conversationHistory.length > 0) {
-    statusLines.push(
-      `💬 ${conversationHistory.length} conversation messages loaded`
-    );
-  }
-
-  // System status
-  const systemsLoaded = [
-    frameworkDetector ? '🔍' : '❌',
-    frameworkPatterns ? '📋' : '❌',
-    frameworkPromptLoader ? '🎭' : '❌',
-    conventionAnalyzer ? '📏' : '❌',
-    teamPatternsLearner ? '🧠' : '❌',
-  ].filter((s) => s !== '❌').length;
-
-  statusLines.push(`⚙️  ${systemsLoaded}/5 systems ready`);
-
-  // GrokCore status (Claude Code-compatible features)
   if (grokCore && grokCore.initialized) {
     const coreStatus = grokCore.getStatus();
-    statusLines.push(`🔧 Core: ${coreStatus.tools.registered} tools, ${coreStatus.agents.registered} agents, ${coreStatus.plugins.enabled} plugins`);
+    statusInfo.push(`${coreStatus.tools.registered} tools, ${coreStatus.agents.registered} agents`);
   }
 
-  // Display status lines
-  if (statusLines.length > 0) {
-    statusLines.forEach((line) => console.log(line));
-    console.log('');
+  // Display welcome screen
+  terminalUI.displayWelcome({
+    title: 'Grok Code',
+    version: packageVersion,
+    subtitle: 'Claude Code Compatible',
+    user: process.env.USER || 'Developer',
+    organization: statusInfo.join(' | '),
+    workingDir: currentDir,
+    tips,
+  });
+
+  // Show additional status
+  const systemsLoaded = [
+    frameworkDetector ? 1 : 0,
+    frameworkPatterns ? 1 : 0,
+    frameworkPromptLoader ? 1 : 0,
+    conventionAnalyzer ? 1 : 0,
+    teamPatternsLearner ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
+
+  console.log(`${ANSI.dim}Systems: ${systemsLoaded}/5 ready${ANSI.reset}`);
+
+  if (conversationHistory.length > 0) {
+    console.log(`${ANSI.dim}Loaded ${conversationHistory.length} conversation messages${ANSI.reset}`);
   }
 
-  // Welcome message
-  console.log('💡 Type your message or use /help for commands');
-  console.log('   Type "exit" or "/exit" to quit\n');
+  console.log('');
+  console.log(`${ANSI.cyan}Type your message or use /help for commands${ANSI.reset}`);
+  console.log(`${ANSI.dim}Tab: autocomplete  Shift+Tab: cycle permissions  Ctrl+C: exit${ANSI.reset}`);
+  console.log('');
 
-  const mainPrompt = {
-    type: 'input',
-    name: 'userInput',
-    message: 'You: ',
-  };
+  // Create InteractivePrompt for real-time autocomplete and permission cycling
+  const interactivePrompt = new InteractivePrompt(terminalUI, {
+    prompt: `${ANSI.green}>${ANSI.reset} `,
+    autocomplete: true,
+    history: true,
+  });
+
+  // Copy command history to interactive prompt
+  interactivePrompt.history = [...commandHistory];
 
   while (true) {
     try {
-      const { userInput } = await inquirer.prompt([mainPrompt]);
+      // Update status line before each prompt
+      terminalUI.updateStatusLine();
+
+      let userInput;
+      try {
+        userInput = await interactivePrompt.start();
+      } catch (promptError) {
+        if (promptError.message === 'Interrupted') {
+          // User pressed Ctrl+C during input, continue to next iteration
+          console.log('');
+          continue;
+        }
+        throw promptError;
+      }
       const trimmedInput = userInput.trim();
       if (!trimmedInput) continue;
 
@@ -2375,6 +2556,12 @@ async function handleCommand(
 - Intelligent file analysis: /semantic-search and /analyze commands use AI to find and prioritize relevant files
 - Automatic context building: Proactively adds relevant files to context during conversation (/auto-context to control)
 - Smart token management: Monitors and manages context size to stay within AI model limits (/prune-context to control)
+
+⌨️  Keyboard Shortcuts (Claude Code-style):
+- Tab: Autocomplete commands when typing /
+- Shift+Tab: Cycle through permission modes (ask/bypass/strict)
+- Up/Down arrows: Navigate command history
+- Ctrl+C: Exit Grok Code
 `);
     return true;
   } else if (input.startsWith('/run ')) {
