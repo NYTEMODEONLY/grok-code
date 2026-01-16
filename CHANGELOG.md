@@ -67,6 +67,60 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - Automatic initialization on startup
 - Graceful shutdown on exit
 
+#### Skills System (`lib/skills/`)
+- **SkillsManager** - Load and execute built-in and custom skills
+- **BuiltInSkills** - Pre-defined AI workflow skills:
+  - `/commit [hint]` - Smart git commit with AI-generated message
+  - `/review [file]` - Code review for staged changes
+  - `/explain [file:line]` - Explain code in context
+  - `/refactor [file]` - Refactoring suggestions
+  - `/test [file]` - Generate tests (auto-detects framework)
+  - `/docs [file]` - Generate documentation
+  - `/fix [error]` - Analyze and fix errors
+  - `/debug [description]` - Debug assistance
+- Custom skills via `.grok/skills/*.md` with YAML frontmatter
+
+#### MCP Server (`lib/mcp/`)
+- **MCPServer** - Model Context Protocol implementation
+- Built-in tools: read_file, write_file, list_directory, search_files, execute_command
+- Built-in resources: cwd, env, project-config
+- Built-in prompts: explain_code, review_code, fix_error, generate_tests
+- JSON-RPC request handling
+
+#### Agentic Handler (`lib/core/agentic-handler.js`)
+- **AgenticHandler** - Automatic tool selection and conversation loop
+- **PermissionManager** - Pattern-based permission control
+  - Allow/deny patterns (e.g., `Bash(git:*)`, `Bash(npm test)`)
+  - Wildcard support for flexible rules
+
+#### Backup System (`lib/core/backup-manager.js`)
+- **BackupManager** - File backup management with indexed storage
+- Auto-backup before edits with retention policies
+- **ActionHistory** - Undo/redo functionality
+
+#### Project Instructions (`lib/core/project-instructions.js`)
+- **ProjectInstructionsLoader** - Load GROK.md instruction files
+- Supports: GROK.md, grok.md, .grok.md, CLAUDE.md (compatibility)
+- Global (~/.grok/GROK.md) and project-level instructions
+- Section parsing, rules extraction, preferences detection
+
+#### Doctor Diagnostics (`lib/core/doctor.js`)
+- System health checks: Node.js version, API key, connection, configs
+- `/doctor` - Full diagnostics
+- `/doctor quick` - Essential checks only
+
+#### Memory Manager (`lib/context/memory-manager.js`)
+- Conversation memory with auto-summarization
+- Token estimation and budget management
+- File context with LRU eviction
+- Save/load conversation state
+
+#### Tool Confirmation (`lib/interactive/tool-confirmation.js`)
+- Interactive confirmation dialogs with previews
+- Risk assessment (low/medium/high)
+- Session-level permission grants
+- Pattern-based blocking
+
 #### New Slash Commands
 - `/agents <list|info|start|stop|running|create>` - Manage sub-agents/specialists
 - `/hooks <list|events|test>` - View and test pre/post tool hooks
@@ -75,6 +129,14 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/checkpoint <create|list|restore|delete>` - Save and restore session checkpoints
 - `/tools <list|info>` - View available tools
 - `/status` - System status overview
+- `/mcp <status|tools|resources|prompts|call|read|prompt>` - MCP server management
+- `/backup <list|restore|stats|cleanup>` - Backup management
+- `/skills <list|info|run|create|delete>` - Skills management
+- `/init <grok|config|full>` - Project initialization
+- `/instructions <show|status|create|reload>` - GROK.md management
+- `/doctor [quick]` - System diagnostics
+- `/memory <status|clear|compress|search|save|load>` - Memory and context management
+- `/config <show|get|set|reset|path|edit>` - Configuration management
 
 #### Enhanced API Client (`lib/api/grok-client.js`)
 - Streaming response support with token-by-token callbacks

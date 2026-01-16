@@ -57,12 +57,15 @@ const {
   handleBackupCommand,
   handleSkillsCommand,
   handleInitCommand,
-  handleInstructionsCommand
+  handleInstructionsCommand,
+  handleMemoryCommand,
+  handleConfigCommand
 } = await import(join(libDir, 'core/commands.js'));
 
-// Import MCP Server, BackupManager, ProjectInstructionsLoader, and Doctor
+// Import MCP Server, BackupManager, ProjectInstructionsLoader, Doctor, and MemoryManager
 const { MCPServer } = await import(join(libDir, 'mcp/index.js'));
 const { BackupManager, getProjectInstructionsLoader, handleDoctorCommand } = await import(join(libDir, 'core/index.js'));
+const { MemoryManager } = await import(join(libDir, 'context/memory-manager.js'));
 
 /**
  * Error Logging System
@@ -1902,6 +1905,21 @@ async function handleCommand(
       await handleDoctorCommand(input);
       return true;
     }
+
+    // Handle /memory command
+    if (input.startsWith('/memory')) {
+      // Initialize memory manager if needed
+      if (!grokCore.memoryManager) {
+        grokCore.memoryManager = new MemoryManager();
+        await grokCore.memoryManager.initialize();
+      }
+      return await handleMemoryCommand(input, grokCore.memoryManager);
+    }
+
+    // Handle /config command
+    if (input.startsWith('/config')) {
+      return await handleConfigCommand(input, grokCore.configManager);
+    }
   }
 
   if (input.startsWith('/add ')) {
@@ -2335,6 +2353,8 @@ async function handleCommand(
 - /init <grok|config|full>: Initialize project with GROK.md and .grok/
 - /instructions <show|status|create|reload>: Manage GROK.md project instructions
 - /doctor [quick]: System health check and diagnostics
+- /memory <status|clear|compress|search|save|load>: Memory and context management
+- /config <show|get|set|reset|path|edit>: Configuration management
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
