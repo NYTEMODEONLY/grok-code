@@ -60,9 +60,9 @@ const {
   handleInstructionsCommand
 } = await import(join(libDir, 'core/commands.js'));
 
-// Import MCP Server, BackupManager, and ProjectInstructionsLoader
+// Import MCP Server, BackupManager, ProjectInstructionsLoader, and Doctor
 const { MCPServer } = await import(join(libDir, 'mcp/index.js'));
-const { BackupManager, getProjectInstructionsLoader } = await import(join(libDir, 'core/index.js'));
+const { BackupManager, getProjectInstructionsLoader, handleDoctorCommand } = await import(join(libDir, 'core/index.js'));
 
 /**
  * Error Logging System
@@ -1896,6 +1896,12 @@ async function handleCommand(
       }
       return await handleInstructionsCommand(input, grokCore.projectInstructionsLoader);
     }
+
+    // Handle /doctor command
+    if (input.startsWith('/doctor')) {
+      await handleDoctorCommand(input);
+      return true;
+    }
   }
 
   if (input.startsWith('/add ')) {
@@ -2328,6 +2334,7 @@ async function handleCommand(
 - /skills <list|info|run|create|edit|delete>: User-defined skills/commands
 - /init <grok|config|full>: Initialize project with GROK.md and .grok/
 - /instructions <show|status|create|reload>: Manage GROK.md project instructions
+- /doctor [quick]: System health check and diagnostics
 - /diagram <show|style|types>: ASCII art workflow diagrams from RPG plans
 - /progress <status|history|report>: Track operations with visual progress indicators
 - /confirm <demo|stats|history>: Rich confirmation dialogs with previews and warnings
