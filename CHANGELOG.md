@@ -200,6 +200,16 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/head <file>` - Show first lines of file
 - `/tail <file>` - Show last lines of file
 - `/wc <file>` - Word/line/character count
+- `/echo <text>` - Output text with variable expansion and escape sequences
+- `/env [name]` - Show/set/filter environment variables
+- `/which <cmd>` - Find executable location in PATH
+- `/stat <file>` - Show detailed file statistics and metadata
+- `/chmod <mode> <file>` - Change file permissions (octal and symbolic modes)
+- `/ln <target> <link>` - Create hard or symbolic links
+- `/du [path]` - Disk usage with depth limits and sorting
+- `/df` - Show disk free space
+- `/date` - Show date/time with custom formatting
+- `/sleep <seconds>` - Pause execution
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
