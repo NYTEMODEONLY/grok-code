@@ -157,6 +157,8 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/permissions <list|allow|deny|clear|reset>` - Permission rule management
 - `/context <list|add|remove|clear|size>` - Context file management
 - `/model [list|set|info]` - Model selection and info
+- `/export <format>` - Export conversation transcripts (markdown, json, html, text, jsonl)
+- `/vision <command>` - Image analysis and vision features
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
