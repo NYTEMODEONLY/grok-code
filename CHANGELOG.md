@@ -223,6 +223,18 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/alias` - Create/manage command aliases
 - `/clear` - Clear terminal screen
 - `/tee <file> <text>` - Write to file and display
+- `/npm <cmd>` - NPM package manager operations
+- `/yarn <cmd>` - Yarn package manager operations
+- `/node <code>` - Execute JavaScript code with sandboxed vm
+- `/json <cmd>` - JSON operations (parse, format, minify, query, validate, keys)
+- `/base64 <encode|decode>` - Base64 encoding/decoding with URL-safe option
+- `/hash <text>` - Generate hashes (md5, sha1, sha256, sha512)
+- `/uuid [count]` - Generate UUID v4 identifiers
+- `/random <type>` - Generate random numbers, strings, hex, passwords
+- `/timestamp` - Unix timestamp conversions
+- `/calc <expr>` - Math calculator with full expression support
+- `/sort <file>` - Sort file lines with numeric/reverse/unique options
+- `/uniq <file>` - Filter unique/duplicate lines with counts
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
