@@ -32,6 +32,22 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - **PlanModeManager** - Planning state and permission management
 - **ToolRegistry** - Central tool registration and discovery
 - **ToolExecutor** - Orchestration with hooks integration and undo support
+- **TaskTool** - Launch specialized sub-agents for complex tasks
+  - Explore, Plan, Bash, general-purpose agent types
+  - Background task execution
+  - Resume capability for long-running tasks
+- **SkillTool** - Execute skills/workflows within conversations
+  - Built-in skills: commit, review, explain, refactor, test, docs, fix, debug
+  - Custom skill support via .grok/skills/*.md
+
+#### System Prompt Builder (`lib/prompts/system-prompt-builder.js`)
+- **SystemPromptBuilder** - Construct comprehensive system prompts
+  - Base prompt with core guidelines
+  - Tool descriptions injection
+  - Environment information
+  - Project instructions (GROK.md)
+  - Session and file context
+  - Agent-specific prompt variants
 
 #### Agents System (`lib/agents/`)
 - **BaseAgent** - Foundation with tools, model, and permission modes
@@ -159,6 +175,7 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/model [list|set|info]` - Model selection and info
 - `/export <format>` - Export conversation transcripts (markdown, json, html, text, jsonl)
 - `/vision <command>` - Image analysis and vision features
+- `/summarize` - AI-powered conversation and code summarization
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
