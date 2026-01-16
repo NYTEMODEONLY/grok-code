@@ -493,6 +493,10 @@ export GROK_VERBOSE=true
 | `/doctor` | System diagnostics |
 | `/init` | Project initialization |
 | `/instructions` | GROK.md management |
+| `/export` | Export transcripts (markdown, json, html) |
+| `/vision` | Image analysis and screenshots |
+| `/summarize` | AI-powered summarization |
+| `/web` | Web fetch and search |
 
 ---
 

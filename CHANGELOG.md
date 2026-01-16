@@ -176,6 +176,7 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/export <format>` - Export conversation transcripts (markdown, json, html, text, jsonl)
 - `/vision <command>` - Image analysis and vision features
 - `/summarize` - AI-powered conversation and code summarization
+- `/web <fetch|search>` - Web operations (fetch pages, search web)
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
