@@ -23,6 +23,13 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - **WebFetchTool** - Fetch and process web content with HTML-to-markdown conversion, caching
 - **WebSearchTool** - Web search with DuckDuckGo integration, domain filtering, result caching
 - **AskUserQuestionTool** - Interactive user prompts with single/multi-select options
+- **NotebookEditTool** - Jupyter notebook (.ipynb) editing with cell replace/insert/delete
+- **KillShellTool** - Kill running background shell processes
+- **TaskOutputTool** - Retrieve output from background tasks with blocking/non-blocking modes
+- **EnterPlanModeTool** - Start structured planning workflow for complex tasks
+- **ExitPlanModeTool** - Complete planning and request user approval with permission grants
+- **TaskManager** - Background process and async agent management
+- **PlanModeManager** - Planning state and permission management
 - **ToolRegistry** - Central tool registration and discovery
 - **ToolExecutor** - Orchestration with hooks integration and undo support
 
