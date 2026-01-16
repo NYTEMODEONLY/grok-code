@@ -190,6 +190,16 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/cat <file>` - Quick file display (alias for /read)
 - `/pwd` - Print current working directory
 - `/cd <path>` - Change working directory
+- `/find <pattern>` - Search for files by name pattern with depth and type filters
+- `/grep <pattern>` - Search file contents with context, line numbers, highlighting
+- `/touch <file>` - Create empty file or update timestamp
+- `/mkdir <dir>` - Create directories (with parent creation)
+- `/rm <file>` - Remove files/directories with confirmation and dry-run
+- `/cp <src> <dest>` - Copy files/directories
+- `/mv <src> <dest>` - Move/rename files/directories
+- `/head <file>` - Show first lines of file
+- `/tail <file>` - Show last lines of file
+- `/wc <file>` - Word/line/character count
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
