@@ -210,6 +210,19 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/df` - Show disk free space
 - `/date` - Show date/time with custom formatting
 - `/sleep <seconds>` - Pause execution
+- `/ps` - List processes with filtering
+- `/kill <pid>` - Terminate processes (SIGTERM/SIGKILL)
+- `/curl <url>` - HTTP requests with headers, methods, data
+- `/ping <host>` - Network connectivity test
+- `/hostname` - Show hostname and IP addresses
+- `/whoami` - Show current user info
+- `/uptime` - System uptime and load average
+- `/uname` - System information (OS, kernel, arch)
+- `/free` - Memory usage statistics
+- `/history` - Command history
+- `/alias` - Create/manage command aliases
+- `/clear` - Clear terminal screen
+- `/tee <file> <text>` - Write to file and display
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
