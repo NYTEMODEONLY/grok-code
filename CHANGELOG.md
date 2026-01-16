@@ -180,6 +180,40 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
   - Context lines around changes
   - Edit preview for string replacements
 
+#### Auto-Summarization (`lib/context/auto-summarizer.js`)
+- **AutoSummarizer** - AI-powered conversation compression
+  - Uses Grok API for intelligent summarization
+  - Progressive summarization for very long conversations
+  - Configurable compression ratio (default 10%)
+  - Summary caching to avoid redundant API calls
+  - Fallback to basic summarization when API unavailable
+  - Action extraction from assistant messages
+  - Summary consolidation for multiple summaries
+
+#### Multimodal Vision (`lib/multimodal/vision.js`)
+- **VisionHandler** - Image analysis and vision support
+  - Support for PNG, JPG, JPEG, GIF, WebP, BMP formats
+  - Base64 encoding for API compatibility
+  - Image analysis with customizable prompts
+  - Screenshot analysis for debugging
+  - Image comparison (before/after)
+  - OCR-like text extraction
+  - UI design/mockup analysis
+  - Image caching with LRU eviction
+- **ScreenshotHelper** - Platform-specific screenshot capture
+  - macOS, Windows, Linux support
+  - Automatic filename generation
+
+#### Transcript Export (`lib/session/transcript-export.js`)
+- **TranscriptExporter** - Multi-format conversation export
+  - Markdown export with full formatting
+  - JSON export (pretty or compact)
+  - HTML export with dark/light themes
+  - Plain text export with configurable width
+  - JSONL export for training/analysis
+  - Multi-format batch export
+  - Export listing and management
+
 #### Enhanced API Client (`lib/api/grok-client.js`)
 - Streaming response support with token-by-token callbacks
 - Tool calling integration (OpenAI-compatible function calling)
