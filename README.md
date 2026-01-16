@@ -497,6 +497,11 @@ export GROK_VERBOSE=true
 | `/vision` | Image analysis and screenshots |
 | `/summarize` | AI-powered summarization |
 | `/web` | Web fetch and search |
+| `/ask` | Interactive user prompts |
+| `/diff` | File comparison and git diff |
+| `/run` | Shell command execution |
+| `/edit` | Interactive file editing |
+| `/search` | Codebase search (files, functions, classes) |
 
 ---
 

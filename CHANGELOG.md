@@ -180,6 +180,9 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/ask <yesno|choice|text>` - Interactive user questions
 - `/diff` - File comparison and git diff viewing
 - `/git` - Enhanced git operations (status, log, branch, stash, etc.)
+- `/run <command>` - Shell command execution with real-time output
+- `/edit <file>` - Interactive file editing (replace, append, prepend, insert)
+- `/search <pattern>` - Codebase search (files, content, functions, classes, TODOs)
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
