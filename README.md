@@ -254,6 +254,109 @@ Sessions are automatically saved and can be resumed:
 /checkpoint restore <checkpoint-id>
 ```
 
+### MCP (Model Context Protocol) Server
+
+Built-in MCP server for standardized AI model context:
+
+```bash
+# Show MCP server status
+/mcp status
+
+# List available MCP tools
+/mcp tools
+
+# List resources
+/mcp resources
+
+# Call an MCP tool
+/mcp call read_file {"path": "src/index.js"}
+
+# Read a resource
+/mcp read file://project-config
+```
+
+### Backup System
+
+Automatic file backups before edits:
+
+```bash
+# List all backups
+/backup list
+
+# List backups for specific file
+/backup list src/index.js
+
+# Restore a backup
+/backup restore <backup-id>
+
+# Restore latest backup for file
+/backup restore-latest src/index.js
+
+# View backup stats
+/backup stats
+
+# Cleanup old backups
+/backup cleanup
+```
+
+### Skills System
+
+User-defined skills and workflows:
+
+```bash
+# List available skills
+/skills list
+
+# Show skill details
+/skills info commit
+
+# Create a custom skill
+/skills create my-workflow
+
+# Delete a custom skill
+/skills delete my-workflow
+```
+
+**Built-in Skills:**
+- `/commit` - Smart git commit with AI-generated message
+- `/review` - Code review for staged changes
+- `/explain` - Explain code in current context
+- `/refactor` - Suggest refactoring improvements
+- `/test` - Generate tests for code
+- `/docs` - Generate documentation
+
+Custom skills are markdown files in `.grok/skills/` with YAML frontmatter.
+
+### Agentic Handler & Permissions
+
+Advanced permission management for autonomous operation:
+
+```json
+// .grok/settings.json
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash(git:*)",
+      "Bash(npm test)",
+      "Bash(npm run lint)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)"
+    ],
+    "autoApprove": {
+      "Explore": true,
+      "Plan": true
+    }
+  }
+}
+```
+
+Pattern matching supports wildcards (`*`) for flexible permission rules.
+
 ---
 
 ## ⚙️ Configuration
@@ -359,6 +462,21 @@ export GROK_VERBOSE=true
 | `/framework patterns` | Show framework patterns |
 | `/diagram` | Show workflow diagrams |
 
+### Claude Code-Compatible
+
+| Command | Description |
+|---------|-------------|
+| `/agents` | Manage sub-agents/specialists |
+| `/hooks` | View and test pre/post hooks |
+| `/plugins` | Manage plugins |
+| `/session` | Session persistence |
+| `/checkpoint` | Save and restore checkpoints |
+| `/tools` | View available tools |
+| `/status` | Show system status |
+| `/mcp` | MCP server management |
+| `/backup` | File backup management |
+| `/skills` | User-defined skills |
+
 ---
 
 ## 📁 Project Structure
@@ -371,15 +489,27 @@ export GROK_VERBOSE=true
 │   └── my-command.txt     # /my-command
 ├── agents/                # Custom agents
 │   └── reviewer.md        # /agents invoke reviewer
+├── skills/                # User-defined skills
+│   └── my-workflow.md     # /skills run my-workflow
 ├── plugins/               # Plugins
 │   └── my-plugin/
 │       ├── manifest.json
 │       ├── commands/
 │       ├── agents/
+│       ├── skills/
 │       └── hooks/
 ├── sessions/              # Session data
+│   └── index.json         # Session index
+├── checkpoints/           # Session checkpoints
 ├── backups/               # File backups
+│   └── index.json         # Backup index
 └── error.log              # Error logs
+
+~/.grok/                   # User-level configuration
+├── settings.json          # User settings
+├── api_key                # xAI API key
+├── sessions/              # User sessions
+└── plugins/               # User plugins
 
 GROK.md                    # Project instructions for Grok
 ```
