@@ -183,6 +183,13 @@ This release brings near 1:1 feature parity with Anthropic's Claude Code, while 
 - `/run <command>` - Shell command execution with real-time output
 - `/edit <file>` - Interactive file editing (replace, append, prepend, insert)
 - `/search <pattern>` - Codebase search (files, content, functions, classes, TODOs)
+- `/read <file>` - Read and display file contents with line numbers, ranges, head/tail options
+- `/write <file>` - Create or write to files interactively with backup support
+- `/ls [path]` - List directory contents with sorting (-S size, -t time) and formatting (-l long)
+- `/tree [path]` - Display directory tree with depth limits and ignore patterns
+- `/cat <file>` - Quick file display (alias for /read)
+- `/pwd` - Print current working directory
+- `/cd <path>` - Change working directory
 
 #### Interactive Module (`lib/interactive/`)
 - **StreamingHandler** - Real-time streaming response display
