@@ -1,0 +1,154 @@
+# Changelog
+
+All notable changes to Grok Code will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.0] - 2025-01-16
+
+### Added - Claude Code Feature Parity
+
+This release brings near 1:1 feature parity with Anthropic's Claude Code, while leveraging xAI's Grok models.
+
+#### Tools System (`lib/tools/`)
+- **BaseTool** - Foundation class for all tools with permission handling and backups
+- **ReadTool** - File reading with offset/limit, binary detection, 25K token limit
+- **WriteTool** - File writing with automatic backup creation
+- **EditTool** - Exact string replacement with `replace_all` option
+- **BashTool** - Shell execution with timeout (120s default, 600s max), dangerous command detection
+- **GrepTool** - Ripgrep-style content search with regex, glob filtering, output modes
+- **GlobTool** - File pattern matching sorted by modification time
+- **TodoTool** - Task tracking with states (pending, in_progress, completed)
+- **ToolRegistry** - Central tool registration and discovery
+- **ToolExecutor** - Orchestration with hooks integration and undo support
+
+#### Agents System (`lib/agents/`)
+- **BaseAgent** - Foundation with tools, model, and permission modes
+- **AgentRegistry** - Agent lifecycle management (start/stop/resume)
+- **AgentLoader** - Load custom agents from .md files with YAML frontmatter
+- **ExploreAgent** - Fast read-only codebase exploration
+- **PlanAgent** - Software architecture and implementation planning
+- **ReviewerAgent** - Code review with security focus
+- **DebuggerAgent** - Error analysis and debugging
+
+#### Hooks System (`lib/hooks/`)
+- **HooksManager** - Central hooks coordination
+- **HookRunner** - Execute command and prompt hooks with JSON communication
+- **HookLoader** - Load hooks from settings files
+- Supported events:
+  - `PreToolUse` - Before tool execution
+  - `PostToolUse` - After tool execution
+  - `PermissionRequest` - When permission is needed
+  - `UserPromptSubmit` - When user submits a prompt
+  - `SessionStart` / `SessionEnd` - Session lifecycle
+  - `Stop` / `SubagentStop` - Stopping events
+  - `Notification` / `PreCompact` - Other events
+
+#### Plugins System (`lib/plugins/`)
+- **BasePlugin** - Plugin foundation with commands, agents, hooks, skills
+- **PluginManager** - Plugin lifecycle and dependency management
+- **PluginLoader** - Load plugins from directories with manifest.json
+
+#### Session System (`lib/session/`)
+- **SessionManager** - Persistence with auto-save (30s interval) and 30-day retention
+- **TranscriptManager** - JSONL transcript logging
+- **CheckpointManager** - Checkpoint create/restore/compare
+
+#### Configuration System (`lib/config/`)
+- **ConfigManager** - Hierarchical settings loading
+  - Defaults → User (`~/.grok/`) → Project (`.grok/`) → Local (`.grok/settings.local.json`) → Environment
+- **SettingsSchema** - Validation and default values
+- `initProject()` - Creates `.grok/` directory structure
+
+#### Core Integration (`lib/core/`)
+- **GrokCore** - Central integration module connecting all subsystems
+- Singleton pattern for easy access across the application
+- Automatic initialization on startup
+- Graceful shutdown on exit
+
+#### New Slash Commands
+- `/agents <list|info|start|stop|running|create>` - Manage sub-agents/specialists
+- `/hooks <list|events|test>` - View and test pre/post tool hooks
+- `/plugins <list|info|enable|disable|create>` - Plugin management
+- `/session <list|info|resume|save>` - Session persistence management
+- `/checkpoint <create|list|restore|delete>` - Save and restore session checkpoints
+- `/tools <list|info>` - View available tools
+- `/status` - System status overview
+
+#### Enhanced API Client (`lib/api/grok-client.js`)
+- Streaming response support with token-by-token callbacks
+- Tool calling integration (OpenAI-compatible function calling)
+- Automatic tool execution loop with `chatWithTools()`
+- Event emitter for response, error, token, and tool events
+- Improved rate limiting (30 req/min default)
+- Token usage tracking
+
+### Changed
+- Version bumped to 2.0.0
+- Welcome banner now shows "Claude Code Compatible"
+- Default model changed to `grok-code-fast-1` (optimized for coding)
+- Updated `/help` to include all new Claude Code-compatible commands
+- Package description updated to reflect new capabilities
+
+### Migration from v1.x
+1. The `.grok/` directory structure is now used for project configuration
+2. New commands are available but backward compatible
+3. Existing workflows continue to work unchanged
+4. To use new features:
+   - Run `/agents list` to see available agents
+   - Run `/plugins list` to see available plugins
+   - Run `/checkpoint create "name"` to save session state
+
+---
+
+## [1.20.0] - Previous Release
+
+### Features (Pre-2.0)
+- Repository Planning Graph (RPG) system
+- Multi-file semantic parsing (AST-based)
+- Dependency graphing and context inference
+- Framework detection (30+ frameworks)
+- Syntax highlighting with multiple themes
+- Color-coded diffs
+- Interactive file browser
+- Git integration (status, commit, push, PRs)
+- Token budget management
+- Auto-context building
+- Error recovery workflow
+- Command history with search
+- Contextual suggestions
+
+---
+
+## Comparison: Grok Code vs Claude Code
+
+| Feature | Grok Code 2.0 | Claude Code |
+|---------|---------------|-------------|
+| Agentic Terminal Tool | ✅ | ✅ |
+| Tool System (Read/Write/Edit/Bash/Grep/Glob) | ✅ | ✅ |
+| Sub-agents/Specialists | ✅ | ✅ |
+| Hooks (Pre/Post Tool Use) | ✅ | ✅ |
+| Plugin System | ✅ | ✅ |
+| Session Persistence | ✅ | ✅ |
+| Checkpointing & Undo | ✅ | ✅ |
+| Project Configuration (.grok/) | ✅ | ✅ (.claude/) |
+| Streaming Responses | ✅ | ✅ |
+| Tool Calling | ✅ | ✅ |
+| **RPG Planning System** | ✅ | ❌ |
+| **Multi-File Intelligence** | ✅ | Partial |
+| **Framework Detection** | ✅ | ❌ |
+| **2M Token Context** | ✅ | 200K |
+
+---
+
+## Acknowledgments
+
+- **xAI** for the Grok AI models
+- **Anthropic** for Claude Code architecture inspiration
+- The open-source community
+
+---
+
+[2.0.0]: https://github.com/NYTEMODEONLY/grok-code/compare/v1.20.0...v2.0.0
+[1.20.0]: https://github.com/NYTEMODEONLY/grok-code/releases/tag/v1.20.0
